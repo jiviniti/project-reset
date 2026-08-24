@@ -1,0 +1,17 @@
+node_modules/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+.env
+.env.local
+.env.*.local
+.vercel/
+.supabase/
+supabase/.temp/
+.DS_Store
+npm-debug.log*
+*.tsbuildinfo
+# The canonical tracked copy is under reference/prototype/.
+/Project RESET Learning Lab Prototype.html
