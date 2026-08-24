@@ -41,3 +41,22 @@ order by q.position, qo.position;
 ```
 
 Confirm the screening slug, policy version, preference, deferred email reward and selected answers are correct. Do not copy PII or free text into tickets or chat.
+
+## Verify database security
+
+Run this separately in the SQL Editor:
+
+```sql
+select
+  p.proname,
+  p.prosecdef as security_definer,
+  has_function_privilege('service_role', p.oid, 'execute') as server_execute,
+  has_function_privilege('anon', p.oid, 'execute') as anon_execute,
+  has_function_privilege('authenticated', p.oid, 'execute') as authenticated_execute
+from pg_proc p
+join pg_namespace n on n.oid = p.pronamespace
+where n.nspname = 'api'
+order by p.proname;
+```
+
+Both functions must show `security_definer = false`, `server_execute = true`, and both browser execution columns as `false`. In **Data API → Settings**, confirm `api` is included, `private` is excluded, and exposed tables/functions both remain at zero.

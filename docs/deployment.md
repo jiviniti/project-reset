@@ -2,12 +2,16 @@
 
 ## Preview
 
-1. Apply committed migrations and `supabase/seed.sql` to the isolated RESET preview project.
-2. Expose only the `api` schema in Supabase Data API settings. Do not expose `private`.
+Verified on 24 August 2026 at [project-reset-psi.vercel.app](https://project-reset-psi.vercel.app/).
+
+1. Apply the committed files in `supabase/migrations/` in filename order, then apply `supabase/seed/001_preview.sql` to the isolated RESET preview project. `supabase/seed.sql` is a psql entry point and its `\ir` command is not accepted by the Dashboard SQL Editor.
+2. In Supabase **Data API → Settings**, add `api` to the exposed schemas and leave `private` excluded. Keep exposed tables at **0**, exposed functions at **0**, and **Automatically expose new tables** off. The dashboard's function toggles grant browser-role execution; do not use them for these server-only functions. The migration explicitly grants execution to `service_role`, which remains callable through the exposed `api` schema by the server secret.
 3. Set the Vercel variables listed in `.env.example`.
 4. Deploy from the private GitHub repository.
 5. Configure the `reset-submissions` Vercel WAF instrument for 1,000 requests/IP/60 seconds and 429 action.
 6. Complete `/s/preview-screening` and verify the record graph using `docs/handover.md`.
+
+The preview WAF threshold is intentionally provisional and must be reviewed against expected audience size, venue networking and submission bursts before production.
 
 ## Production cutover
 

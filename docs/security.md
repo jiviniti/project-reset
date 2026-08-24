@@ -4,6 +4,7 @@
 - RLS is enabled on every raw table with no browser policies.
 - `PUBLIC`, `anon` and `authenticated` have no raw-table privileges.
 - API functions are `SECURITY INVOKER`; execution is revoked from browser roles and granted to `service_role` only.
+- Supabase Data API includes the `api` schema but exposes no raw tables and applies no dashboard function toggles. Those toggles would grant execution to browser roles and must remain off.
 - Vercel holds a current `sb_secret_...` key in `SUPABASE_SECRET_KEY`. It must never use a `NEXT_PUBLIC_` name, browser bundle, URL, log, chat or documentation.
 - Origin and `Sec-Fetch-Site` checks reduce cross-site misuse but are defence-in-depth, not authentication.
 - The submission body is capped at 32 KiB before JSON/Zod/database validation.

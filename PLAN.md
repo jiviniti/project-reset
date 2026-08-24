@@ -26,12 +26,13 @@ Deliver a new Vercel preview that preserves the supplied RESET journey and atomi
 
 - [x] Audit and preserve the prototype.
 - [x] Scaffold the application and documentation.
-- [ ] Apply schema, grants, RLS and seed migrations to preview. (Migration authored; hosted application pending.)
+- [x] Apply schema, grants, RLS and seed migrations to preview.
 - [x] Implement and test the server submission route.
 - [x] Port the participant flow and share-card experience.
-- [ ] Deploy a Vercel preview.
-- [ ] Complete and verify a hosted Supabase submission.
-- [ ] Produce the milestone report and stop.
+- [x] Deploy a Vercel preview.
+- [x] Complete and verify a hosted Supabase submission.
+- [x] Audit the journey visually at mobile and desktop widths.
+- [x] Produce the milestone report and stop.
 
 ## Explicitly deferred
 
