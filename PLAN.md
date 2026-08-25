@@ -65,7 +65,7 @@ Milestone 2 is accepted. Reconcile the production frontend with the latest appro
 - [x] Preserve final-step PII, private custom tags, validation and atomic persistence.
 - [x] Add the additive U.S.-English policy-version migration.
 - [x] Run unit, build, responsive Playwright and rollback-safe database regression tests.
-- [ ] Deploy and verify the reconciled frontend on the hosted preview, then stop.
+- [x] Deploy and verify the reconciled frontend on the hosted preview, then stop.
 
 ## Explicitly deferred
 

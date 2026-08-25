@@ -146,6 +146,14 @@ Verified locally on 25 August 2026:
 
 The exact paid “Debora Celina Script” font remains an optional Foundation-supplied dependency. The approved prototype’s embedded Petit Formal Script substitute is used in the current build.
 
+Hosted reconciliation verification on 25 August 2026:
+
+- commit `4dac975` deployed successfully to `https://project-reset-psi.vercel.app/s/preview-screening`;
+- the new RESET hero, final-step PII order, private-tag composer, U.S.-English acknowledgement and Learning Lab composition were present;
+- the safe endpoint returned revision 5 with seeded 4,283, observed 6 and combined 4,289, containing only approved totals and metric categories;
+- an already-open Learning Lab moved from five to six observed check-ins without a page reload after the independent revision 4 → 5 update;
+- no hosted submission was made during this reconciliation audit. The source of the sixth preview response was not inferred; all preview records remain subject to the documented production-cleanup requirement.
+
 ## Manual owner actions
 
 - Review the illustrative seeded-baseline wording with the Foundation before production.
