@@ -28,6 +28,8 @@ Aggregate state is physically separated into the non-exposed `aggregate` schema.
 - `processed_responses`: private idempotency/recovery bridge preventing a response from being aggregated twice.
 - `state`: global snapshot version and monotonically increasing revision.
 
+`public.aggregate_revision` is a PII-free singleton invalidation resource. A unique constant-expression index enforces one row, and the revision function uses an explicit row-targeting `WHERE` clause so Supabase API safe-update protections do not reject the transaction.
+
 `data_origin` is always `seeded` or `observed`. Database triggers enforce that seeded rows can exist only in the canonical seeded-baseline scope and observed rows cannot use that scope.
 
 ## Cumulative invariants

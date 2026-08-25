@@ -36,6 +36,7 @@ public.aggregate_revision
 - No `private` or `aggregate` table may be present in the publication.
 - The browser uses a current `sb_publishable_...` key only for this PII-free subscription.
 - Realtime messages cause a debounced safe-API refetch and never supply counts directly.
+- A singleton unique index and explicit `WHERE` clause protect revision mutation; browser roles still retain SELECT only.
 
 Origin and `Sec-Fetch-Site` checks remain defence-in-depth rather than authentication.
 

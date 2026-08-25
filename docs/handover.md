@@ -8,6 +8,7 @@ Last updated: 25 August 2026
 2. In Supabase SQL Editor, apply these files in order:
    - `supabase/migrations/202608250003_aggregate_model.sql`
    - `supabase/migrations/202608250004_submission_aggregate_hook.sql`
+   - `supabase/migrations/202608250005_fix_revision_safe_update.sql`
 3. Apply `supabase/seed/002_aggregate_baseline.sql`. Dashboard SQL Editor does not support the `\ir` command in `supabase/seed.sql`.
 4. Run `supabase/tests/aggregate_milestone2.sql`. It performs test submissions inside a transaction and rolls them back.
 5. Add Vercel browser-safe variables:
@@ -114,12 +115,20 @@ This clears and rebuilds observed aggregate rows and processed-response markers 
 
 Use a preview-only email and complete `/s/preview-screening`, then follow the private-record queries retained from Milestone 1. Do not paste identity or free text into tickets, chat or documentation.
 
+## Hosted verification record
+
+Verified on 25 August 2026 at `project-reset-psi.vercel.app`:
+
+- the browser bundle contained the intended public Supabase URL and publishable key, with no secret key;
+- the public aggregate endpoint returned the allowlisted cumulative snapshot;
+- one synthetic preview submission committed and increased observed responses from four to five;
+- an already-open visualization received a PII-free revision update and moved from revision 3 to revision 4 without a page reload;
+- the observed total remained five during the notification-only refresh;
+- `202608250005_fix_revision_safe_update.sql` corrected Supabase API safe-update rejection by targeting the singleton revision row explicitly.
+
 ## Manual owner actions
 
-- Add the publishable Supabase key and public Supabase URL to Vercel Preview.
-- Apply the two migrations and aggregate seed in Supabase.
-- Run the SQL integration test.
-- Confirm the hosted two-window realtime behavior.
 - Review the illustrative seeded-baseline wording with the Foundation before production.
+- Retain the preview-only dataset warning: the synthetic test response and all other preview research records must be removed before any production cutover.
 
 Production cutover, custom domain, KINEMA and actual reward delivery remain deferred.

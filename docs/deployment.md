@@ -2,7 +2,7 @@
 
 ## Preview
 
-Milestone 1 verified on 24 August 2026 at [project-reset-psi.vercel.app](https://project-reset-psi.vercel.app/). Milestone 2 hosted verification is pending.
+Milestone 1 was verified on 24 August 2026 and Milestone 2 on 25 August 2026 at [project-reset-psi.vercel.app](https://project-reset-psi.vercel.app/). The hosted Milestone 2 check committed one synthetic preview response, verified five observed responses, and confirmed a no-reload realtime refetch from revision 3 to revision 4.
 
 1. Apply the committed files in `supabase/migrations/` in filename order, then apply `supabase/seed/001_preview.sql` and `supabase/seed/002_aggregate_baseline.sql` to the isolated RESET preview project. `supabase/seed.sql` is a psql entry point and its `\ir` command is not accepted by the Dashboard SQL Editor.
 2. In Supabase **Data API → Settings**, add `api` to the exposed schemas and leave `private` and `aggregate` excluded. Do not use dashboard exposure toggles for server-only functions. The migration explicitly grants execution to `service_role`.

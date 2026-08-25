@@ -44,8 +44,8 @@ Implement the safe cumulative aggregate and realtime public visualization layer.
 - [x] Reconcile the approved final-step PII, custom-tag and Donate changes.
 - [x] Add database, API, realtime, security, visual and end-to-end tests.
 - [x] Update architecture, data-model, security and handover documentation.
-- [ ] Apply and verify the migration and application in the hosted preview.
-- [ ] Produce the Milestone 2 report and stop.
+- [x] Apply and verify the migration and application in the hosted preview.
+- [x] Produce the Milestone 2 report and stop.
 
 ## Explicitly deferred
 

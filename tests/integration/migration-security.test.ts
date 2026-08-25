@@ -15,6 +15,10 @@ const aggregateSubmissionHook = readFileSync(
   resolve("supabase/migrations/202608250004_submission_aggregate_hook.sql"),
   "utf8",
 ).toLowerCase();
+const revisionSafeUpdateMigration = readFileSync(
+  resolve("supabase/migrations/202608250005_fix_revision_safe_update.sql"),
+  "utf8",
+).toLowerCase();
 
 describe("database security migration", () => {
   it("uses only invoker functions", () => {
@@ -59,6 +63,17 @@ describe("database security migration", () => {
     expect(aggregateMigration).toContain("grant select on table public.aggregate_revision to anon, authenticated");
     expect(aggregateMigration).toContain("alter publication supabase_realtime add table public.aggregate_revision");
     expect(aggregateMigration).toContain("schemaname = 'private' or schemaname = 'aggregate'");
+  });
+
+  it("targets the singleton revision row explicitly for API-safe updates", () => {
+    expect(revisionSafeUpdateMigration).toContain("aggregate_revision_singleton_idx");
+    expect(revisionSafeUpdateMigration).toMatch(
+      /update public\.aggregate_revision[\s\S]*?where revision_row\.revision/,
+    );
+    expect(revisionSafeUpdateMigration).toContain("security invoker");
+    expect(revisionSafeUpdateMigration).toContain(
+      "revoke execute on function aggregate.bump_revision_v1() from public, anon, authenticated",
+    );
   });
 
   it("updates aggregates inside the new-submission transaction only", () => {
