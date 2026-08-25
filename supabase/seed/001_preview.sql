@@ -23,7 +23,9 @@ cross join (values
   ('burnout_note', 'Tell us more', 'text', 2),
   ('reset_pathways', 'What helps you reset?', 'multi_choice', 3),
   ('reset_practices', 'Which practices help?', 'multi_choice', 4),
-  ('reset_ritual', 'Tell us about your RESET ritual', 'text', 5)
+  ('reset_ritual', 'Tell us about your RESET ritual', 'text', 5),
+  ('burnout_custom_tags', 'Participant-created burnout tags', 'text', 6),
+  ('reset_custom_tags', 'Participant-created RESET tags', 'text', 7)
 ) as item(key, prompt, answer_type, position)
 on conflict (questionnaire_version_id, key) do update
 set prompt = excluded.prompt, answer_type = excluded.answer_type, position = excluded.position;

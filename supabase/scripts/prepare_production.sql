@@ -12,8 +12,9 @@ $guard$;
 
 begin;
 truncate table private.participants cascade;
+select aggregate.rebuild_observed_v1();
 commit;
 
--- Configuration tables are deliberately preserved. Rerun supabase/seed.sql,
--- verify all participant/research tables contain zero test rows, and only then
--- enable production submissions.
+-- Configuration and the canonical seeded baseline are deliberately preserved.
+-- Verify all participant/research tables and observed aggregates contain zero
+-- test rows, then enable production submissions only in the production deployment.

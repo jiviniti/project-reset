@@ -7,6 +7,14 @@ const submissionFix = readFileSync(
   resolve("supabase/migrations/202608240002_fix_submission_email_variable.sql"),
   "utf8",
 ).toLowerCase();
+const aggregateMigration = readFileSync(
+  resolve("supabase/migrations/202608250003_aggregate_model.sql"),
+  "utf8",
+).toLowerCase();
+const aggregateSubmissionHook = readFileSync(
+  resolve("supabase/migrations/202608250004_submission_aggregate_hook.sql"),
+  "utf8",
+).toLowerCase();
 
 describe("database security migration", () => {
   it("uses only invoker functions", () => {
@@ -35,5 +43,40 @@ describe("database security migration", () => {
   it("keeps the created response variable distinct from response_id columns", () => {
     expect(submissionFix).toContain("created_response_id uuid");
     expect(submissionFix).toContain("where selected.response_id = created_response_id");
+  });
+
+  it("keeps aggregate functions invoker-only and browser mutation inaccessible", () => {
+    expect(aggregateMigration).toContain("create schema if not exists aggregate");
+    expect(aggregateMigration).toContain("security invoker");
+    expect(aggregateMigration).not.toContain("security definer");
+    expect(aggregateMigration).toContain("revoke all on schema aggregate from public, anon, authenticated");
+    expect(aggregateMigration).toContain("revoke execute on function api.get_public_aggregates_v1()");
+    expect(aggregateMigration).toContain("grant execute on function api.get_public_aggregates_v1() to service_role");
+  });
+
+  it("exposes only a read-only PII-free revision resource to browser roles", () => {
+    expect(aggregateMigration).toContain("create table if not exists public.aggregate_revision");
+    expect(aggregateMigration).toContain("grant select on table public.aggregate_revision to anon, authenticated");
+    expect(aggregateMigration).toContain("alter publication supabase_realtime add table public.aggregate_revision");
+    expect(aggregateMigration).toContain("schemaname = 'private' or schemaname = 'aggregate'");
+  });
+
+  it("updates aggregates inside the new-submission transaction only", () => {
+    expect(aggregateSubmissionHook).toContain(
+      "perform aggregate.apply_observed_submission_v1(created_response_id, screening.id)",
+    );
+    const replayReturn = aggregateSubmissionHook.indexOf("'replayed', true");
+    const aggregateUpdate = aggregateSubmissionHook.indexOf("aggregate.apply_observed_submission_v1");
+    expect(replayReturn).toBeGreaterThan(-1);
+    expect(aggregateUpdate).toBeGreaterThan(replayReturn);
+    expect(aggregateSubmissionHook).toContain("security invoker");
+    expect(aggregateSubmissionHook).not.toContain("security definer");
+  });
+
+  it("derives cumulative observed values from screening scopes and seeded values from one baseline", () => {
+    expect(aggregateMigration).toContain("scope.scope_type = 'screening'");
+    expect(aggregateMigration).toContain("scope.scope_type = 'seeded_baseline'");
+    expect(aggregateMigration).toContain("aggregate_one_seeded_baseline_idx");
+    expect(aggregateMigration).toContain("scope_type = 'cohort' and screening_id is null");
   });
 });

@@ -1,52 +1,83 @@
 # Handover and verification
 
-## Verify a test submission in Supabase SQL Editor
+Last updated: 25 August 2026
 
-Use a test email created only for preview. After completing `/s/preview-screening`, run:
+## Milestone 2 preview rollout
 
-```sql
-select p.id, p.first_name, p.normalized_email, p.created_at
-from private.participants p
-where p.normalized_email = lower(trim('YOUR_TEST_EMAIL'));
+1. Disable preview submissions in Vercel with `SUBMISSIONS_ENABLED=false`.
+2. In Supabase SQL Editor, apply these files in order:
+   - `supabase/migrations/202608250003_aggregate_model.sql`
+   - `supabase/migrations/202608250004_submission_aggregate_hook.sql`
+3. Apply `supabase/seed/002_aggregate_baseline.sql`. Dashboard SQL Editor does not support the `\ir` command in `supabase/seed.sql`.
+4. Run `supabase/tests/aggregate_milestone2.sql`. It performs test submissions inside a transaction and rolls them back.
+5. Add Vercel browser-safe variables:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+6. Keep `SUPABASE_SECRET_KEY` server-only. Never substitute the publishable key for it.
+7. Deploy the preview, verify the aggregate endpoint and realtime, then re-enable preview submissions.
 
-select pa.id, s.slug, qv.key, qv.version, pa.city, pa.age_band, pa.occupation, pa.submitted_at
-from private.participations pa
-join private.participants p on p.id = pa.participant_id
-join private.screenings s on s.id = pa.screening_id
-join private.questionnaire_versions qv on qv.id = pa.questionnaire_version_id
-where p.normalized_email = lower(trim('YOUR_TEST_EMAIL'));
+## Verify the public aggregate snapshot
 
-select c.data_use_accepted, pv.version, c.accepted_at,
-       cp.future_communications_allowed,
-       rd.channel, rd.status
-from private.participations pa
-join private.participants p on p.id = pa.participant_id
-join private.consents c on c.participation_id = pa.id
-join private.policy_versions pv on pv.id = c.policy_version_id
-join private.communication_preferences cp on cp.participation_id = pa.id
-join private.reward_deliveries rd on rd.participation_id = pa.id
-where p.normalized_email = lower(trim('YOUR_TEST_EMAIL'));
+Open:
 
-select q.key as question, qo.key as selected_option, ra.text_value
-from private.participations pa
-join private.participants p on p.id = pa.participant_id
-join private.responses r on r.participation_id = pa.id
-join private.questions q on q.questionnaire_version_id = pa.questionnaire_version_id
-left join private.response_selections rs on rs.response_id = r.id and rs.question_id = q.id
-left join private.question_options qo on qo.id = rs.option_id
-left join private.response_answers ra on ra.response_id = r.id and ra.question_id = q.id
-where p.normalized_email = lower(trim('YOUR_TEST_EMAIL'))
-  and (qo.id is not null or ra.id is not null)
-order by q.position, qo.position;
+```text
+https://project-reset-psi.vercel.app/api/v1/aggregates
 ```
 
-Confirm the screening slug, policy version, preference, deferred email reward and selected answers are correct. Do not copy PII or free text into tickets or chat.
+Confirm:
 
-## Verify database security
+- `scope` is `cumulative`;
+- seeded, observed and combined totals are separate;
+- only emotions, pathways and practices appear;
+- no participant, screening, free-text, demographic or consent data appears.
 
-Run this separately in the SQL Editor:
+In SQL Editor, compare the server snapshot:
 
 ```sql
+select api.get_public_aggregates_v1();
+```
+
+## Verify counts and seeded/observed separation
+
+```sql
+select
+  scope.scope_type,
+  scope.scope_key,
+  total.data_origin,
+  total.count
+from aggregate.submission_totals total
+join aggregate.scopes scope on scope.id = total.scope_id
+order by scope.scope_type, scope.scope_key, total.data_origin;
+
+select
+  definition.category,
+  definition.metric_key,
+  count.data_origin,
+  sum(count.count) as total
+from aggregate.metric_counts count
+join aggregate.metric_definitions definition on definition.id = count.metric_definition_id
+join aggregate.scopes scope on scope.id = count.scope_id
+where scope.include_in_cumulative
+group by definition.category, definition.metric_key, count.data_origin
+order by definition.category, definition.metric_key, count.data_origin;
+```
+
+There must be exactly one `seeded_baseline` scope. Observed totals must exist only on screening/cohort scopes; cumulative public computation uses screening scopes only.
+
+## Verify realtime and browser-role security
+
+```sql
+select schemaname, tablename
+from pg_publication_tables
+where pubname = 'supabase_realtime'
+order by schemaname, tablename;
+
+select
+  has_table_privilege('anon', 'public.aggregate_revision', 'select') as anon_select,
+  has_table_privilege('anon', 'public.aggregate_revision', 'insert') as anon_insert,
+  has_table_privilege('anon', 'public.aggregate_revision', 'update') as anon_update,
+  has_table_privilege('anon', 'public.aggregate_revision', 'delete') as anon_delete;
+
 select
   p.proname,
   p.prosecdef as security_definer,
@@ -55,8 +86,40 @@ select
   has_function_privilege('authenticated', p.oid, 'execute') as authenticated_execute
 from pg_proc p
 join pg_namespace n on n.oid = p.pronamespace
-where n.nspname = 'api'
-order by p.proname;
+where n.nspname in ('api', 'aggregate')
+order by n.nspname, p.proname;
 ```
 
-Both functions must show `security_definer = false`, `server_execute = true`, and both browser execution columns as `false`. In **Data API → Settings**, confirm `api` is included, `private` is excluded, and exposed tables/functions both remain at zero.
+Expected:
+
+- `public.aggregate_revision` is the only Project RESET realtime table;
+- `anon_select = true` and all mutation columns are false;
+- all application functions show `security_definer = false`;
+- server execution is true only where granted;
+- browser execution is false.
+
+Open the Learning Lab in two browser windows. Submit a new response in one. The other must update without a page reload. Its network log should show an aggregate-revision event followed by `GET /api/v1/aggregates`, with no raw response payload.
+
+## Rebuild/recovery
+
+Disable submissions first, then run:
+
+```sql
+select aggregate.rebuild_observed_v1();
+```
+
+This clears and rebuilds observed aggregate rows and processed-response markers from committed raw responses, preserves seeded rows, and increments the revision once.
+
+## Verify a raw test submission
+
+Use a preview-only email and complete `/s/preview-screening`, then follow the private-record queries retained from Milestone 1. Do not paste identity or free text into tickets, chat or documentation.
+
+## Manual owner actions
+
+- Add the publishable Supabase key and public Supabase URL to Vercel Preview.
+- Apply the two migrations and aggregate seed in Supabase.
+- Run the SQL integration test.
+- Confirm the hosted two-window realtime behavior.
+- Review the illustrative seeded-baseline wording with the Foundation before production.
+
+Production cutover, custom domain, KINEMA and actual reward delivery remain deferred.

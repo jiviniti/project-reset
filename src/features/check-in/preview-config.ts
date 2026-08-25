@@ -123,5 +123,21 @@ export const previewScreeningConfig: ScreeningConfig = {
       required: false,
       options: [],
     },
+    {
+      key: "burnout_custom_tags",
+      prompt: "Participant-created burnout tags",
+      answerType: "text",
+      position: 6,
+      required: false,
+      options: [],
+    },
+    {
+      key: "reset_custom_tags",
+      prompt: "Participant-created RESET tags",
+      answerType: "text",
+      position: 7,
+      required: false,
+      options: [],
+    },
   ],
 };
