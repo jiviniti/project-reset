@@ -17,6 +17,15 @@ One trim-and-lowercase normalized email is assumed to identify one participant a
 
 Rituals, explanatory answers and participant-created tags are private text answers. They are never read by the aggregate updater.
 
+### Participant-created tag representation
+
+- `burnout_custom_tags` and `reset_custom_tags` remain questionnaire text questions in `private.questions`.
+- The frontend trims only leading/trailing whitespace, preserves internal spacing, spelling, punctuation and non-ASCII wording, deduplicates within the answer and allows at most six tags of 60 characters per question.
+- Tags are serialized as newline-delimited `text_value` in `private.response_answers`, so they retain their question association without creating public metric definitions.
+- They are not canonicalized, alias-matched, clustered, moderated, copied to `metric_definitions`, returned by the aggregate API, displayed in the Learning Lab or included in the share card.
+
+`private.policy_versions.reset_data_use_v1_us` contains the U.S.-English acknowledgement. The earlier `reset_data_use_v1` row remains intact so prior consent provenance is not rewritten.
+
 ## Aggregate model
 
 Aggregate state is physically separated into the non-exposed `aggregate` schema.

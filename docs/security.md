@@ -20,6 +20,8 @@ The public response excludes participant names/emails, participant/participation
 
 Participant-created tags remain private text until a future moderation and allowlisting process is approved.
 
+The downloadable share card is generated locally in the browser. It includes only first name, selected approved pathways and up to three selected approved practices. Email, demographics, burnout answers, free text and participant-created tags are excluded.
+
 ## Realtime boundary
 
 The only browser-readable database resource is:

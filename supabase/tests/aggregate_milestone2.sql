@@ -13,10 +13,13 @@ declare
   after_first jsonb;
   after_replay jsonb;
   after_second jsonb;
+  after_failure jsonb;
+  failed_payload jsonb;
   seeded_before bigint;
   first_scope_count bigint;
   second_scope_count bigint;
   published_unsafe integer;
+  stored_custom_tag text;
 begin
   select * into strict source_screening
   from private.screenings
@@ -34,7 +37,7 @@ begin
       'email', 'aggregate-' || first_idempotency || '@example.invalid'
     ),
     'demographics', '{}'::jsonb,
-    'consent', jsonb_build_object('dataUseAccepted', true, 'policyVersion', 'reset_data_use_v1'),
+    'consent', jsonb_build_object('dataUseAccepted', true, 'policyVersion', 'reset_data_use_v1_us'),
     'communication', jsonb_build_object('futureCommunicationsAllowed', false),
     'answers', jsonb_build_array(
       jsonb_build_object('questionKey', 'burnout_signs', 'optionKeys', jsonb_build_array('exhausted')),
@@ -58,6 +61,19 @@ begin
 
   if after_first::text like '%private-test-tag-never-public%' then
     raise exception 'free text leaked into public snapshot';
+  end if;
+
+  select answer.text_value into strict stored_custom_tag
+  from private.response_answers answer
+  join private.responses response on response.id = answer.response_id
+  join private.participations participation on participation.id = response.participation_id
+  join private.participants participant on participant.id = participation.participant_id
+  join private.questions question on question.id = answer.question_id
+  where participant.normalized_email = lower('aggregate-' || first_idempotency || '@example.invalid')
+    and question.key = 'burnout_custom_tags';
+
+  if stored_custom_tag <> 'private-test-tag-never-public' then
+    raise exception 'private custom tag did not retain participant wording';
   end if;
 
   if (after_first #>> '{totals,seeded}')::bigint <> seeded_before then
@@ -110,6 +126,24 @@ begin
   if (after_second #>> '{totals,observed}')::bigint
       <> (after_first #>> '{totals,observed}')::bigint + 1 then
     raise exception 'cumulative total did not include the second screening exactly once';
+  end if;
+
+  failed_payload := jsonb_set(second_payload, '{idempotencyKey}', to_jsonb(gen_random_uuid()::text));
+  failed_payload := jsonb_set(failed_payload, '{answers,0,optionKeys}', '["not_an_approved_option"]'::jsonb);
+  begin
+    perform api.submit_participation_v1(failed_payload);
+    raise exception 'invalid submission unexpectedly succeeded';
+  exception when others then
+    if sqlerrm = 'invalid submission unexpectedly succeeded' then
+      raise;
+    end if;
+  end;
+
+  select api.get_public_aggregates_v1() into after_failure;
+  if after_failure -> 'totals' <> after_second -> 'totals'
+     or after_failure -> 'metrics' <> after_second -> 'metrics'
+     or (after_failure ->> 'revision')::bigint <> (after_second ->> 'revision')::bigint then
+    raise exception 'failed submission changed aggregate state';
   end if;
 
   if after_second ? 'screening' or after_second ? 'participantId' or after_second ? 'email' then

@@ -9,9 +9,9 @@ export const previewScreeningConfig: ScreeningConfig = {
   eventDate: null,
   questionnaireKey: "reset-v1",
   questionnaireVersion: 1,
-  policyVersion: "reset_data_use_v1",
+  policyVersion: "reset_data_use_v1_us",
   policyText:
-    "I understand that my responses will be stored for Project RESET research and may contribute to anonymised or aggregated findings.",
+    "I understand that my responses will be stored for Project RESET research and may contribute to anonymized or aggregated findings.",
   questions: [
     {
       key: "burnout_signs",

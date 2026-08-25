@@ -35,7 +35,7 @@ Committed aggregate revision UPDATE
   -> browser receives PII-free invalidation
   -> events are debounced/coalesced
   -> GET /api/v1/aggregates
-  -> stable-key bubbles animate to the authoritative snapshot
+  -> stable-key words/statistics/pathway blooms animate to the authoritative snapshot
 ```
 
 Only `public.aggregate_revision(revision, updated_at)` is browser-readable and added to `supabase_realtime`. Browser roles have SELECT only. No raw record, aggregate count or screening metadata is streamed.
@@ -44,19 +44,21 @@ The visualization recovers from missed events by fetching on initial load and ag
 
 ## Frontend journey
 
-The active React implementation follows the latest prototype supplied on 25 August 2026:
+The active React implementation follows the latest prototype supplied on 25 August 2026. Questionnaire answers remain in local React state until the final atomic request:
 
 1. burnout signs plus optional private custom tags/free text;
 2. RESET pathways/practices plus optional private custom tags/ritual;
 3. final-step PII, optional demographics, data-use consent and false-by-default future-communications preference;
-4. thank-you/share card and entry into the cumulative community visualization.
+4. persisted thank-you state, transactional-reward status, Learning Lab entry and share card.
 
 The header action is Donate. Product copy uses U.S. English. SMS selection remains deferred because reward delivery is outside Milestone 2.
 
-The self-contained source prototype and checksum are preserved under `reference/prototype/`. The active production-oriented UI is the typed React implementation under `src/`.
+Persisted success is presented as Step 04 of 04; it is not a fourth write stage. Back navigation between questionnaire stages retains local answers, and each forward transition returns the viewport to the stage heading.
+
+The self-contained source prototype and checksum are preserved under `reference/prototype/`. The active production-oriented UI is the typed React implementation under `src/`. Approved fonts are extracted as local assets and loaded through `next/font/local`; no prototype runtime or opaque generated code ships in the app.
 
 ## Active, supporting and deferred boundaries
 
-- **Active core:** check-in, private submission, cumulative safe aggregates, revision invalidation, public bubble visualization and share card.
+- **Active core:** check-in, private submission, cumulative safe aggregates, revision invalidation, public word-map/statistics/pathway visualization and share card.
 - **Supporting:** canonical seeded baseline, rebuild/backfill function, preview seed, security tests and production-cleanup guard.
 - **Deferred:** KINEMA, actual email/SMS delivery, personalized Learning Lab persistence, public screening/cohort views, custom domain and production cutover.

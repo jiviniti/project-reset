@@ -1,78 +1,53 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import {
-  publicAggregateSnapshotSchema,
-  type PublicAggregateMetric,
-  type PublicAggregateSnapshot,
-} from "@/lib/validation/aggregate";
+import { publicAggregateSnapshotSchema, type PublicAggregateMetric, type PublicAggregateSnapshot } from "@/lib/validation/aggregate";
 import { subscribeToAggregateRevision } from "@/services/aggregates/realtime";
 
 type LoadState = "loading" | "ready" | "stale";
-
+type MetricCategory = "emotions" | "practices";
+const DONATION_URL = process.env.NEXT_PUBLIC_DONATE_URL ?? "https://thirddegreeburnout.com/donate";
 const categoryColors = {
-  emotions: ["#de5240", "#fa8757", "#edbaa6", "#9d4b4f"],
-  pathways: ["#458284", "#82bcc8", "#de5240", "#fa8757", "#d4953b"],
-  practices: ["#458284", "#82bcc8", "#d4953b", "#fa8757"],
+  emotions: ["#f18262", "#dfa38f", "#b8655c", "#f3c8b8", "#93474d"],
+  practices: ["#286b72", "#448d91", "#d4933e", "#ef805b", "#7ab6bb"],
 } as const;
 
-function BubbleCloud({
-  metrics,
-  category,
-}: {
-  metrics: PublicAggregateMetric[];
-  category: keyof typeof categoryColors;
-}) {
+function WordCloud({ metrics, category }: { metrics: PublicAggregateMetric[]; category: MetricCategory }) {
   const ordered = useMemo(
-    () => [...metrics].sort((left, right) => right.combined - left.combined || left.label.localeCompare(right.label)),
+    () => [...metrics].filter((metric) => metric.combined > 0).sort((left, right) => right.combined - left.combined || left.label.localeCompare(right.label)),
     [metrics],
   );
   const maximum = Math.max(...ordered.map((metric) => metric.combined), 1);
-
   return (
-    <div className={`bubble-cloud bubble-cloud--${category}`}>
+    <div className={`word-cloud word-cloud--${category}`}>
       {ordered.map((metric, index) => {
         const ratio = Math.sqrt(metric.combined / maximum);
-        const diameter = Math.round(76 + ratio * 82);
-        const color = categoryColors[category][index % categoryColors[category].length];
-        return (
-          <div
-            className="aggregate-bubble"
-            key={`${category}:${metric.key}`}
-            style={{
-              "--bubble-size": `${diameter}px`,
-              "--bubble-color": color,
-              "--bubble-delay": `${(index % 8) * 35}ms`,
-            } as CSSProperties}
-            aria-label={`${metric.label}: ${metric.combined.toLocaleString()} combined, including ${metric.observed.toLocaleString()} observed`}
-          >
-            <strong>{metric.label}</strong>
-            <span>{metric.combined.toLocaleString()}</span>
-            {metric.observed > 0 && <small>+{metric.observed.toLocaleString()} shared</small>}
-          </div>
-        );
+        return <span className="aggregate-word" key={`${category}:${metric.key}`} style={{ "--word-size": `${0.82 + ratio * 1.62}rem`, "--word-color": categoryColors[category][index % categoryColors[category].length], "--word-delay": `${(index % 9) * 90}ms` } as CSSProperties} aria-label={`${metric.label}: ${metric.combined.toLocaleString()} combined, including ${metric.observed.toLocaleString()} observed`}>{metric.label}</span>;
       })}
     </div>
   );
+}
+
+function metricPercent(metrics: PublicAggregateMetric[], key: string, total: number) {
+  const count = metrics.find((metric) => metric.key === key)?.combined ?? 0;
+  return total > 0 ? Math.round((count / total) * 100) : 0;
 }
 
 export function IllustrativeDashboard({ onContribute }: { onContribute: () => void }) {
   const [snapshot, setSnapshot] = useState<PublicAggregateSnapshot | null>(null);
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const refresh = useCallback(async () => {
     try {
       const response = await fetch("/api/v1/aggregates", { cache: "no-store" });
       if (!response.ok) throw new Error("aggregate_unavailable");
-      const parsed = publicAggregateSnapshotSchema.parse(await response.json());
-      setSnapshot(parsed);
+      setSnapshot(publicAggregateSnapshotSchema.parse(await response.json()));
       setLoadState("ready");
     } catch {
-      setLoadState((current) => (current === "loading" ? "stale" : current));
+      setLoadState((current) => current === "loading" ? "stale" : current);
     }
   }, []);
-
   const scheduleRefresh = useCallback(() => {
     if (refreshTimer.current) clearTimeout(refreshTimer.current);
     refreshTimer.current = setTimeout(() => void refresh(), 180);
@@ -81,68 +56,68 @@ export function IllustrativeDashboard({ onContribute }: { onContribute: () => vo
   useEffect(() => {
     scheduleRefresh();
     const unsubscribe = subscribeToAggregateRevision(scheduleRefresh);
-
     return () => {
       if (refreshTimer.current) clearTimeout(refreshTimer.current);
       unsubscribe();
     };
-  }, [refresh, scheduleRefresh]);
+  }, [scheduleRefresh]);
 
   if (!snapshot) {
-    return (
-      <div className="dashboard dashboard--loading">
-        <section className="dashboard__section dashboard__section--dark">
-          <p className="eyebrow eyebrow--orange">The community picture</p>
-          <h2>{loadState === "loading" ? "gathering every RESET…" : "the picture is taking a moment."}</h2>
-          <p>{loadState === "stale" ? "Please try again—the check-in remains available." : "Building the cumulative view."}</p>
-          {loadState === "stale" && <button type="button" className="button button--light" onClick={() => void refresh()}>Try again</button>}
-        </section>
-      </div>
-    );
+    return <div className="dashboard dashboard--loading"><section className="dashboard__section dashboard__section--dark"><p className="eyebrow eyebrow--orange">The community picture</p><h2>{loadState === "loading" ? "Gathering every RESET…" : "The picture is taking a moment."}</h2><p>{loadState === "stale" ? "Please try again—the check-in remains available." : "Building the cumulative view."}</p>{loadState === "stale" && <button type="button" className="button button--light" onClick={() => void refresh()}>Try again</button>}</section></div>;
   }
+
+  const total = snapshot.totals.combined;
+  const stats = [
+    { value: total.toLocaleString(), label: "illustrative baseline + observed responses" },
+    { value: `${metricPercent(snapshot.metrics.practices, "eating_more_plants", total)}%`, label: "choose eating more plants" },
+    { value: `${metricPercent(snapshot.metrics.practices, "walking", total)}%`, label: "choose walking" },
+    { value: `${metricPercent(snapshot.metrics.emotions, "overwhelmed", total)}%`, label: "name feeling overwhelmed" },
+  ];
 
   return (
     <div className="dashboard" data-revision={snapshot.revision}>
       <section className="dashboard__intro">
-        <p className="eyebrow eyebrow--orange">Project RESET · live cumulative view</p>
-        <h2>every answer changes the picture.</h2>
-        <p className="dashboard__observed-total">
-          <strong>{snapshot.totals.observed.toLocaleString()}</strong>
-          <span>people have shared their RESET</span>
-        </p>
-        <p>The bubbles update as committed responses arrive from screenings and programs.</p>
+        <div className="reset-brand reset-brand--light" aria-label="Project RESET"><span className="reset-brand__project">Project</span><span className="reset-brand__word"><b>re</b>set<b>.</b></span><span className="reset-brand__tagline">Choose Better. Together.</span></div>
+        <p className="eyebrow eyebrow--orange">The Learning Lab · live cumulative view</p>
+        <h2>Every answer changes the picture.</h2>
+        <p>A living portrait of how burnout shows up—and the practices helping a community find its way back.</p>
+        <p className="dashboard__observed-total"><strong>{snapshot.totals.observed.toLocaleString()}</strong><span>observed check-ins added so far</span></p>
       </section>
 
       <section className="dashboard__section dashboard__section--dark">
-        <p className="eyebrow eyebrow--orange">How burnout shows up</p>
-        <h2>this is what it feels like.</h2>
-        <BubbleCloud metrics={snapshot.metrics.emotions} category="emotions" />
+        <p className="section-number">01</p><p className="eyebrow eyebrow--orange">The burnout landscape</p><h2>This is what it feels like.</h2><p>The larger the word, the more often it appears in the cumulative picture.</p>
+        <WordCloud metrics={snapshot.metrics.emotions} category="emotions" />
       </section>
 
-      <section className="dashboard__section dashboard__section--peach">
-        <p className="eyebrow">RESET pathways</p>
-        <h2>where we begin again.</h2>
-        <BubbleCloud metrics={snapshot.metrics.pathways} category="pathways" />
+      <section className="dashboard__section dashboard__section--cream">
+        <p className="section-number">02</p><p className="eyebrow">The community RESET map</p><h2>What brings us back.</h2><p>Shared practices become a collective map of recovery and reconnection.</p>
+        <WordCloud metrics={snapshot.metrics.practices} category="practices" />
       </section>
 
-      <section className="dashboard__section dashboard__section--light">
-        <p className="eyebrow">What helps</p>
-        <h2>the practices we return to.</h2>
-        <BubbleCloud metrics={snapshot.metrics.practices} category="practices" />
+      <section className="dashboard__section dashboard__section--coral-soft">
+        <p className="section-number">03</p><p className="eyebrow">Growing together</p><h2>The picture in numbers.</h2>
+        <div className="community-stats">{stats.map((stat) => <div key={stat.label}><strong>{stat.value}</strong><span>{stat.label}</span></div>)}</div>
+        <aside className="dashboard__seed-note"><strong>About the starting picture</strong><p>The visual starts with {snapshot.totals.seeded.toLocaleString()} illustrative demo entries from the approved prototype—not verified Project RESET participants. The {snapshot.totals.observed.toLocaleString()} observed check-ins remain structurally separate and grow live.</p></aside>
       </section>
 
-      <aside className="dashboard__seed-note">
-        <strong>About the starting picture</strong>
-        <p>
-          The visual begins with a clearly marked illustrative prototype baseline of {snapshot.totals.seeded.toLocaleString()} entries. It is not collected participant data. The {snapshot.totals.observed.toLocaleString()} observed responses are counted separately and grow live.
-        </p>
-      </aside>
-
-      <section className="dashboard__section dashboard__section--coral">
-        <h2>add your RESET.</h2>
-        <p>The picture grows because people answer.</p>
-        <button type="button" className="button button--light" onClick={onContribute}>Contribute your RESET</button>
+      <section className="dashboard__section dashboard__section--light pathway-section">
+        <p className="section-number">04</p><p className="eyebrow">Five pathways</p><h2>Where we begin again.</h2>
+        <div className="pathway-blooms">{snapshot.metrics.pathways.map((metric, index) => {
+          const percent = total > 0 ? Math.min(100, Math.round((metric.combined / total) * 100)) : 0;
+          return <div className="pathway-bloom" key={metric.key} style={{ "--bloom-color": ["#286b72", "#7ab6bb", "#dc5743", "#ef805b", "#d4933e"][index % 5], "--bloom-scale": `${0.4 + Math.sqrt(percent / 100) * 0.6}` } as CSSProperties}><span><strong>{percent}%</strong></span><b>{metric.label}</b></div>;
+        })}</div>
       </section>
+
+      <section className="dashboard__section dashboard__section--coral dashboard__cta">
+        <p className="script-line script-line--white">Your answer belongs here.</p><h2>Add your RESET.</h2><p>The picture grows because people choose to share.</p>
+        <button type="button" className="button button--light" onClick={onContribute}>Contribute your RESET <span aria-hidden="true">→</span></button>
+        <a href={DONATION_URL} target="_blank" rel="noreferrer">Support the work · Donate</a>
+      </section>
+
+      <footer className="dashboard__footer">
+        <Image src="/images/jiviniti-wordmark.png" alt="JIVINITI" width={100} height={46} /><span>in partnership with</span><Image src="/images/picture-motion.jpg" alt="Picture Motion" width={95} height={46} />
+        <p>Public results are aggregated and de-identified. Free text, custom tags, participant identifiers, and demographics are never shown here.</p>
+      </footer>
     </div>
   );
 }

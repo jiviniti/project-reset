@@ -43,7 +43,7 @@ const initialForm: FormState = {
   ritual: "",
 };
 
-const DONATION_URL = "https://thirddegreeburnout.com/donate";
+const DONATION_URL = process.env.NEXT_PUBLIC_DONATE_URL ?? "https://thirddegreeburnout.com/donate";
 
 const pathwayPresentation: Record<string, { blurb: string; color: string }> = {
   nourish: { blurb: "plants, water, earth", color: "#458284" },
@@ -52,6 +52,73 @@ const pathwayPresentation: Record<string, { blurb: string; color: string }> = {
   connect: { blurb: "people, animals", color: "#fa8757" },
   rebalance: { blurb: "limits, meaning", color: "#d4953b" },
 };
+
+function ProgressHeader({ step, onBack, complete = false }: { step: number; onBack?: () => void; complete?: boolean }) {
+  return (
+    <header className="progress-header">
+      <div className="progress-header__row">
+        {onBack ? <button type="button" className="back-button" onClick={onBack}>← Back</button> : <span>Completed</span>}
+        <span>Step 0{step} of 04</span>
+      </div>
+      <div className="progress-track" aria-label={`Step ${step} of 4`} aria-valuemin={1} aria-valuemax={4} aria-valuenow={step} role="progressbar">
+        <span className={complete ? "progress-track__bar progress-track__bar--complete" : "progress-track__bar"} style={{ width: `${step * 25}%` }} />
+      </div>
+    </header>
+  );
+}
+
+function CustomTagField({
+  side,
+  input,
+  tags,
+  onInput,
+  onAdd,
+  onRemove,
+  dark = false,
+}: {
+  side: "burnout" | "reset";
+  input: string;
+  tags: string[];
+  onInput: (value: string) => void;
+  onAdd: () => void;
+  onRemove: (value: string) => void;
+  dark?: boolean;
+}) {
+  const trimmed = input.trim().slice(0, 60);
+  const label = side === "burnout" ? "burnout" : "RESET";
+  return (
+    <div className={`custom-tags${dark ? " custom-tags--dark" : ""}`}>
+      <p className="field-group-label">Not listed? Add your own tag</p>
+      {tags.length > 0 && <div className="chips" aria-label={`Your private ${label} tags`}>{tags.map((tag) => (
+        <button type="button" className="chip chip--selected custom-tag" key={tag} onClick={() => onRemove(tag)} aria-label={`Remove ${tag}`}>
+          {tag}<span aria-hidden="true"> ×</span>
+        </button>
+      ))}</div>}
+      <div className="tag-composer">
+        <input
+          aria-label={`Add a ${label} tag`}
+          maxLength={60}
+          placeholder={side === "burnout" ? "Start typing, e.g. doomscrolling" : "Start typing, e.g. painting"}
+          value={input}
+          onChange={(event) => onInput(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              onAdd();
+            }
+          }}
+        />
+        {trimmed && tags.length < 6 ? (
+          <button className="tag-suggestion" type="button" onClick={onAdd}>
+            <span aria-hidden="true">＋</span>
+            <span>Add “{trimmed}”<small>Private tag · preserves your wording</small></span>
+          </button>
+        ) : null}
+      </div>
+      <small>{tags.length}/6 private tags. They are not included in public totals.</small>
+    </div>
+  );
+}
 
 export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
   const [view, setView] = useState<View>("hero");
@@ -100,7 +167,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
 
   function addCustomTag(side: "burnout" | "reset") {
     const input = side === "burnout" ? burnoutTagInput : resetTagInput;
-    const value = input.trim().replace(/\s+/g, " ").slice(0, 60);
+    const value = input.trim().slice(0, 60);
     if (!value) return;
     const key = side === "burnout" ? "burnoutCustomTags" : "resetCustomTags";
     setForm((current) => {
@@ -127,6 +194,12 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
   function back() {
     if (step === 1) setView("hero");
     else setStep((current) => current - 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function goToStep(nextStep: number) {
+    setStep(nextStep);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function submitFinalStep(event: FormEvent) {
@@ -202,50 +275,50 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
               <a className="nav__action" href={DONATION_URL} target="_blank" rel="noreferrer">Donate</a>
             </nav>
             <div className="hero__content">
-              <p className="eyebrow">The documentary</p>
-              <p className="film-title">Third Degree Burnout<br /><em>A Survivor’s Guide</em></p>
-              <hr />
-              <p className="eyebrow eyebrow--orange">Project RESET · The Learning Lab</p>
-              <p className="script-line">Welcome.</p>
+              <div className="reset-brand" aria-label="Project RESET">
+                <span className="reset-brand__project">Project</span>
+                <span className="reset-brand__word"><b>re</b>set<b>.</b></span>
+                <span className="reset-brand__tagline">Choose Better. Together.</span>
+              </div>
+              <div className="film-lockup">
+                <p>An educational initiative based on the award-winning documentary</p>
+                <strong>Third Degree Burnout</strong>
+                <em>A Survivor’s Guide</em>
+              </div>
+              <p className="eyebrow eyebrow--orange">The Learning Lab</p>
               <h1>How do you reset?</h1>
-              <p>The film asks the questions. Project RESET is where you answer them—carrying the conversation beyond the screen.</p>
-              <p>Every screening adds to our collective understanding of burnout and recovery.</p>
-              <Image src="/images/reset-collage.avif" alt="Project RESET community collage" width={900} height={500} priority className="hero__image" />
-              <button type="button" className="button button--coral" onClick={start}>Contribute your RESET</button>
-              <p className="hero__meta">About 90 seconds · research contribution · film access by email</p>
-              <button type="button" className="text-button" onClick={() => setView("lab")}>See what the community has shared</button>
+              <p className="hero__lede">The film asks the questions. Project RESET is where you answer them—carrying the conversation beyond the screen.</p>
+              <p>Created by JIVINITI in partnership with Picture Motion, this living Learning Lab gathers what burnout feels like and what helps us come back to ourselves.</p>
+              <div className="hero__image-frame">
+                <Image src="/images/reset-collage.avif" alt="A collage of everyday movement, nourishment, rest, nature, and community" width={900} height={500} priority className="hero__image" />
+              </div>
+              <button type="button" className="button button--coral" onClick={start}>Contribute your RESET <span aria-hidden="true">→</span></button>
+              <p className="hero__meta">About 90 seconds · public results are de-identified · film access by email</p>
+              <button type="button" className="text-button" onClick={() => setView("lab")}>Explore the Learning Lab <span aria-hidden="true">→</span></button>
             </div>
           </section>
         )}
 
         {view === "flow" && (
           <section className="flow">
-            <header className="progress-header">
-              <div><button type="button" className="back-button" onClick={back}>← Back</button><span>Step 0{step} of 03</span></div>
-              <div className="progress-track"><span style={{ width: `${step * 33.333}%` }} /></div>
-            </header>
+            <ProgressHeader step={step} onBack={back} />
 
             {step === 1 && (
               <section className="step step--dark">
-                <p className="eyebrow eyebrow--orange">Question one</p>
+                <p className="eyebrow eyebrow--orange">01 · The burnout landscape</p>
                 <h2>How does burnout show up for you?</h2>
                 <p>Choose as many as feel true.</p>
                 <div className="chips">{visibleEmotions.map((option) => <Chip tone="dark" key={option.key} selected={form.emotions.includes(option.key)} onClick={() => toggleList("emotions", option.key)}>{option.label}</Chip>)}</div>
                 <button type="button" className="text-button text-button--peach" onClick={() => setShowMoreEmotions((current) => !current)}>{showMoreEmotions ? "Show fewer" : `+ ${emotionOptions.length - 10} more ways it shows up`}</button>
-                <div className="custom-tags custom-tags--dark">
-                  <p className="field-group-label">Not listed? Add your own tag</p>
-                  <div className="chips">{form.burnoutCustomTags.map((tag) => <button type="button" className="chip chip--selected custom-tag" key={tag} onClick={() => removeCustomTag("burnout", tag)}>{tag}<span aria-hidden="true"> ×</span></button>)}</div>
-                  <div className="tag-entry"><input aria-label="Add a burnout tag" maxLength={60} placeholder="e.g. doomscrolling" value={burnoutTagInput} onChange={(event) => setBurnoutTagInput(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); addCustomTag("burnout"); } }} /><button type="button" onClick={() => addCustomTag("burnout")}>Add</button></div>
-                  <small>New tags stay private for review and do not enter public totals automatically.</small>
-                </div>
+                <CustomTagField side="burnout" input={burnoutTagInput} tags={form.burnoutCustomTags} onInput={setBurnoutTagInput} onAdd={() => addCustomTag("burnout")} onRemove={(tag) => removeCustomTag("burnout", tag)} dark />
                 <label>Tell us more (optional)<textarea rows={3} maxLength={1500} value={form.burnoutNote} onChange={(event) => update("burnoutNote", event.target.value)} /></label>
-                <button className="button button--coral" type="button" onClick={() => setStep(2)}>Continue · {form.emotions.length + form.burnoutCustomTags.length} selected</button>
+                <button className="button button--coral" type="button" onClick={() => goToStep(2)}>Continue · {form.emotions.length + form.burnoutCustomTags.length} selected</button>
               </section>
             )}
 
             {step === 2 && (
               <section className="step step--peach">
-                <p className="eyebrow">Question two</p>
+                <p className="eyebrow">02 · Your RESET map</p>
                 <h2>What helps you reset?</h2>
                 <p>Pick one or two pathways, then the practices inside them.</p>
                 <div className="pathway-grid">{pathwayOptions.map((option) => {
@@ -254,30 +327,26 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                   return <button type="button" aria-pressed={selected} key={option.key} className="pathway-card" style={selected ? { background: presentation.color, borderColor: presentation.color } : undefined} onClick={() => toggleList("pathways", option.key)}><strong>{option.label}</strong><span>{presentation.blurb}</span></button>;
                 })}</div>
                 {form.pathways.map((pathwayKey) => <fieldset className="practice-group" key={pathwayKey}><legend>{pathwayOptions.find((option) => option.key === pathwayKey)?.label}—what exactly?</legend><div className="chips">{practicesByPathway[pathwayKey].map((option) => <Chip key={option.key} selected={form.practices.includes(option.key)} onClick={() => toggleList("practices", option.key)}>{option.label}</Chip>)}</div></fieldset>)}
-                <div className="custom-tags">
-                  <p className="field-group-label">Not listed? Add your own tag</p>
-                  <div className="chips">{form.resetCustomTags.map((tag) => <button type="button" className="chip chip--selected custom-tag" key={tag} onClick={() => removeCustomTag("reset", tag)}>{tag}<span aria-hidden="true"> ×</span></button>)}</div>
-                  <div className="tag-entry"><input aria-label="Add a RESET tag" maxLength={60} placeholder="e.g. painting" value={resetTagInput} onChange={(event) => setResetTagInput(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); addCustomTag("reset"); } }} /><button type="button" onClick={() => addCustomTag("reset")}>Add</button></div>
-                  <small>New tags stay private for review and do not enter public totals automatically.</small>
-                </div>
+                <CustomTagField side="reset" input={resetTagInput} tags={form.resetCustomTags} onInput={setResetTagInput} onAdd={() => addCustomTag("reset")} onRemove={(tag) => removeCustomTag("reset", tag)} />
                 <label>Tell us about your RESET ritual (optional)<textarea rows={3} maxLength={1500} value={form.ritual} onChange={(event) => update("ritual", event.target.value)} /></label>
-                <button className="button button--primary" type="button" onClick={() => setStep(3)}>Continue · {form.practices.length + form.resetCustomTags.length} practices</button>
+                <button className="button button--primary" type="button" onClick={() => goToStep(3)}>Continue · {form.practices.length + form.resetCustomTags.length} selected</button>
               </section>
             )}
 
             {step === 3 && (
               <form className="step step--light" onSubmit={submitFinalStep}>
-                <p className="eyebrow eyebrow--orange">Last step</p>
+                <p className="eyebrow eyebrow--orange">03 · Complete your check-in</p>
                 <h2>Where should we send your film?</h2>
-                <p>We use your email to associate your participation and, later, send transactional film access.</p>
+                <p>Your details come last so you can reflect first. Email is the initial reward-delivery channel for this phase.</p>
+                <div className="delivery-method" aria-label="Selected delivery method"><span>Email</span></div>
                 <label>First name<input required autoComplete="given-name" maxLength={80} value={form.firstName} onChange={(event) => update("firstName", event.target.value)} /></label>
                 <label>Email<input required type="email" autoComplete="email" maxLength={254} value={form.email} onChange={(event) => update("email", event.target.value)} /></label>
-                <p className="field-group-label">Optional—helps us see patterns</p>
+                <p className="field-group-label">Optional—helps us understand broad patterns</p>
                 <label>City<input autoComplete="address-level2" maxLength={120} value={form.city} onChange={(event) => update("city", event.target.value)} /></label>
                 <fieldset><legend>Age range</legend><div className="chips">{["18–24", "25–34", "35–44", "45–54", "55+"].map((age) => <Chip key={age} selected={form.ageBand === age} onClick={() => update("ageBand", form.ageBand === age ? "" : age)}>{age}</Chip>)}</div></fieldset>
                 <label>Occupation<input autoComplete="organization-title" maxLength={120} value={form.occupation} onChange={(event) => update("occupation", event.target.value)} /></label>
                 <label className="check-row"><input required type="checkbox" checked={form.consent} onChange={(event) => update("consent", event.target.checked)} /><span>{screening.policyText}</span></label>
-                <label className="check-row"><input type="checkbox" checked={form.futureCommunications} onChange={(event) => update("futureCommunications", event.target.checked)} /><span>Virsa may contact me about future programs. Optional and off by default.</span></label>
+                <label className="check-row"><input type="checkbox" checked={form.futureCommunications} onChange={(event) => update("futureCommunications", event.target.checked)} /><span>Virsa may contact me about future programs. This is optional and off by default.</span></label>
                 <button className="button button--primary" type="submit" disabled={submissionStatus === "submitting"}>{submissionStatus === "submitting" ? "Saving your RESET…" : "Finish"}</button>
                 <p className="error-message" role="alert">{errorMessage}</p>
                 <a className="donation-link" href={DONATION_URL} target="_blank" rel="noreferrer">We go wherever we go because of your kindness—donate</a>
@@ -287,18 +356,29 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
         )}
 
         {view === "success" && (
-          <section className="success">
-            <Image src="/images/reset-mark.png" alt="" width={116} height={116} className="success__mark" />
-            <h2>Thank you.</h2>
-            <p>You’ve added your experience to a growing body of lived evidence about burnout, wellbeing and systems change.</p>
-            <p className="script-line script-line--white">You’re part of it now.</p>
-            <ShareCard firstName={form.firstName.trim().split(/\s+/)[0]} pathways={selectedPathwayOptions.map(({ key, label }) => ({ key, label }))} practices={selectedPracticeOptions.map(({ label }) => label)} />
-            <section className="reward-card">
-              <p className="eyebrow">Your film access</p>
-              <h3>Email delivery is being configured.</h3>
-              <p>Your transactional reward request has been recorded separately from marketing consent. No access email is sent by this preview milestone.</p>
-            </section>
-            <button type="button" className="button button--outline-light" onClick={() => setView("lab")}>Enter the Learning Lab</button>
+          <section className="flow">
+            <ProgressHeader step={4} complete />
+            <div className="success">
+              <div className="success__intro">
+                <Image src="/images/reset-mark.png" alt="" width={116} height={116} className="success__mark" />
+                <p className="eyebrow">04 · Your RESET is part of the picture</p>
+                <h2>Thank you.</h2>
+                <p>You’ve added your experience to a growing body of lived evidence about burnout, well-being, and systems change.</p>
+                <p className="script-line script-line--white">You’re part of it now.</p>
+              </div>
+              <section className="reward-card">
+                <p className="eyebrow">Your film access</p>
+                <h3>Email delivery is being configured.</h3>
+                <p>Your transactional reward request has been recorded separately from marketing consent. This preview does not send an access email yet.</p>
+              </section>
+              <button type="button" className="button button--outline-light" onClick={() => setView("lab")}>Enter the Learning Lab <span aria-hidden="true">→</span></button>
+              <div className="share-invitation">
+                <p className="script-line">Bring someone with you.</p>
+                <h3>Make your RESET visible.</h3>
+                <p>Download or share a personal card to invite someone else into the conversation.</p>
+              </div>
+              <ShareCard firstName={form.firstName.trim().split(/\s+/)[0]} pathways={selectedPathwayOptions.map(({ key, label }) => ({ key, label }))} practices={selectedPracticeOptions.map(({ label }) => label)} />
+            </div>
           </section>
         )}
       </div>

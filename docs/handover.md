@@ -9,6 +9,7 @@ Last updated: 25 August 2026
    - `supabase/migrations/202608250003_aggregate_model.sql`
    - `supabase/migrations/202608250004_submission_aggregate_hook.sql`
    - `supabase/migrations/202608250005_fix_revision_safe_update.sql`
+   - `supabase/migrations/202608250006_us_english_policy.sql`
 3. Apply `supabase/seed/002_aggregate_baseline.sql`. Dashboard SQL Editor does not support the `\ir` command in `supabase/seed.sql`.
 4. Run `supabase/tests/aggregate_milestone2.sql`. It performs test submissions inside a transaction and rolls them back.
 5. Add Vercel browser-safe variables:
@@ -126,9 +127,29 @@ Verified on 25 August 2026 at `project-reset-psi.vercel.app`:
 - the observed total remained five during the notification-only refresh;
 - `202608250005_fix_revision_safe_update.sql` corrected Supabase API safe-update rejection by targeting the singleton revision row explicitly.
 
+## Product and visual reconciliation verification
+
+The latest approved file was confirmed byte-identical to `reference/prototype/Project RESET Learning Lab Prototype.html`; see `docs/prototype-reconciliation.md` for its checksum and screen audit.
+
+Verified locally on 25 August 2026:
+
+- lint, TypeScript and production build completed without errors;
+- 28 Vitest unit/integration assertions passed;
+- four Playwright journeys passed across iPhone 13 and desktop Chromium;
+- custom burnout and RESET tags retained trimmed literal wording in the final payload;
+- a long, punctuated non-ASCII first name rendered into a valid 1080×1350 canvas card;
+- the card excluded PII beyond first name, burnout answers, free text, demographics and custom tags;
+- required 390px, larger-mobile, tablet and desktop layouts were visually inspected;
+- focus styling, sticky progress, wrapped custom-tag suggestions, scroll-to-stage behavior and reduced-motion CSS were checked;
+- the aggregate SQL regression passed inside a rollback, including private custom-tag persistence, safe public output, idempotency, failed-submission rollback, seeded/observed separation, screening/cumulative totals, grants/RLS and realtime publication boundaries;
+- `202608250006_us_english_policy.sql` was applied to the preview database without altering the previous policy record.
+
+The exact paid “Debora Celina Script” font remains an optional Foundation-supplied dependency. The approved prototype’s embedded Petit Formal Script substitute is used in the current build.
+
 ## Manual owner actions
 
 - Review the illustrative seeded-baseline wording with the Foundation before production.
+- Confirm whether the Foundation owns/licences “Debora Celina Script” if exact script-typeface parity is required.
 - Retain the preview-only dataset warning: the synthetic test response and all other preview research records must be removed before any production cutover.
 
 Production cutover, custom domain, KINEMA and actual reward delivery remain deferred.

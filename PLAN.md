@@ -2,9 +2,9 @@
 
 Last updated: 25 August 2026
 
-## Current approved milestone: Milestone 2
+## Current approved pass: Product + Visual Reconciliation (pre-Milestone 3)
 
-Implement the safe cumulative aggregate and realtime public visualization layer. Stop after hosted verification. KINEMA, actual reward delivery, Learning Lab persistence, custom-domain work and production cutover remain outside this milestone.
+Milestone 2 is accepted. Reconcile the production frontend with the latest approved prototype while preserving the verified submission, aggregate, realtime and privacy architecture. Stop after hosted verification. This is not Milestone 3.
 
 ## Architecture decisions carried forward
 
@@ -33,6 +33,20 @@ Implement the safe cumulative aggregate and realtime public visualization layer.
 - The outgoing aggregate response is parsed through a strict allowlisted schema and contains no participant identity, UUIDs, free text, demographics, consent or raw records.
 - The latest supplied prototype (25 August 2026) is the frontend source of truth. The participant flow moves PII to the last question step, restores private custom-tag input for the two relevant questions, uses “Donate” with the approved donation link and standardises product copy to U.S. English.
 
+## Product and visual reconciliation decisions
+
+- `Project RESET Learning Lab Prototype - Latest.html` is byte-identical to the canonical reference, SHA-256 `bf06b5c2c8cf45aa94c05a0ab6cbac1095aca41a3b815346fa9b44d2610cd1ac`.
+- The prototype controls journey, copy and presentation; the production implementation controls data, security, consent, transaction and deployment behavior.
+- Approved embedded Poppins, EB Garamond, Petit Formal Script and Manrope assets are served locally through `next/font/local`.
+- The experience uses the prototype’s 390px desktop artifact measure and edge-to-edge mobile behavior.
+- Persisted success is presented as Step 04 of 04. Submission still occurs atomically at the end of Step 03; no success UI appears before persistence.
+- PII remains local until the final step and is sent only in the final complete payload.
+- Private custom tags retain trimmed participant wording, allow six tags of up to 60 characters per relevant question, and remain excluded from public aggregates and the share card.
+- The Learning Lab now uses accessible frequency-scaled word maps, cumulative statistics and pathway blooms while reading the same safe aggregate API.
+- The approved Donate URL is `https://thirddegreeburnout.com/donate`, configurable with `NEXT_PUBLIC_DONATE_URL`.
+- U.S.-English acknowledgement text is a new immutable policy version, `reset_data_use_v1_us`; prior consent wording is not rewritten.
+- The 4,283 baseline is an illustrative prototype fixture, not evidence of real Project RESET participants.
+
 ## Milestone sequence
 
 - [x] Milestone 1: hosted end-to-end private submission.
@@ -46,6 +60,12 @@ Implement the safe cumulative aggregate and realtime public visualization layer.
 - [x] Update architecture, data-model, security and handover documentation.
 - [x] Apply and verify the migration and application in the hosted preview.
 - [x] Produce the Milestone 2 report and stop.
+- [x] Audit the latest prototype and document screen-by-screen differences.
+- [x] Reconcile hero, journey, completion, share-card and community visual language.
+- [x] Preserve final-step PII, private custom tags, validation and atomic persistence.
+- [x] Add the additive U.S.-English policy-version migration.
+- [x] Run unit, build, responsive Playwright and rollback-safe database regression tests.
+- [ ] Deploy and verify the reconciled frontend on the hosted preview, then stop.
 
 ## Explicitly deferred
 

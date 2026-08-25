@@ -4,8 +4,8 @@ on conflict (key, version) do update set title = excluded.title, status = exclud
 
 insert into private.policy_versions (version, acknowledgement_text, status, published_at)
 values (
-  'reset_data_use_v1',
-  'I understand that my responses will be stored for Project RESET research and may contribute to anonymised or aggregated findings.',
+  'reset_data_use_v1_us',
+  'I understand that my responses will be stored for Project RESET research and may contribute to anonymized or aggregated findings.',
   'published',
   now()
 )

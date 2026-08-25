@@ -7,6 +7,8 @@ test("completes the preview check-in and reaches the persisted success state", a
     expect(payload.screeningSlug).toBe("preview-screening");
     expect(payload.consent.dataUseAccepted).toBe(true);
     expect(payload.communication.futureCommunicationsAllowed).toBe(false);
+    expect(payload.answers.find((answer: { questionKey: string }) => answer.questionKey === "burnout_custom_tags")?.text).toBe("Doomscrolling   at 2 a.m.");
+    expect(payload.answers.find((answer: { questionKey: string }) => answer.questionKey === "reset_custom_tags")?.text).toBe("Making ceramics");
     await route.fulfill({
       status: 201,
       contentType: "application/json",
@@ -17,19 +19,25 @@ test("completes the preview check-in and reaches the persisted success state", a
   await page.goto("/s/preview-screening");
   await page.getByRole("button", { name: "Contribute your RESET" }).click();
   await page.getByRole("button", { name: "Exhausted" }).click();
-  await page.getByRole("button", { name: /Continue · 1 selected/ }).click();
+  await page.getByLabel("Add a burnout tag").fill("  Doomscrolling   at 2 a.m.  ");
+  await page.getByRole("button", { name: /Add “Doomscrolling/ }).click();
+  await page.getByRole("button", { name: /Continue · 2 selected/ }).click();
   await page.getByRole("button", { name: /Restore/ }).click();
   await page.getByRole("button", { name: "Sleep", exact: true }).click();
-  await page.getByRole("button", { name: /Continue · 1 practices/ }).click();
-  await page.getByLabel("First name").fill("Nivi");
+  await page.getByLabel("Add a RESET tag").fill("Making ceramics");
+  await page.getByRole("button", { name: /Add “Making ceramics”/ }).click();
+  await page.getByRole("button", { name: /Continue · 2 selected/ }).click();
+  await page.getByLabel("First name").fill("María-José-Alexandria");
   await page.getByLabel("Email").fill("nivi@example.org");
   await page.getByLabel(/I understand that my responses/).check();
   await page.getByRole("button", { name: "Finish", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Thank you." })).toBeVisible();
+  await expect(page.getByText("Step 04 of 04")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Email delivery is being configured." })).toBeVisible();
+  await expect(page.locator("canvas").evaluate((canvas: HTMLCanvasElement) => [canvas.width, canvas.height])).resolves.toEqual([1080, 1350]);
 });
 
-test("renders the cumulative community bubbles from the safe endpoint", async ({ page }) => {
+test("renders the cumulative community word map from the safe endpoint", async ({ page }) => {
   await page.route("**/api/v1/aggregates", async (route) => {
     await route.fulfill({
       status: 200,
@@ -52,9 +60,10 @@ test("renders the cumulative community bubbles from the safe endpoint", async ({
   });
 
   await page.goto("/s/preview-screening");
-  await page.getByRole("button", { name: "See what the community has shared" }).click();
+  await page.getByRole("button", { name: "Explore the Learning Lab" }).click();
   await expect(page.getByText("2", { exact: true })).toBeVisible();
   await expect(page.getByLabel(/Exhausted: 95 combined/)).toBeVisible();
   await expect(page.locator("[data-revision='4']")).toBeVisible();
-  await expect(page.getByText(/illustrative prototype baseline of 4,283 entries/)).toBeVisible();
+  await expect(page.getByText(/4,283 illustrative demo entries from the approved prototype/)).toBeVisible();
+  await expect(page.getByText(/Free text, custom tags, participant identifiers, and demographics are never shown here/)).toBeVisible();
 });
