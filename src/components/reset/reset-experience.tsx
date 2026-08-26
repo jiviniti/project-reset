@@ -88,7 +88,7 @@ function CustomTagField({
   const label = side === "burnout" ? "burnout" : "RESET";
   return (
     <div className={`custom-tags${dark ? " custom-tags--dark" : ""}`}>
-      <p className="field-group-label">Not listed? Add your own tag</p>
+      <p className="field-group-label">Can’t find the right option? Add your own response</p>
       {tags.length > 0 && <div className="chips" aria-label={`Your private ${label} tags`}>{tags.map((tag) => (
         <button type="button" className="chip chip--selected custom-tag" key={tag} onClick={() => onRemove(tag)} aria-label={`Remove ${tag}`}>
           {tag}<span aria-hidden="true"> ×</span>
@@ -111,11 +111,11 @@ function CustomTagField({
         {trimmed && tags.length < 6 ? (
           <button className="tag-suggestion" type="button" onClick={onAdd}>
             <span aria-hidden="true">＋</span>
-            <span>Add “{trimmed}”<small>Private tag · preserves your wording</small></span>
+            <span>Add “{trimmed}”<small>Saved in your own words</small></span>
           </button>
         ) : null}
       </div>
-      <small>{tags.length}/6 private tags. They are not included in public totals.</small>
+      {tags.length > 0 ? <small>{tags.length} of 6 added. Your responses are saved with your check-in and won’t appear in the live visualization yet.</small> : <small>Optional. Your response is saved with your check-in and won’t appear in the live visualization yet.</small>}
     </div>
   );
 }
@@ -337,11 +337,13 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
               <form className="step step--light" onSubmit={submitFinalStep}>
                 <p className="eyebrow eyebrow--orange">03 · Complete your check-in</p>
                 <h2>Where should we send your film?</h2>
-                <p>Your details come last so you can reflect first. Email is the initial reward-delivery channel for this phase.</p>
-                <div className="delivery-method" aria-label="Selected delivery method"><span>Email</span></div>
-                <label>First name<input required autoComplete="given-name" maxLength={80} value={form.firstName} onChange={(event) => update("firstName", event.target.value)} /></label>
-                <label>Email<input required type="email" autoComplete="email" maxLength={254} value={form.email} onChange={(event) => update("email", event.target.value)} /></label>
-                <p className="field-group-label">Optional—helps us understand broad patterns</p>
+                <p>Complete your details to finish your check-in.</p>
+                <label>Name / initials (required)<input required autoComplete="given-name" maxLength={80} value={form.firstName} onChange={(event) => update("firstName", event.target.value)} /></label>
+                <label>Email (required)<input required type="email" autoComplete="email" maxLength={254} value={form.email} onChange={(event) => update("email", event.target.value)} /></label>
+                <div className="optional-fields-intro">
+                  <p className="field-group-label">A little more about you</p>
+                  <p>Optional—city, age range, and occupation help us understand broad patterns.</p>
+                </div>
                 <label>City<input autoComplete="address-level2" maxLength={120} value={form.city} onChange={(event) => update("city", event.target.value)} /></label>
                 <fieldset><legend>Age range</legend><div className="chips">{["18–24", "25–34", "35–44", "45–54", "55+"].map((age) => <Chip key={age} selected={form.ageBand === age} onClick={() => update("ageBand", form.ageBand === age ? "" : age)}>{age}</Chip>)}</div></fieldset>
                 <label>Occupation<input autoComplete="organization-title" maxLength={120} value={form.occupation} onChange={(event) => update("occupation", event.target.value)} /></label>

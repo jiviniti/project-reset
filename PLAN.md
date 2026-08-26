@@ -1,6 +1,6 @@
 # Project RESET Phase 1 Plan
 
-Last updated: 25 August 2026
+Last updated: 26 August 2026
 
 ## Current approved pass: Product + Visual Reconciliation (pre-Milestone 3)
 
@@ -66,6 +66,7 @@ Milestone 2 is accepted. Reconcile the production frontend with the latest appro
 - [x] Add the additive U.S.-English policy-version migration.
 - [x] Run unit, build, responsive Playwright and rollback-safe database regression tests.
 - [x] Deploy and verify the reconciled frontend on the hosted preview, then stop.
+- [x] Apply the unambiguous interface feedback from the Foundation review: persistent Learning Lab check-in navigation, consumer-facing custom-response guidance, explicit required/optional detail grouping, clearer share actions, removal of the observed-check-in callout, and corrected partner-logo composition.
 
 ## Explicitly deferred
 
@@ -76,6 +77,9 @@ Milestone 2 is accepted. Reconcile the production frontend with the latest appro
 - Production database cutover
 - Public screening/cohort breakdowns and demographic filtering
 - Automated moderation or public aggregation of participant-created tags
+- Final identity requirements (whether name/initials and email remain mandatory) pending Foundation discussion
+- Final consumer copy for the identity/reward stage pending Foundation wording
+- Copyright wording pending confirmation of the legal owner and approved phrase
 
 ## Production cutover guardrail
 

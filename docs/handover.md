@@ -1,6 +1,6 @@
 # Handover and verification
 
-Last updated: 25 August 2026
+Last updated: 26 August 2026
 
 ## Milestone 2 preview rollout
 
@@ -154,10 +154,23 @@ Hosted reconciliation verification on 25 August 2026:
 - an already-open Learning Lab moved from five to six observed check-ins without a page reload after the independent revision 4 → 5 update;
 - no hosted submission was made during this reconciliation audit. The source of the sixth preview response was not inferred; all preview records remain subject to the documented production-cleanup requirement.
 
+Foundation-feedback verification on 26 August 2026:
+
+- the Learning Lab’s top check-in action remained fixed at the top of the 390px viewport after scrolling to the footer;
+- the mobile layout had no horizontal overflow, and the desktop artifact remained centered at its approved 390px measure;
+- the final stage showed explicit required labels for name/initials and email, a separate optional-demographics explanation, and no noninteractive delivery-method control;
+- the JIVINITI footer mark rendered dark against the cream background and the partner lockup was tightened;
+- the observed-check-in callout was absent while the illustrative-preview label and safe aggregate data remained intact;
+- the participant and Learning Lab Playwright journeys passed on mobile and desktop Chromium.
+
 ## Manual owner actions
 
 - Review the illustrative seeded-baseline wording with the Foundation before production.
 - Confirm whether the Foundation owns/licences “Debora Celina Script” if exact script-typeface parity is required.
 - Retain the preview-only dataset warning: the synthetic test response and all other preview research records must be removed before any production cutover.
+- Confirm whether name/initials and email are required for every check-in or whether an anonymous/no-reward submission path is desired.
+- Supply the final consumer wording for the identity and film-access stage.
+- Supply the exact copyright owner and approved copyright phrase before a site-wide footer is introduced.
+- Confirm that native device sharing plus PNG download is the intended share-card scope; direct posting destinations cannot be guaranteed by a web application.
 
 Production cutover, custom domain, KINEMA and actual reward delivery remain deferred.

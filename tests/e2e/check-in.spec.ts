@@ -27,8 +27,8 @@ test("completes the preview check-in and reaches the persisted success state", a
   await page.getByLabel("Add a RESET tag").fill("Making ceramics");
   await page.getByRole("button", { name: /Add “Making ceramics”/ }).click();
   await page.getByRole("button", { name: /Continue · 2 selected/ }).click();
-  await page.getByLabel("First name").fill("María-José-Alexandria");
-  await page.getByLabel("Email").fill("nivi@example.org");
+  await page.getByLabel("Name / initials (required)").fill("María-José-Alexandria");
+  await page.getByLabel("Email (required)").fill("nivi@example.org");
   await page.getByLabel(/I understand that my responses/).check();
   await page.getByRole("button", { name: "Finish", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Thank you." })).toBeVisible();
@@ -61,9 +61,12 @@ test("renders the cumulative community word map from the safe endpoint", async (
 
   await page.goto("/s/preview-screening");
   await page.getByRole("button", { name: "Explore the Learning Lab" }).click();
-  await expect(page.getByText("2", { exact: true })).toBeVisible();
+  await expect(page.getByText(/observed check-ins added so far/)).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Take the Check-In" })).toBeVisible();
   await expect(page.getByLabel(/Exhausted: 95 combined/)).toBeVisible();
   await expect(page.locator("[data-revision='4']")).toBeVisible();
   await expect(page.getByText(/4,283 illustrative demo entries from the approved prototype/)).toBeVisible();
   await expect(page.getByText(/Free text, custom tags, participant identifiers, and demographics are never shown here/)).toBeVisible();
+  await page.getByRole("button", { name: "Take the Check-In" }).click();
+  await expect(page.getByRole("heading", { name: "How does burnout show up for you?" })).toBeVisible();
 });

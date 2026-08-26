@@ -150,10 +150,11 @@ export function ShareCard({ firstName, pathways, practices }: ShareCardProps) {
       <h3 id="share-card-title">A snapshot of your RESET.</h3>
       <canvas ref={canvasRef} className="share-card__canvas" aria-label={`${firstName || "My"} Project RESET share card`} />
       <div className="button-stack">
-        <button type="button" className="button button--light" onClick={download}>Download my card</button>
-        <button type="button" className="button button--outline-light" onClick={share}>Share my card</button>
+        <button type="button" className="button button--light" onClick={download}>Save card as PNG</button>
+        <button type="button" className="button button--outline-light" onClick={share}>Share to an app</button>
       </div>
       <p className="status" aria-live="polite">{status}</p>
+      <p className="share-card__device-note">Available sharing options depend on your device and installed apps.</p>
       <small>Only your first name, selected pathways, and up to three selected practices appear. Your email, demographics, burnout answers, free text, and private tags are excluded.</small>
     </section>
   );

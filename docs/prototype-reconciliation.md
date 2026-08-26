@@ -1,6 +1,6 @@
 # Prototype reconciliation
 
-Last updated: 25 August 2026
+Last updated: 26 August 2026
 
 ## Source-of-truth rule
 
@@ -70,3 +70,17 @@ The baseline must continue to be labelled illustrative and remain structurally s
 - The prototype notes that “Debora Celina Script” is a paid/custom typeface and substitutes Petit Formal Script. The approved webfont files are still required if the exact paid face is intended for production.
 - Reward delivery copy must change again only when an approved email provider and KINEMA workflow are implemented.
 - The illustrative baseline wording should receive final Foundation approval before production cutover.
+
+## Foundation feedback pass — 26 August 2026
+
+The first stakeholder review of the reconciled preview confirmed that the overall visual direction, copy, personal RESET snapshot, and community word clouds were working well. The following unambiguous refinements were adopted without changing the production architecture:
+
+- the Learning Lab now keeps a visible “Take the Check-In” action at the top, so visitors do not need to reach the final call-to-action before contributing;
+- participant-created responses use consumer-facing language that explains what happens to the data without exposing internal “private tag” terminology;
+- the noninteractive Email pill was removed from the final stage;
+- required name/initials and email fields are labelled explicitly, while city, age range, and occupation are grouped and described as optional;
+- share actions now distinguish saving a PNG from opening the device share sheet, including a short device-availability note;
+- the observed-check-in callout was removed from the Learning Lab while the underlying observed count remains available to the safe aggregate model;
+- the preview is explicitly labelled illustrative, and the footer uses a legible JIVINITI mark with a tighter Picture Motion partnership composition.
+
+The review did not authorize changes to identity requirements, reward delivery, KINEMA, seeded-data policy, legal copyright wording, or the aggregate/security architecture. Those decisions remain pending Foundation discussion.

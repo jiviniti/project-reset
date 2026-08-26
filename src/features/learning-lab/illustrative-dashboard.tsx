@@ -76,12 +76,15 @@ export function IllustrativeDashboard({ onContribute }: { onContribute: () => vo
 
   return (
     <div className="dashboard" data-revision={snapshot.revision}>
+      <header className="dashboard-nav">
+        <span>The Learning Lab</span>
+        <button type="button" onClick={onContribute}>Take the Check-In</button>
+      </header>
       <section className="dashboard__intro">
         <div className="reset-brand reset-brand--light" aria-label="Project RESET"><span className="reset-brand__project">Project</span><span className="reset-brand__word"><b>re</b>set<b>.</b></span><span className="reset-brand__tagline">Choose Better. Together.</span></div>
-        <p className="eyebrow eyebrow--orange">The Learning Lab · live cumulative view</p>
+        <p className="eyebrow eyebrow--orange">The Learning Lab · illustrative preview</p>
         <h2>Every answer changes the picture.</h2>
         <p>A living portrait of how burnout shows up—and the practices helping a community find its way back.</p>
-        <p className="dashboard__observed-total"><strong>{snapshot.totals.observed.toLocaleString()}</strong><span>observed check-ins added so far</span></p>
       </section>
 
       <section className="dashboard__section dashboard__section--dark">
@@ -115,7 +118,9 @@ export function IllustrativeDashboard({ onContribute }: { onContribute: () => vo
       </section>
 
       <footer className="dashboard__footer">
-        <Image src="/images/jiviniti-wordmark.png" alt="JIVINITI" width={100} height={46} /><span>in partnership with</span><Image src="/images/picture-motion.jpg" alt="Picture Motion" width={95} height={46} />
+        <p className="dashboard__footer-label">Brought to you by</p>
+        <Image className="dashboard__footer-jiviniti" src="/images/jiviniti-wordmark.png" alt="JIVINITI" width={112} height={52} />
+        <div className="dashboard__footer-partner"><span>in partnership with</span><Image src="/images/picture-motion.jpg" alt="Picture Motion" width={95} height={46} /></div>
         <p>Public results are aggregated and de-identified. Free text, custom tags, participant identifiers, and demographics are never shown here.</p>
       </footer>
     </div>
