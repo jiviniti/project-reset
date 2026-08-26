@@ -96,10 +96,15 @@ export function ShareCard({ firstName, pathways, practices }: ShareCardProps) {
       context.fillStyle = "#ef805b";
       roundedRect(context, 64, 1174, 952, 118, 30);
       context.fillStyle = "#ffffff";
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      const displaySignupUrl = signupUrl.replace(/^https?:\/\//, "").trim();
       context.font = `600 31px ${sans}`;
-      context.fillText("What does your RESET look like?", 112, 1227);
-      context.font = `400 23px ${sans}`;
-      context.fillText(signupUrl.replace(/^https?:\/\//, ""), 112, 1267, 835);
+      context.fillText("What does your RESET look like?", 540, displaySignupUrl ? 1218 : 1233, 835);
+      if (displaySignupUrl) {
+        context.font = `400 23px ${sans}`;
+        context.fillText(displaySignupUrl, 540, 1260, 835);
+      }
     };
     void document.fonts.ready.then(draw);
     draw();
