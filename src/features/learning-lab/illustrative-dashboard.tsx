@@ -119,8 +119,11 @@ export function IllustrativeDashboard({ onContribute }: { onContribute: () => vo
 
       <footer className="dashboard__footer">
         <p className="dashboard__footer-label">Brought to you by</p>
-        <Image className="dashboard__footer-jiviniti" src="/images/jiviniti-wordmark.png" alt="JIVINITI" width={112} height={52} />
-        <div className="dashboard__footer-partner"><span>in partnership with</span><Image src="/images/picture-motion.jpg" alt="Picture Motion" width={95} height={46} /></div>
+        <div className="dashboard__footer-lockup">
+          <Image className="dashboard__footer-jiviniti" src="/images/jiviniti-wordmark.png" alt="JIVINITI" width={112} height={52} />
+          <span>in partnership with</span>
+          <Image className="dashboard__footer-picture-motion" src="/images/picture-motion.jpg" alt="Picture Motion" width={54} height={54} />
+        </div>
         <p>Public results are aggregated and de-identified. Free text, custom tags, participant identifiers, and demographics are never shown here.</p>
       </footer>
     </div>
