@@ -1,6 +1,6 @@
 # Security
 
-Last verified: 25 August 2026
+Last verified: 29 August 2026
 
 ## Database boundary
 
@@ -41,6 +41,17 @@ public.aggregate_revision
 - A singleton unique index and explicit `WHERE` clause protect revision mutation; browser roles still retain SELECT only.
 
 Origin and `Sec-Fetch-Site` checks remain defence-in-depth rather than authentication.
+
+## Reward eligibility boundary
+
+- A screening URL is a low-stakes bearer entry point, not proof of identity.
+- The browser supplies only the screening slug; it cannot supply pathway, reward type or access expiry.
+- A `SECURITY INVOKER` database function resolves eligibility from private screening configuration and database time.
+- Event eligibility uses a half-open interval: opening is inclusive and closing is exclusive.
+- Expired or not-yet-open event links fall back to trailer access while preserving screening attribution.
+- The committed decision is returned to the UI and stored privately. It is absent from the public aggregate API and realtime resource.
+- Share-card links use the canonical non-event campaign URL, never the event QR URL.
+- KINEMA credentials and provider calls have not been introduced.
 
 ## Submission protection
 

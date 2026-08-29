@@ -103,13 +103,17 @@ on conflict (question_id, key) do update
 set label = excluded.label, parent_option_id = excluded.parent_option_id, position = excluded.position;
 
 insert into private.screenings (
-  slug, name, institution, status, questionnaire_version_id, cohort_metadata
+  slug, name, institution, status, questionnaire_version_id, cohort_metadata,
+  pathway_type, check_in_opens_at, check_in_closes_at, film_access_ends_at
 )
 select
   'preview-screening', 'Project RESET Preview Screening', 'The Virsa Foundation', 'active', id,
-  '{"environment":"preview","seeded":true}'::jsonb
+  '{"environment":"preview","seeded":true}'::jsonb, 'non_event', null, null, null
 from private.questionnaire_versions where key = 'reset-v1' and version = 1
 on conflict (slug) do update
 set name = excluded.name, institution = excluded.institution, status = excluded.status,
     questionnaire_version_id = excluded.questionnaire_version_id,
-    cohort_metadata = excluded.cohort_metadata, updated_at = now();
+    cohort_metadata = excluded.cohort_metadata, pathway_type = excluded.pathway_type,
+    check_in_opens_at = excluded.check_in_opens_at,
+    check_in_closes_at = excluded.check_in_closes_at,
+    film_access_ends_at = excluded.film_access_ends_at, updated_at = now();

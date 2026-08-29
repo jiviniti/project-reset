@@ -1,13 +1,7 @@
 import "server-only";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import type { SubmissionPayload } from "@/lib/validation/submission";
-
-export type SubmissionResult = {
-  submissionId: string;
-  participationId: string;
-  status: "completed";
-  replayed: boolean;
-};
+import { submissionResultSchema, type SubmissionPayload } from "@/lib/validation/submission";
+import type { SubmissionResult } from "@/types/pathway";
 
 export class SubmissionDatabaseError extends Error {
   constructor(public readonly safeCode: string) {
@@ -29,5 +23,5 @@ export async function persistSubmission(payload: SubmissionPayload): Promise<Sub
     ].find((code) => error.message.includes(code));
     throw new SubmissionDatabaseError(knownCode ?? "submission_database_error");
   }
-  return data as SubmissionResult;
+  return submissionResultSchema.parse(data) as SubmissionResult;
 }

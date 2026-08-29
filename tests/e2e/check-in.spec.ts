@@ -4,7 +4,7 @@ test("completes the preview check-in and reaches the persisted success state", a
   await page.route("**/api/v1/submissions", async (route) => {
     const request = route.request();
     const payload = request.postDataJSON();
-    expect(payload.screeningSlug).toBe("preview-screening");
+    expect(payload.screeningSlug).toBe("preview-event");
     expect(payload.consent.dataUseAccepted).toBe(true);
     expect(payload.communication.futureCommunicationsAllowed).toBe(false);
     expect(payload.answers.find((answer: { questionKey: string }) => answer.questionKey === "burnout_custom_tags")?.text).toBe("Doomscrolling   at 2 a.m.");
@@ -12,11 +12,11 @@ test("completes the preview check-in and reaches the persisted success state", a
     await route.fulfill({
       status: 201,
       contentType: "application/json",
-      body: JSON.stringify({ submissionId: crypto.randomUUID(), participationId: crypto.randomUUID(), status: "completed", replayed: false }),
+      body: JSON.stringify({ submissionId: crypto.randomUUID(), participationId: crypto.randomUUID(), rewardDeliveryId: crypto.randomUUID(), status: "completed", replayed: false, entryPathway: "event", rewardType: "film_access", eventWindowStatus: "active_event", accessEndsAt: "2026-10-07T23:59:59.000Z" }),
     });
   });
 
-  await page.goto("/s/preview-screening");
+  await page.goto("/s/preview-event");
   await page.getByRole("button", { name: "Contribute your RESET" }).click();
   await page.getByRole("button", { name: "Exhausted" }).click();
   await page.getByLabel("Add a burnout tag").fill("  Doomscrolling   at 2 a.m.  ");
@@ -35,6 +35,30 @@ test("completes the preview check-in and reaches the persisted success state", a
   await expect(page.getByText("Step 04 of 04")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Email delivery is being configured." })).toBeVisible();
   await expect(page.locator("canvas").evaluate((canvas: HTMLCanvasElement) => [canvas.width, canvas.height])).resolves.toEqual([1080, 1350]);
+});
+
+test("an expired event link becomes a trailer check-in", async ({ page }) => {
+  await page.route("**/api/v1/submissions", async (route) => {
+    await route.fulfill({
+      status: 201,
+      contentType: "application/json",
+      body: JSON.stringify({ submissionId: crypto.randomUUID(), participationId: crypto.randomUUID(), rewardDeliveryId: crypto.randomUUID(), status: "completed", replayed: false, entryPathway: "non_event", rewardType: "trailer_access", eventWindowStatus: "event_expired", accessEndsAt: null }),
+    });
+  });
+
+  await page.goto("/s/preview-expired-event");
+  await expect(page.getByText(/film-access window has ended/i)).toBeVisible();
+  await expect(page.getByText(/trailer access after check-in/i)).toBeVisible();
+  await page.getByRole("button", { name: "Contribute your RESET" }).click();
+  await page.getByRole("button", { name: /Continue · 0 selected/ }).click();
+  await page.getByRole("button", { name: /Continue · 0 selected/ }).click();
+  await expect(page.getByRole("heading", { name: "Complete your check-in" })).toBeVisible();
+  await page.getByLabel("Name / initials (required)").fill("Guest");
+  await page.getByLabel("Email (required)").fill("guest@example.org");
+  await page.getByLabel(/I understand that my responses/).check();
+  await page.getByRole("button", { name: "Finish", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Trailer access is being prepared." })).toBeVisible();
+  await expect(page.getByText(/event’s film-access window has ended/i)).toBeVisible();
 });
 
 test("renders the cumulative community word map from the safe endpoint", async ({ page }) => {

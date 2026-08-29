@@ -83,4 +83,16 @@ The first stakeholder review of the reconciled preview confirmed that the overal
 - the observed-check-in callout was removed from the Learning Lab while the underlying observed count remains available to the safe aggregate model;
 - the preview is explicitly labelled illustrative, and the footer uses a legible JIVINITI mark with a tighter Picture Motion partnership composition.
 
-The review did not authorize changes to identity requirements, reward delivery, KINEMA, seeded-data policy, legal copyright wording, or the aggregate/security architecture. Those decisions remain pending Foundation discussion.
+The review did not authorize changes to identity requirements, KINEMA provider integration, seeded-data policy, legal copyright wording, or the aggregate/security architecture. A later Foundation decision established the event/non-event reward rules; the implementation now records those decisions without yet issuing KINEMA access.
+
+## Event/non-event addendum — 29 August 2026
+
+This product rule postdates the visual prototype, so the Foundation decision supersedes prototype reward copy without changing the approved visual language:
+
+- an active event pathway earns time-limited film access;
+- a general/non-event pathway earns trailer access;
+- an expired or not-yet-open event URL falls back to the non-event trailer experience;
+- both pathways retain the visualization and share card;
+- the share card’s campaign URL must always enter the non-event pathway.
+
+The active frontend now presents the resolved reward truthfully. Actual film issuance remains deferred until KINEMA confirms its supported integration model.

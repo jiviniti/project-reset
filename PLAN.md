@@ -1,6 +1,6 @@
 # Project RESET Phase 1 Plan
 
-Last updated: 26 August 2026
+Last updated: 29 August 2026
 
 ## Current approved pass: Product + Visual Reconciliation (pre-Milestone 3)
 
@@ -16,6 +16,17 @@ Milestone 2 is accepted. Reconcile the production frontend with the latest appro
 - Preview WAF remains 1,000 submission requests per IP per 60 seconds and must be reviewed against expected screening size before production launch.
 - Email normalization remains trim and lowercase only. One normalized email corresponds to one participant across screenings.
 - Transactional reward delivery remains separate from optional, false-by-default future-communications consent.
+
+## Event/non-event pathway foundation
+
+- Each screening is configured as `event` or `non_event`; active event film eligibility is bounded by trusted database timestamps.
+- The browser never submits or selects a reward type. PostgreSQL resolves the effective pathway and reward at commit time.
+- An event URL before its opening or at/after its closing time remains attributable to that screening but safely becomes a non-event check-in with trailer access.
+- The committed pathway, window status and reward are stored on the participation so later configuration changes cannot rewrite what the participant earned.
+- Active-event film rewards create a deferred email delivery intent with an access expiry. Trailer rewards create an available web-delivery intent.
+- Share cards always use the configured canonical campaign/signup URL, which must lead to a non-event pathway.
+- The schema deliberately permits repeat participations. Any future “one film entitlement per email per event” rule awaits Foundation/KINEMA confirmation.
+- Actual KINEMA calls, film-access issuance and provider webhooks remain deferred.
 
 ## Milestone 2 decisions
 
@@ -67,6 +78,9 @@ Milestone 2 is accepted. Reconcile the production frontend with the latest appro
 - [x] Run unit, build, responsive Playwright and rollback-safe database regression tests.
 - [x] Deploy and verify the reconciled frontend on the hosted preview, then stop.
 - [x] Apply the unambiguous interface feedback from the Foundation review: persistent Learning Lab check-in navigation, consumer-facing custom-response guidance, explicit required/optional detail grouping, clearer share actions, removal of the observed-check-in callout, and corrected partner-logo composition.
+- [x] Add the KINEMA-independent event/non-event pathway, expiry fallback and committed reward-intent foundation.
+- [ ] Apply the pathway migration and run its rollback-safe database regression in the hosted preview.
+- [ ] Confirm KINEMA’s access, API, account, geographic, commercial and webhook capabilities before implementing a provider adapter.
 
 ## Explicitly deferred
 

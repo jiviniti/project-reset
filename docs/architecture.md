@@ -1,6 +1,6 @@
 # Architecture
 
-Last verified: 25 August 2026
+Last verified: 29 August 2026
 
 Project RESET is a screening-aware Next.js application deployed on Vercel. Participants complete the RESET Check-In without a Supabase Auth account. Browser submissions go only to `POST /api/v1/submissions`; raw identity and research records remain in the non-exposed Supabase `private` schema.
 
@@ -20,6 +20,17 @@ Browser
 ```
 
 The submission and aggregate mutations share one PostgreSQL transaction. An invalid submission rolls back both. An idempotent replay returns before the aggregate helper and therefore changes neither counts nor revision.
+
+Before the participation is inserted, `private.resolve_screening_pathway_v1` resolves eligibility from the locked screening row and database time:
+
+```text
+configured non-event                         -> non-event + trailer
+configured event, before check-in opening    -> non-event + trailer
+configured event, within [opening, closing)  -> event + film
+configured event, at/after closing           -> non-event + trailer
+```
+
+The resolved pathway, window status and reward type are frozen on the participation. A copied event QR therefore continues to collect screening-attributed responses after expiry without continuing to grant film access. The browser cannot request or override the reward. The actual KINEMA adapter remains outside this foundation.
 
 ### Public cumulative snapshot
 
@@ -61,4 +72,4 @@ The self-contained source prototype and checksum are preserved under `reference/
 
 - **Active core:** check-in, private submission, cumulative safe aggregates, revision invalidation, public word-map/statistics/pathway visualization and share card.
 - **Supporting:** canonical seeded baseline, rebuild/backfill function, preview seed, security tests and production-cleanup guard.
-- **Deferred:** KINEMA, actual email/SMS delivery, personalized Learning Lab persistence, public screening/cohort views, custom domain and production cutover.
+- **Deferred:** KINEMA provider integration, actual email/SMS delivery, personalized Learning Lab persistence, public screening/cohort views, custom domain and production cutover.

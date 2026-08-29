@@ -1,6 +1,8 @@
 export type RewardDeliveryRequest = {
   rewardDeliveryId: string;
   channel: "email";
+  rewardType: "film_access";
+  accessEndsAt: string;
 };
 
 export interface RewardService {

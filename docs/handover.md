@@ -1,6 +1,31 @@
 # Handover and verification
 
-Last updated: 26 August 2026
+Last updated: 29 August 2026
+
+## Event/non-event pathway rollout
+
+1. Set `SUBMISSIONS_ENABLED=false` in the Vercel preview environment and redeploy.
+2. Apply `supabase/migrations/202608290001_event_non_event_pathways.sql` in Supabase SQL Editor.
+3. Reapply `supabase/seed/001_preview.sql`; it explicitly keeps `preview-screening` on the non-event pathway.
+4. Run `supabase/tests/pathway_foundation.sql`. It creates active and expired event submissions inside a transaction and rolls all writes back.
+5. Add `NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL` in Vercel only after Nivi confirms the final trailer destination. It is browser-safe configuration, not a secret.
+6. Redeploy, verify `/s/preview-screening` promises trailer access, then re-enable preview submissions.
+
+To configure a real event after its dates are approved:
+
+```sql
+update private.screenings
+set pathway_type = 'event',
+    check_in_opens_at = '2026-09-15T00:00:00Z',
+    check_in_closes_at = '2026-09-23T00:00:00Z',
+    film_access_ends_at = '2026-09-25T00:00:00Z',
+    updated_at = now()
+where slug = 'replace-with-approved-event-slug';
+
+select api.get_screening_v1('replace-with-approved-event-slug');
+```
+
+The returned `entryPathway`, `rewardType` and `eventWindowStatus` must match the current window. Do not put event URLs into `NEXT_PUBLIC_PROJECT_RESET_SIGNUP_URL`; that share-card destination must remain a canonical non-event route.
 
 ## Milestone 2 preview rollout
 

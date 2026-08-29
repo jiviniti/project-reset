@@ -1,6 +1,6 @@
 # Data model
 
-Last verified: 25 August 2026
+Last verified: 29 August 2026
 
 ## Raw research model
 
@@ -14,6 +14,21 @@ One trim-and-lowercase normalized email is assumed to identify one participant a
 - `communication_preferences`: optional future communications, false by default.
 - `responses`, `response_selections`, `response_answers`: substantive questionnaire data.
 - `reward_deliveries`: transactional reward intent, independent of marketing preference.
+
+### Entry pathway and reward snapshots
+
+`private.screenings` now carries the authoritative pathway configuration:
+
+- `pathway_type`: `event` or `non_event`;
+- `check_in_opens_at`: optional inclusive event eligibility start;
+- `check_in_closes_at`: required exclusive event eligibility end for event pathways;
+- `film_access_ends_at`: required expiry attached to a qualifying film reward.
+
+`private.participations` stores the committed `entry_pathway`, `event_window_status` and `reward_type`. This is a historical decision snapshot, not a browser preference. Expired and not-yet-open event URLs store `non_event`/`trailer_access` while retaining their original `screening_id`.
+
+`private.reward_deliveries` stores `reward_type` and `access_expires_at`. Film rewards use an email channel with deferred status until KINEMA delivery is implemented. Trailer rewards use a web channel with available status. Marketing consent does not control either transactional reward.
+
+The model permits the same participant to complete multiple screenings and does not yet impose one entitlement per participant/event. That business rule is deferred pending KINEMA and Foundation confirmation.
 
 Rituals, explanatory answers and participant-created tags are private text answers. They are never read by the aggregate updater.
 

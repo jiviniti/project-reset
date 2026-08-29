@@ -1,3 +1,5 @@
+import type { PathwayResolution } from "@/types/pathway";
+
 export type QuestionOption = {
   key: string;
   label: string;
@@ -14,7 +16,7 @@ export type QuestionnaireQuestion = {
   options: QuestionOption[];
 };
 
-export type ScreeningConfig = {
+export type ScreeningConfig = PathwayResolution & {
   slug: string;
   name: string;
   institution: string | null;
@@ -23,5 +25,7 @@ export type ScreeningConfig = {
   questionnaireVersion: number;
   policyVersion: string;
   policyText: string;
+  checkInOpensAt: string | null;
+  checkInClosesAt: string | null;
   questions: QuestionnaireQuestion[];
 };

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeEmail, submissionSchema } from "../../src/lib/validation/submission";
+import { normalizeEmail, submissionResultSchema, submissionSchema } from "../../src/lib/validation/submission";
 
 const validPayload = {
   apiVersion: "1",
@@ -33,5 +33,32 @@ describe("submission validation", () => {
 describe("email normalization", () => {
   it("only trims and lowercases", () => {
     expect(normalizeEmail("  First.Last+RESET@Gmail.COM ")).toBe("first.last+reset@gmail.com");
+  });
+});
+
+describe("submission result validation", () => {
+  const baseResult = {
+    submissionId: "b7de8ec9-842c-4663-88e0-9d3677df8709",
+    participationId: "7093318a-7bb0-4de4-aee0-1ff0b5cd3605",
+    status: "completed" as const,
+    replayed: false,
+  };
+
+  it("keeps legacy server responses compatible during migration rollout", () => {
+    expect(submissionResultSchema.parse(baseResult)).toMatchObject({
+      entryPathway: "event",
+      rewardType: "film_access",
+      eventWindowStatus: "active_event",
+    });
+  });
+
+  it("accepts an expired event resolved to trailer access", () => {
+    expect(submissionResultSchema.parse({
+      ...baseResult,
+      entryPathway: "non_event",
+      rewardType: "trailer_access",
+      eventWindowStatus: "event_expired",
+      accessEndsAt: null,
+    }).rewardType).toBe("trailer_access");
   });
 });

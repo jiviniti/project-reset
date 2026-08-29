@@ -5,6 +5,8 @@ import { FormEvent, useState } from "react";
 import { Chip } from "@/components/ui/chip";
 import { IllustrativeDashboard } from "@/features/learning-lab/illustrative-dashboard";
 import { ShareCard } from "@/features/share-card/share-card";
+import { submissionResultSchema } from "@/lib/validation/submission";
+import type { SubmissionResult } from "@/types/pathway";
 import type { ScreeningConfig } from "@/types/screening";
 
 type View = "hero" | "flow" | "success" | "lab";
@@ -44,6 +46,7 @@ const initialForm: FormState = {
 };
 
 const DONATION_URL = process.env.NEXT_PUBLIC_DONATE_URL ?? "https://thirddegreeburnout.com/donate";
+const TRAILER_URL = process.env.NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL?.trim() ?? "";
 
 const pathwayPresentation: Record<string, { blurb: string; color: string }> = {
   nourish: { blurb: "plants, water, earth", color: "#458284" },
@@ -128,6 +131,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
   const [burnoutTagInput, setBurnoutTagInput] = useState("");
   const [resetTagInput, setResetTagInput] = useState("");
   const [submissionStatus, setSubmissionStatus] = useState<"idle" | "submitting" | "error">("idle");
+  const [submissionResult, setSubmissionResult] = useState<SubmissionResult | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID());
 
@@ -242,6 +246,8 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
         }),
       });
       if (!response.ok) throw new Error("submission_failed");
+      const result = submissionResultSchema.parse(await response.json());
+      setSubmissionResult(result);
       setSubmissionStatus("idle");
       setView("success");
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -255,6 +261,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
     setForm(initialForm);
     setIdempotencyKey(crypto.randomUUID());
     setSubmissionStatus("idle");
+    setSubmissionResult(null);
     setErrorMessage("");
     setBurnoutTagInput("");
     setResetTagInput("");
@@ -292,8 +299,14 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
               <div className="hero__image-frame">
                 <Image src="/images/reset-collage.avif" alt="A collage of everyday movement, nourishment, rest, nature, and community" width={900} height={500} priority className="hero__image" />
               </div>
+              {screening.eventWindowStatus === "event_expired" ? (
+                <p className="pathway-notice">This event’s film-access window has ended. You can still contribute your RESET and watch the trailer.</p>
+              ) : null}
+              {screening.eventWindowStatus === "event_not_started" ? (
+                <p className="pathway-notice">Film access for this event is not active yet. You can still contribute through the trailer pathway.</p>
+              ) : null}
               <button type="button" className="button button--coral" onClick={start}>Contribute your RESET <span aria-hidden="true">→</span></button>
-              <p className="hero__meta">About 90 seconds · public results are de-identified · film access by email</p>
+              <p className="hero__meta">About 90 seconds · public results are de-identified · {screening.rewardType === "film_access" ? "film access by email" : "trailer access after check-in"}</p>
               <button type="button" className="text-button" onClick={() => setView("lab")}>Explore the Learning Lab <span aria-hidden="true">→</span></button>
             </div>
           </section>
@@ -336,7 +349,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
             {step === 3 && (
               <form className="step step--light" onSubmit={submitFinalStep}>
                 <p className="eyebrow eyebrow--orange">03 · Complete your check-in</p>
-                <h2>Where should we send your film?</h2>
+                <h2>{screening.rewardType === "film_access" ? "Where should we send your film?" : "Complete your check-in"}</h2>
                 <p>Complete your details to finish your check-in.</p>
                 <label>Name / initials (required)<input required autoComplete="given-name" maxLength={80} value={form.firstName} onChange={(event) => update("firstName", event.target.value)} /></label>
                 <label>Email (required)<input required type="email" autoComplete="email" maxLength={254} value={form.email} onChange={(event) => update("email", event.target.value)} /></label>
@@ -368,11 +381,20 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <p>You’ve added your experience to a growing body of lived evidence about burnout, well-being, and systems change.</p>
                 <p className="script-line script-line--white">You’re part of it now.</p>
               </div>
-              <section className="reward-card">
-                <p className="eyebrow">Your film access</p>
-                <h3>Email delivery is being configured.</h3>
-                <p>Your transactional reward request has been recorded separately from marketing consent. This preview does not send an access email yet.</p>
-              </section>
+              {(submissionResult?.rewardType ?? screening.rewardType) === "film_access" ? (
+                <section className="reward-card">
+                  <p className="eyebrow">Your film access</p>
+                  <h3>Email delivery is being configured.</h3>
+                  <p>Your film-access request has been recorded separately from marketing consent. This preview does not send an access email yet.</p>
+                </section>
+              ) : (
+                <section className="reward-card">
+                  <p className="eyebrow">Your trailer access</p>
+                  <h3>{TRAILER_URL ? "Your trailer is ready." : "Trailer access is being prepared."}</h3>
+                  <p>{(submissionResult?.eventWindowStatus ?? screening.eventWindowStatus) === "event_expired" ? "The event’s film-access window has ended, so this check-in follows the trailer pathway. " : ""}{TRAILER_URL ? "Watch it now, then continue into the Learning Lab." : "The final trailer URL still needs to be configured before launch."}</p>
+                  {TRAILER_URL ? <a className="button button--coral reward-card__action" href={TRAILER_URL} target="_blank" rel="noreferrer">Watch the trailer <span aria-hidden="true">→</span></a> : null}
+                </section>
+              )}
               <button type="button" className="button button--outline-light" onClick={() => setView("lab")}>Enter the Learning Lab <span aria-hidden="true">→</span></button>
               <div className="share-invitation">
                 <p className="script-line">Bring someone with you.</p>

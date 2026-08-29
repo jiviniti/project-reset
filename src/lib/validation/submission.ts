@@ -42,6 +42,21 @@ export const submissionSchema = z.object({
   answers: z.array(answerSchema).max(12),
 });
 
+export const submissionResultSchema = z.object({
+  submissionId: z.string().uuid(),
+  participationId: z.string().uuid(),
+  rewardDeliveryId: z.string().uuid().nullable().optional().default(null),
+  status: z.literal("completed"),
+  replayed: z.boolean(),
+  entryPathway: z.enum(["event", "non_event"]).optional().default("event"),
+  rewardType: z.enum(["film_access", "trailer_access"]).optional().default("film_access"),
+  eventWindowStatus: z
+    .enum(["active_event", "event_not_started", "event_expired", "non_event"])
+    .optional()
+    .default("active_event"),
+  accessEndsAt: z.string().datetime({ offset: true }).nullable().optional().default(null),
+});
+
 export type SubmissionPayload = z.infer<typeof submissionSchema>;
 
 export function normalizeEmail(email: string): string {
