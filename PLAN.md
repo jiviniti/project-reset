@@ -28,6 +28,13 @@ Milestone 2 is accepted. Reconcile the production frontend with the latest appro
 - The schema deliberately permits repeat participations. Any future “one film entitlement per email per event” rule awaits Foundation/KINEMA confirmation.
 - Actual KINEMA calls, film-access issuance and provider webhooks remain deferred.
 
+## Post-submission journey decision
+
+- The verified current journey strands the session-only share card when a participant enters the standalone Learning Lab; the Lab’s check-in actions can then clear the completed state.
+- `docs/user-journey.md` maps the current journey, alternatives and impact surface.
+- Recommended direction, pending approval: keep success as the owning view, embed a post-submission Lab before the card, offer “Skip to my card,” and suppress all restart controls in the embedded Lab.
+- This should remain a frontend-only composition change; card recovery after refresh is a separate privacy/persistence decision.
+
 ## Milestone 2 decisions
 
 - Aggregate state lives in a separate, non-exposed `aggregate` schema.
