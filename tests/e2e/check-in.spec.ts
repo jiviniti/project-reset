@@ -1,5 +1,30 @@
 import { expect, test } from "@playwright/test";
 
+const aggregateSnapshot = {
+  apiVersion: "1",
+  snapshotVersion: 1,
+  revision: 4,
+  generatedAt: "2026-08-25T12:00:00+00:00",
+  scope: "cumulative",
+  suppression: { minimumObservedCellSize: 5, applied: false },
+  totals: { seeded: 4283, observed: 2, combined: 4285 },
+  metrics: {
+    emotions: [{ key: "exhausted", label: "Exhausted", seeded: 94, observed: 1, combined: 95, suppressed: false }],
+    pathways: [{ key: "restore", label: "Restore", seeded: 71, observed: 1, combined: 72, suppressed: false }],
+    practices: [{ key: "sleep", label: "Sleep", seeded: 82, observed: 1, combined: 83, suppressed: false }],
+  },
+};
+
+test.beforeEach(async ({ page }) => {
+  await page.route("**/api/v1/aggregates", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(aggregateSnapshot),
+    });
+  });
+});
+
 test("completes the preview check-in and reaches the persisted success state", async ({ page }) => {
   await page.route("**/api/v1/submissions", async (route) => {
     const request = route.request();
@@ -34,6 +59,12 @@ test("completes the preview check-in and reaches the persisted success state", a
   await expect(page.getByRole("heading", { name: "Thank you." })).toBeVisible();
   await expect(page.getByText("Step 04 of 04")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Email delivery is being configured." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Every answer changes the picture." })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Take the Check-In" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /Contribute your RESET/ })).toHaveCount(0);
+  await page.getByRole("link", { name: /Skip to my card/ }).click();
+  await expect.poll(() => page.evaluate(() => window.location.hash)).toBe("#my-reset-card");
+  await expect(page.locator("#my-reset-card")).toBeInViewport();
   await expect(page.locator("canvas").evaluate((canvas: HTMLCanvasElement) => [canvas.width, canvas.height])).resolves.toEqual([1080, 1350]);
 });
 
@@ -62,27 +93,6 @@ test("an expired event link becomes a trailer check-in", async ({ page }) => {
 });
 
 test("renders the cumulative community word map from the safe endpoint", async ({ page }) => {
-  await page.route("**/api/v1/aggregates", async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({
-        apiVersion: "1",
-        snapshotVersion: 1,
-        revision: 4,
-        generatedAt: "2026-08-25T12:00:00+00:00",
-        scope: "cumulative",
-        suppression: { minimumObservedCellSize: 5, applied: false },
-        totals: { seeded: 4283, observed: 2, combined: 4285 },
-        metrics: {
-          emotions: [{ key: "exhausted", label: "Exhausted", seeded: 94, observed: 1, combined: 95, suppressed: false }],
-          pathways: [{ key: "restore", label: "Restore", seeded: 71, observed: 1, combined: 72, suppressed: false }],
-          practices: [{ key: "sleep", label: "Sleep", seeded: 82, observed: 1, combined: 83, suppressed: false }],
-        },
-      }),
-    });
-  });
-
   await page.goto("/s/preview-screening");
   await page.getByRole("button", { name: "Explore the Learning Lab" }).click();
   await expect(page.getByText(/observed check-ins added so far/)).toHaveCount(0);

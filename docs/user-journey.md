@@ -2,7 +2,7 @@
 
 Last updated: 30 August 2026
 
-Status: current journey verified in code; post-submission composition is a proposed product decision awaiting approval.
+Status: post-submission composition approved and implemented on 30 August 2026.
 
 ## Purpose
 
@@ -31,7 +31,7 @@ All entry contexts use the same questionnaire and aggregate visualization. The c
 
 The share card must always link to the canonical non-event entry point. It must never reproduce or expose an event-specific URL.
 
-## Current journey — verified
+## Previous journey — verified before the 30 August fix
 
 ```text
 Screening/campaign link
@@ -52,7 +52,7 @@ Screening/campaign link
 
 The share-card canvas is derived from the completed form state in `ResetExperience`. It contains first name/initials, approved pathways and up to three approved practices. It excludes email, demographics, burnout answers, free text and custom tags.
 
-## Continuity problem — verified
+## Continuity problem — verified and resolved
 
 On the persisted thank-you screen, the participant can see both the “Enter the Learning Lab” action and their share card. Selecting the Lab action changes the React view from `success` to `lab`.
 
@@ -154,9 +154,9 @@ Keep the views separate but prompt the participant to download the card before e
 
 This is not recommended. It protects the implementation rather than improving the journey, interrupts the emotional payoff, and does not help users who want to share only after seeing the larger context.
 
-## Recommendation
+## Implemented decision
 
-Adopt **Option A**, with the return behavior from Option B retained as a fallback during implementation.
+Project RESET adopts **Option A**.
 
 The proposed final journey should be one continuous story:
 
@@ -167,12 +167,26 @@ The proposed final journey should be one continuous story:
 5. render a post-submission version of the Learning Lab inline;
 6. end with the personalized card and download/share actions.
 
-The existing standalone Lab remains the pre-submission experience reached from the hero. The same aggregate component should support two explicit modes:
+The existing standalone Lab remains the pre-submission experience reached from the hero. The aggregate component now supports two explicit modes:
 
 - `standalone`: show “Take the Check-In” navigation and the full campaign ending;
 - `post_submission`: suppress all reset/restart controls, omit duplicate framing as needed, and provide an anchor to the participant’s card.
 
-This is a frontend-only composition change. It must not change submission persistence, aggregate queries, realtime invalidation, pathway resolution, public-data allowlisting or the share-card data boundary.
+This is a frontend-only composition change. It does not change submission persistence, aggregate queries, realtime invalidation, pathway resolution, public-data allowlisting or the share-card data boundary.
+
+### Implemented post-submission journey
+
+```text
+Committed thank-you + reward status
+  → explanation that the card is waiting below
+  ├─ Skip to my card
+  └─ inline post-submission Learning Lab
+      → community picture
+      → transition to the participant’s RESET
+      → personalized share card + download/share
+```
+
+The inline Lab replaces every restart action with a persistent “My card” anchor. The standalone pre-submission Lab retains its “Take the Check-In” and “Contribute your RESET” actions.
 
 ## Session persistence decision
 
@@ -211,9 +225,7 @@ If recovery after refresh becomes a requirement, treat it as a separate product/
 - Event and non-event reward states both use the same post-submission structure.
 - Refresh recovery remains explicitly out of scope for this iteration.
 
-## Product decisions still required
+## Future product decisions
 
-1. Approve the continuous final-page sequence and “Skip to my card” escape hatch.
-2. Confirm whether the full Lab or a shorter post-submission summary should appear before the card.
-3. Confirm whether the sticky “My card” control is desirable or whether the top anchor is sufficient.
-4. Decide later whether card recovery after page refresh is worth the added privacy and persistence complexity.
+1. Decide later whether the full Lab should be replaced by a shorter post-submission summary after real-event observation.
+2. Decide later whether card recovery after page refresh is worth the added privacy and persistence complexity.

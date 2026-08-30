@@ -134,6 +134,14 @@ legend, .field-group-label { margin: 9px 0 7px; color: #756d68; font-family: var
 .reward-card h3 { margin: 0 0 8px; font-family: var(--serif); font-size: 1.25rem; font-weight: 400; }
 .reward-card p:last-child { margin-bottom: 0; color: #665f5a; font-size: .71rem; line-height: 1.55; }
 .reward-card__action { width: 100%; margin-top: 16px; text-decoration: none; }
+.success__lab-bridge { padding: 28px 24px 30px; color: var(--ink); background: var(--peach); text-align: left; }
+.success__lab-bridge .eyebrow { margin-bottom: 8px; color: var(--coral); }
+.success__lab-bridge h3 { margin: 0 0 10px; color: var(--burgundy); font-family: var(--serif); font-size: 1.5rem; font-weight: 400; }
+.success__lab-bridge > p:not(.eyebrow) { margin: 0; color: #665f5a; font-size: .73rem; line-height: 1.6; }
+.success__skip-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 17px; color: var(--burgundy); font-size: .7rem; font-weight: 700; text-underline-offset: 4px; }
+.success__card-target { scroll-margin-top: 66px; }
+.success__card-target:focus { outline: none; }
+.success__card-target:focus-visible { outline: 3px solid #2672e6; outline-offset: -3px; }
 .share-invitation { padding: 28px 24px 13px; color: var(--ink); background: var(--peach); }
 .share-invitation h3 { margin: 8px 0; font-size: 1.45rem; font-weight: 500; }
 .share-invitation p:last-child { margin-bottom: 0; font-size: .74rem; line-height: 1.6; }
@@ -149,7 +157,7 @@ legend, .field-group-label { margin: 9px 0 7px; color: #756d68; font-family: var
 
 .dashboard-nav { position: sticky; z-index: 6; top: 0; min-height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 9px 17px 9px 22px; color: var(--burgundy); border-bottom: 1px solid rgb(82 41 43 / 14%); background: rgb(251 241 232 / 96%); backdrop-filter: blur(10px); }
 .dashboard-nav > span { font-family: var(--ui); font-size: .62rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-.dashboard-nav button { min-height: 38px; padding: 8px 15px; color: white; border: 0; border-radius: 999px; background: var(--coral); cursor: pointer; font-family: var(--ui); font-size: .66rem; font-weight: 700; }
+.dashboard-nav button, .dashboard-nav a { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; padding: 8px 15px; color: white; border: 0; border-radius: 999px; background: var(--coral); cursor: pointer; font-family: var(--ui); font-size: .66rem; font-weight: 700; text-decoration: none; }
 .dashboard__intro { padding: 38px 24px 42px; color: white; background: var(--burgundy); }
 .dashboard__intro .reset-brand { margin-bottom: 35px; }
 .dashboard__intro h2 { margin: 0 0 17px; font-size: 2.25rem; }
@@ -184,6 +192,7 @@ legend, .field-group-label { margin: 9px 0 7px; color: #756d68; font-family: var
 .pathway-bloom b { color: var(--burgundy); font-size: .72rem; font-weight: 600; text-transform: uppercase; }
 .dashboard__cta .script-line { margin-bottom: 8px; }
 .dashboard__cta a { display: inline-block; margin-top: 18px; color: white; font-size: .68rem; }
+.dashboard__cta--card .button { width: 100%; color: var(--burgundy); text-decoration: none; }
 .dashboard__footer { padding: 30px 24px; background: var(--cream); }
 .dashboard__footer-label { margin: 0 0 9px; color: #796f69; font-size: .56rem; line-height: 1.5; text-align: center; }
 .dashboard__footer-lockup { display: flex; align-items: center; justify-content: center; gap: 11px; }

@@ -34,7 +34,15 @@ function metricPercent(metrics: PublicAggregateMetric[], key: string, total: num
   return total > 0 ? Math.round((count / total) * 100) : 0;
 }
 
-export function IllustrativeDashboard({ onContribute }: { onContribute: () => void }) {
+export function IllustrativeDashboard({
+  onContribute,
+  mode = "standalone",
+  cardAnchorId = "my-reset-card",
+}: {
+  onContribute?: () => void;
+  mode?: "standalone" | "post_submission";
+  cardAnchorId?: string;
+}) {
   const [snapshot, setSnapshot] = useState<PublicAggregateSnapshot | null>(null);
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const refreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -78,7 +86,11 @@ export function IllustrativeDashboard({ onContribute }: { onContribute: () => vo
     <div className="dashboard" data-revision={snapshot.revision}>
       <header className="dashboard-nav">
         <span>The Learning Lab</span>
-        <button type="button" onClick={onContribute}>Take the Check-In</button>
+        {mode === "post_submission" ? (
+          <a href={`#${cardAnchorId}`}>My card <span aria-hidden="true">↓</span></a>
+        ) : (
+          <button type="button" onClick={onContribute}>Take the Check-In</button>
+        )}
       </header>
       <section className="dashboard__intro">
         <div className="reset-brand reset-brand--light" aria-label="Project RESET"><span className="reset-brand__project">Project</span><span className="reset-brand__word"><b>re</b>set<b>.</b></span><span className="reset-brand__tagline">Choose Better. Together.</span></div>
@@ -111,21 +123,32 @@ export function IllustrativeDashboard({ onContribute }: { onContribute: () => vo
         })}</div>
       </section>
 
-      <section className="dashboard__section dashboard__section--coral dashboard__cta">
-        <p className="script-line script-line--white">Your answer belongs here.</p><h2>Add your RESET.</h2><p>The picture grows because people choose to share.</p>
-        <button type="button" className="button button--light" onClick={onContribute}>Contribute your RESET <span aria-hidden="true">→</span></button>
-        <a href={DONATION_URL} target="_blank" rel="noreferrer">Support the work · Donate</a>
-      </section>
+      {mode === "post_submission" ? (
+        <section className="dashboard__section dashboard__section--coral dashboard__cta dashboard__cta--card">
+          <p className="script-line script-line--white">The bigger picture includes you.</p>
+          <h2>Your RESET is next.</h2>
+          <p>Turn your reflection into a card you can keep or share.</p>
+          <a className="button button--light" href={`#${cardAnchorId}`}>See my card <span aria-hidden="true">↓</span></a>
+        </section>
+      ) : (
+        <>
+          <section className="dashboard__section dashboard__section--coral dashboard__cta">
+            <p className="script-line script-line--white">Your answer belongs here.</p><h2>Add your RESET.</h2><p>The picture grows because people choose to share.</p>
+            <button type="button" className="button button--light" onClick={onContribute}>Contribute your RESET <span aria-hidden="true">→</span></button>
+            <a href={DONATION_URL} target="_blank" rel="noreferrer">Support the work · Donate</a>
+          </section>
 
-      <footer className="dashboard__footer">
-        <p className="dashboard__footer-label">Brought to you by</p>
-        <div className="dashboard__footer-lockup">
-          <Image className="dashboard__footer-jiviniti" src="/images/jiviniti-wordmark.png" alt="JIVINITI" width={112} height={52} />
-          <span>in partnership with</span>
-          <Image className="dashboard__footer-picture-motion" src="/images/picture-motion.jpg" alt="Picture Motion" width={54} height={54} />
-        </div>
-        <p>Public results are aggregated and de-identified. Free text, custom tags, participant identifiers, and demographics are never shown here.</p>
-      </footer>
+          <footer className="dashboard__footer">
+            <p className="dashboard__footer-label">Brought to you by</p>
+            <div className="dashboard__footer-lockup">
+              <Image className="dashboard__footer-jiviniti" src="/images/jiviniti-wordmark.png" alt="JIVINITI" width={112} height={52} />
+              <span>in partnership with</span>
+              <Image className="dashboard__footer-picture-motion" src="/images/picture-motion.jpg" alt="Picture Motion" width={54} height={54} />
+            </div>
+            <p>Public results are aggregated and de-identified. Free text, custom tags, participant identifiers, and demographics are never shown here.</p>
+          </footer>
+        </>
+      )}
     </div>
   );
 }

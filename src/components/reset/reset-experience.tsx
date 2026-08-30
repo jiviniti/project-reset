@@ -395,13 +395,21 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                   {TRAILER_URL ? <a className="button button--coral reward-card__action" href={TRAILER_URL} target="_blank" rel="noreferrer">Watch the trailer <span aria-hidden="true">→</span></a> : null}
                 </section>
               )}
-              <button type="button" className="button button--outline-light" onClick={() => setView("lab")}>Enter the Learning Lab <span aria-hidden="true">→</span></button>
-              <div className="share-invitation">
-                <p className="script-line">Bring someone with you.</p>
-                <h3>Make your RESET visible.</h3>
-                <p>Download or share a personal card to invite someone else into the conversation.</p>
+              <section className="success__lab-bridge">
+                <p className="eyebrow">See where your RESET belongs</p>
+                <h3>Explore the community picture.</h3>
+                <p>Your personal share card is waiting at the end of the Learning Lab. Explore the results, or go straight to your card.</p>
+                <a className="success__skip-link" href="#my-reset-card">Skip to my card <span aria-hidden="true">↓</span></a>
+              </section>
+              <IllustrativeDashboard mode="post_submission" cardAnchorId="my-reset-card" />
+              <div id="my-reset-card" className="success__card-target" tabIndex={-1} aria-labelledby="my-reset-card-heading">
+                <div className="share-invitation">
+                  <p className="script-line">Bring someone with you.</p>
+                  <h3 id="my-reset-card-heading">Make your RESET visible.</h3>
+                  <p>Download or share a personal card to invite someone else into the conversation.</p>
+                </div>
+                <ShareCard firstName={form.firstName.trim().split(/\s+/)[0]} pathways={selectedPathwayOptions.map(({ key, label }) => ({ key, label }))} practices={selectedPracticeOptions.map(({ label }) => label)} />
               </div>
-              <ShareCard firstName={form.firstName.trim().split(/\s+/)[0]} pathways={selectedPathwayOptions.map(({ key, label }) => ({ key, label }))} practices={selectedPracticeOptions.map(({ label }) => label)} />
             </div>
           </section>
         )}
