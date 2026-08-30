@@ -117,3 +117,37 @@ set name = excluded.name, institution = excluded.institution, status = excluded.
     check_in_opens_at = excluded.check_in_opens_at,
     check_in_closes_at = excluded.check_in_closes_at,
     film_access_ends_at = excluded.film_access_ends_at, updated_at = now();
+
+insert into private.screenings (
+  slug, name, institution, status, questionnaire_version_id, cohort_metadata,
+  pathway_type, check_in_opens_at, check_in_closes_at, film_access_ends_at
+)
+select
+  'preview-event', 'Project RESET Active Event Preview', 'The Virsa Foundation', 'active', id,
+  '{"environment":"preview","seeded":true,"demonstration":"active_event"}'::jsonb,
+  'event', '2026-08-01T00:00:00Z', '2026-09-30T23:59:59Z', '2026-10-07T23:59:59Z'
+from private.questionnaire_versions where key = 'reset-v1' and version = 1
+on conflict (slug) do update
+set name = excluded.name, institution = excluded.institution, status = excluded.status,
+    questionnaire_version_id = excluded.questionnaire_version_id,
+    cohort_metadata = excluded.cohort_metadata, pathway_type = excluded.pathway_type,
+    check_in_opens_at = excluded.check_in_opens_at,
+    check_in_closes_at = excluded.check_in_closes_at,
+    film_access_ends_at = excluded.film_access_ends_at, updated_at = now();
+
+insert into private.screenings (
+  slug, name, institution, status, questionnaire_version_id, cohort_metadata,
+  pathway_type, check_in_opens_at, check_in_closes_at, film_access_ends_at
+)
+select
+  'preview-expired-event', 'Project RESET Expired Event Preview', 'The Virsa Foundation', 'active', id,
+  '{"environment":"preview","seeded":true,"demonstration":"expired_event"}'::jsonb,
+  'event', '2026-08-01T00:00:00Z', '2026-08-02T23:59:59Z', '2026-08-04T23:59:59Z'
+from private.questionnaire_versions where key = 'reset-v1' and version = 1
+on conflict (slug) do update
+set name = excluded.name, institution = excluded.institution, status = excluded.status,
+    questionnaire_version_id = excluded.questionnaire_version_id,
+    cohort_metadata = excluded.cohort_metadata, pathway_type = excluded.pathway_type,
+    check_in_opens_at = excluded.check_in_opens_at,
+    check_in_closes_at = excluded.check_in_closes_at,
+    film_access_ends_at = excluded.film_access_ends_at, updated_at = now();

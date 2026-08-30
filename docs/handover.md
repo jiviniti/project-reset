@@ -188,6 +188,16 @@ Foundation-feedback verification on 26 August 2026:
 - the observed-check-in callout was absent while the illustrative-preview label and safe aggregate data remained intact;
 - the participant and Learning Lab Playwright journeys passed on mobile and desktop Chromium.
 
+Hosted pathway/journey verification on 30 August 2026:
+
+- `202608290001_event_non_event_pathways.sql` was applied to the isolated Project RESET preview database;
+- `preview-screening` resolves to `non_event`, `trailer_access`, and `non_event` window status;
+- the resolver is executable by `service_role` and not by `anon` or `authenticated`; `anon` cannot read private participations;
+- one clearly synthetic submission (`deployment-qa-559086a@example.invalid`) committed as `non_event / trailer_access / web / available` and increased the preview observed aggregate once;
+- commit `559086a` deployed through the existing Git integration and was verified at `https://project-reset-psi.vercel.app/s/preview-screening`;
+- the hosted success page rendered the inline Learning Lab, contained no restart controls, retained the card, and its skip anchor reached the card;
+- `preview-event` and `preview-expired-event` are demonstration-only screening routes, not approved production events.
+
 ## Manual owner actions
 
 - Review the illustrative seeded-baseline wording with the Foundation before production.

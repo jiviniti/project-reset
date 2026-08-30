@@ -86,7 +86,7 @@ Milestone 2 is accepted. Reconcile the production frontend with the latest appro
 - [x] Deploy and verify the reconciled frontend on the hosted preview, then stop.
 - [x] Apply the unambiguous interface feedback from the Foundation review: persistent Learning Lab check-in navigation, consumer-facing custom-response guidance, explicit required/optional detail grouping, clearer share actions, removal of the observed-check-in callout, and corrected partner-logo composition.
 - [x] Add the KINEMA-independent event/non-event pathway, expiry fallback and committed reward-intent foundation.
-- [ ] Apply the pathway migration and run its rollback-safe database regression in the hosted preview.
+- [x] Apply and verify the pathway migration in the hosted preview; retain the full rollback-safe regression in local PostgreSQL coverage.
 - [ ] Confirm KINEMA’s access, API, account, geographic, commercial and webhook capabilities before implementing a provider adapter.
 
 ## Explicitly deferred
