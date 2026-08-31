@@ -195,7 +195,7 @@ Hosted pathway/journey verification on 30 August 2026:
 - the resolver is executable by `service_role` and not by `anon` or `authenticated`; `anon` cannot read private participations;
 - one clearly synthetic submission (`deployment-qa-559086a@example.invalid`) committed as `non_event / trailer_access / web / available` and increased the preview observed aggregate once;
 - commit `559086a` deployed through the existing Git integration and was verified at `https://project-reset-psi.vercel.app/s/preview-screening`;
-- the hosted success page rendered the inline Learning Lab, contained no restart controls, retained the card, and its skip anchor reached the card;
+- the hosted success page rendered the earlier full inline Learning Lab, contained no restart controls, retained the card, and its skip anchor reached the card; this was subsequently superseded by Nivi’s request for a condensed results → access → card sequence;
 - `preview-event` and `preview-expired-event` are demonstration-only screening routes, not approved production events.
 
 ## Manual owner actions

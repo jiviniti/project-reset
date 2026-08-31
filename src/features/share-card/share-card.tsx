@@ -151,8 +151,9 @@ export function ShareCard({ firstName, pathways, practices }: ShareCardProps) {
 
   return (
     <section className="share-card" aria-labelledby="share-card-title">
-      <p className="eyebrow">Your personalized share card</p>
-      <h3 id="share-card-title">A snapshot of your RESET.</h3>
+      <p className="eyebrow">Your personal RESET</p>
+      <h3 id="share-card-title">My RESET card</h3>
+      <p className="share-card__intro">Save or share your card to bring someone else into the conversation.</p>
       <canvas ref={canvasRef} className="share-card__canvas" aria-label={`${firstName || "My"} Project RESET share card`} />
       <div className="button-stack">
         <button type="button" className="button button--light" onClick={download}>Save card as PNG</button>

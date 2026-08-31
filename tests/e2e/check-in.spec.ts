@@ -56,15 +56,23 @@ test("completes the preview check-in and reaches the persisted success state", a
   await page.getByLabel("Email (required)").fill("nivi@example.org");
   await page.getByLabel(/I understand that my responses/).check();
   await page.getByRole("button", { name: "Finish", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Thank you." })).toBeVisible();
-  await expect(page.getByText("Step 04 of 04")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Email delivery is being configured." })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Every answer changes the picture." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Thank you—your RESET has been added to the picture." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Film access is being prepared." })).toBeVisible();
+  await expect(page.getByText("The burnout landscape", { exact: true })).toBeVisible();
+  await expect(page.getByText("The community RESET map", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "My RESET card", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Every answer changes the picture." })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "The picture in numbers." })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Where we begin again." })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Take the Check-In" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: /Contribute your RESET/ })).toHaveCount(0);
-  await page.getByRole("link", { name: /Skip to my card/ }).click();
-  await expect.poll(() => page.evaluate(() => window.location.hash)).toBe("#my-reset-card");
-  await expect(page.locator("#my-reset-card")).toBeInViewport();
+  const sequence = await page.locator(".dashboard--post-submission .dashboard__section--dark, .dashboard--post-submission .dashboard__section--cream, .success__reward, .success__card-target").evaluateAll((elements) => elements.map((element) => element.className));
+  expect(sequence).toEqual([
+    "dashboard__section dashboard__section--dark",
+    "dashboard__section dashboard__section--cream",
+    "success__reward",
+    "success__card-target",
+  ]);
   await expect(page.locator("canvas").evaluate((canvas: HTMLCanvasElement) => [canvas.width, canvas.height])).resolves.toEqual([1080, 1350]);
 });
 
@@ -88,8 +96,9 @@ test("an expired event link becomes a trailer check-in", async ({ page }) => {
   await page.getByLabel("Email (required)").fill("guest@example.org");
   await page.getByLabel(/I understand that my responses/).check();
   await page.getByRole("button", { name: "Finish", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Trailer access is being prepared." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Watch the trailer." })).toBeVisible();
   await expect(page.getByText(/event’s film-access window has ended/i)).toBeVisible();
+  await expect(page.getByRole("link", { name: /Watch the Trailer/ })).toHaveAttribute("href", "https://www.thirddegreeburnout.com/");
 });
 
 test("renders the cumulative community word map from the safe endpoint", async ({ page }) => {

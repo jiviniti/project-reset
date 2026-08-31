@@ -32,7 +32,7 @@ Milestone 2 is accepted. Reconcile the production frontend with the latest appro
 
 - The verified current journey strands the session-only share card when a participant enters the standalone Learning Lab; the Lab’s check-in actions can then clear the completed state.
 - `docs/user-journey.md` maps the current journey, alternatives and impact surface.
-- Implemented direction: keep success as the owning view, embed a post-submission Lab before the card, offer “Skip to my card,” and suppress all restart controls in the embedded Lab.
+- Implemented direction after Nivi’s 31 August review: keep success as the owning view and show only the Burnout Landscape, Community RESET Map, appropriate film/trailer access, and personalized card—in that order. The condensed aggregate view suppresses all restart controls, statistics, pathway blooms, donation prompts and duplicate Lab framing.
 - This should remain a frontend-only composition change; card recovery after refresh is a separate privacy/persistence decision.
 
 ## Milestone 2 decisions

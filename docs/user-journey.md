@@ -158,35 +158,31 @@ This is not recommended. It protects the implementation rather than improving th
 
 Project RESET adopts **Option A**.
 
-The proposed final journey should be one continuous story:
+After Nivi’s 31 August product review, the final journey is a deliberately condensed continuous story:
 
 1. confirm that the check-in was saved;
-2. present the appropriate film/trailer reward status;
-3. tell the participant their card is ready and available at the end;
-4. offer “Skip to my card” so the Lab is never a forced detour;
-5. render a post-submission version of the Learning Lab inline;
-6. end with the personalized card and download/share actions.
+2. immediately show the Burnout Landscape and Community RESET Map;
+3. present the appropriate film/trailer access action or truthful interim status;
+4. end with the personalized card and download/share actions.
 
 The existing standalone Lab remains the pre-submission experience reached from the hero. The aggregate component now supports two explicit modes:
 
 - `standalone`: show “Take the Check-In” navigation and the full campaign ending;
-- `post_submission`: suppress all reset/restart controls, omit duplicate framing as needed, and provide an anchor to the participant’s card.
+- `post_submission`: show only the two approved aggregate word maps and suppress navigation, statistics, pathway blooms, donation prompts and every reset/restart control.
 
 This is a frontend-only composition change. It does not change submission persistence, aggregate queries, realtime invalidation, pathway resolution, public-data allowlisting or the share-card data boundary.
 
 ### Implemented post-submission journey
 
 ```text
-Committed thank-you + reward status
-  → explanation that the card is waiting below
-  ├─ Skip to my card
-  └─ inline post-submission Learning Lab
-      → community picture
-      → transition to the participant’s RESET
-      → personalized share card + download/share
+Committed thank-you
+  → Burnout Landscape
+  → Community RESET Map
+  → film access status OR Watch the Trailer
+  → personalized share card + download/share
 ```
 
-The inline Lab replaces every restart action with a persistent “My card” anchor. The standalone pre-submission Lab retains its “Take the Check-In” and “Contribute your RESET” actions.
+The post-submission aggregate view is intentionally shorter than the standalone Learning Lab. The standalone pre-submission Lab retains its introduction, statistics, pathway blooms, “Take the Check-In,” “Contribute your RESET,” donation prompt and Foundation/partner footer.
 
 ## Session persistence decision
 
@@ -205,7 +201,7 @@ If recovery after refresh becomes a requirement, treat it as a separate product/
 | Product | Replace competing Lab/card actions with a continuous post-submission narrative |
 | UI state | Keep `success` as the owning state; do not switch to `lab` after submission |
 | Learning Lab component | Add explicit standalone/post-submission presentation modes |
-| Navigation | Add accessible anchor links and optional sticky “My card” action |
+| Navigation | Remove competing post-submission navigation and restart actions |
 | Share card | No payload or canvas-content change |
 | API/database | No change |
 | Aggregate/realtime | Reuse the existing safe snapshot and invalidation flow |
@@ -216,8 +212,8 @@ If recovery after refresh becomes a requirement, treat it as a separate product/
 ## Acceptance criteria for the recommended flow
 
 - A successful submission is still required before the personalized result appears.
-- The participant sees a clear message that their card is available at the end of the Lab.
-- “Skip to my card” moves focus and scroll position to the share-card heading.
+- The participant sees the two approved community visualizations immediately after the saved confirmation.
+- Film/trailer access follows the community picture and precedes the card.
 - The inline Lab contains no action that clears or starts over the completed response.
 - The card can be downloaded or shared after exploring the Lab.
 - Aggregate loading failure does not hide or block the share card.
@@ -227,5 +223,5 @@ If recovery after refresh becomes a requirement, treat it as a separate product/
 
 ## Future product decisions
 
-1. Decide later whether the full Lab should be replaced by a shorter post-submission summary after real-event observation.
-2. Decide later whether card recovery after page refresh is worth the added privacy and persistence complexity.
+1. Decide later whether card recovery after page refresh is worth the added privacy and persistence complexity.
+2. Revisit the condensed/full Lab balance only after observing real event behavior.

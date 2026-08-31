@@ -46,7 +46,7 @@ const initialForm: FormState = {
 };
 
 const DONATION_URL = process.env.NEXT_PUBLIC_DONATE_URL ?? "https://thirddegreeburnout.com/donate";
-const TRAILER_URL = process.env.NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL?.trim() ?? "";
+const TRAILER_URL = process.env.NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL?.trim() || "https://www.thirddegreeburnout.com/";
 
 const pathwayPresentation: Record<string, { blurb: string; color: string }> = {
   nourish: { blurb: "plants, water, earth", color: "#458284" },
@@ -372,42 +372,31 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
 
         {view === "success" && (
           <section className="flow">
-            <ProgressHeader step={4} complete />
             <div className="success">
-              <div className="success__intro">
-                <Image src="/images/reset-mark.png" alt="" width={116} height={116} className="success__mark" />
-                <p className="eyebrow">04 · Your RESET is part of the picture</p>
-                <h2>Thank you.</h2>
-                <p>You’ve added your experience to a growing body of lived evidence about burnout, well-being, and systems change.</p>
-                <p className="script-line script-line--white">You’re part of it now.</p>
-              </div>
-              {(submissionResult?.rewardType ?? screening.rewardType) === "film_access" ? (
-                <section className="reward-card">
-                  <p className="eyebrow">Your film access</p>
-                  <h3>Email delivery is being configured.</h3>
-                  <p>Your film-access request has been recorded separately from marketing consent. This preview does not send an access email yet.</p>
-                </section>
-              ) : (
-                <section className="reward-card">
-                  <p className="eyebrow">Your trailer access</p>
-                  <h3>{TRAILER_URL ? "Your trailer is ready." : "Trailer access is being prepared."}</h3>
-                  <p>{(submissionResult?.eventWindowStatus ?? screening.eventWindowStatus) === "event_expired" ? "The event’s film-access window has ended, so this check-in follows the trailer pathway. " : ""}{TRAILER_URL ? "Watch it now, then continue into the Learning Lab." : "The final trailer URL still needs to be configured before launch."}</p>
-                  {TRAILER_URL ? <a className="button button--coral reward-card__action" href={TRAILER_URL} target="_blank" rel="noreferrer">Watch the trailer <span aria-hidden="true">→</span></a> : null}
-                </section>
-              )}
-              <section className="success__lab-bridge">
-                <p className="eyebrow">See where your RESET belongs</p>
-                <h3>Explore the community picture.</h3>
-                <p>Your personal share card is waiting at the end of the Learning Lab. Explore the results, or go straight to your card.</p>
-                <a className="success__skip-link" href="#my-reset-card">Skip to my card <span aria-hidden="true">↓</span></a>
+              <header className="success__confirmation">
+                <p className="eyebrow">Your check-in is complete</p>
+                <h2>Thank you—your RESET has been added to the picture.</h2>
+              </header>
+
+              <IllustrativeDashboard mode="post_submission" />
+
+              <section className="success__reward" aria-labelledby="reset-access-heading">
+                <p className="eyebrow">Your access</p>
+                {(submissionResult?.rewardType ?? screening.rewardType) === "film_access" ? (
+                  <div className="reward-card">
+                    <h3 id="reset-access-heading">Film access is being prepared.</h3>
+                    <p>We’ve recorded your access request. Film delivery will be enabled after the KINEMA process is confirmed.</p>
+                  </div>
+                ) : (
+                  <div className="reward-card">
+                    <h3 id="reset-access-heading">Watch the trailer.</h3>
+                    <p>{(submissionResult?.eventWindowStatus ?? screening.eventWindowStatus) === "event_expired" ? "This event’s film-access window has ended, but you can still watch the trailer. " : ""}Visit the film’s website to continue.</p>
+                    <a className="button button--coral reward-card__action" href={TRAILER_URL} target="_blank" rel="noreferrer">Watch the Trailer <span aria-hidden="true">→</span></a>
+                  </div>
+                )}
               </section>
-              <IllustrativeDashboard mode="post_submission" cardAnchorId="my-reset-card" />
-              <div id="my-reset-card" className="success__card-target" tabIndex={-1} aria-labelledby="my-reset-card-heading">
-                <div className="share-invitation">
-                  <p className="script-line">Bring someone with you.</p>
-                  <h3 id="my-reset-card-heading">Make your RESET visible.</h3>
-                  <p>Download or share a personal card to invite someone else into the conversation.</p>
-                </div>
+
+              <div className="success__card-target">
                 <ShareCard firstName={form.firstName.trim().split(/\s+/)[0]} pathways={selectedPathwayOptions.map(({ key, label }) => ({ key, label }))} practices={selectedPracticeOptions.map(({ label }) => label)} />
               </div>
             </div>

@@ -37,11 +37,9 @@ function metricPercent(metrics: PublicAggregateMetric[], key: string, total: num
 export function IllustrativeDashboard({
   onContribute,
   mode = "standalone",
-  cardAnchorId = "my-reset-card",
 }: {
   onContribute?: () => void;
   mode?: "standalone" | "post_submission";
-  cardAnchorId?: string;
 }) {
   const [snapshot, setSnapshot] = useState<PublicAggregateSnapshot | null>(null);
   const [loadState, setLoadState] = useState<LoadState>("loading");
@@ -82,15 +80,33 @@ export function IllustrativeDashboard({
     { value: `${metricPercent(snapshot.metrics.emotions, "overwhelmed", total)}%`, label: "name feeling overwhelmed" },
   ];
 
+  if (mode === "post_submission") {
+    return (
+      <div className="dashboard dashboard--post-submission" data-revision={snapshot.revision}>
+        <section className="dashboard__section dashboard__section--dark">
+          <p className="section-number">01</p>
+          <p className="eyebrow eyebrow--orange">The burnout landscape</p>
+          <h2>This is what it feels like.</h2>
+          <p>The larger the word, the more often it appears in the cumulative picture.</p>
+          <WordCloud metrics={snapshot.metrics.emotions} category="emotions" />
+        </section>
+
+        <section className="dashboard__section dashboard__section--cream">
+          <p className="section-number">02</p>
+          <p className="eyebrow">The community RESET map</p>
+          <h2>What brings us back.</h2>
+          <p>Shared practices become a collective map of recovery and reconnection.</p>
+          <WordCloud metrics={snapshot.metrics.practices} category="practices" />
+        </section>
+      </div>
+    );
+  }
+
   return (
     <div className="dashboard" data-revision={snapshot.revision}>
       <header className="dashboard-nav">
         <span>The Learning Lab</span>
-        {mode === "post_submission" ? (
-          <a href={`#${cardAnchorId}`}>My card <span aria-hidden="true">↓</span></a>
-        ) : (
-          <button type="button" onClick={onContribute}>Take the Check-In</button>
-        )}
+        <button type="button" onClick={onContribute}>Take the Check-In</button>
       </header>
       <section className="dashboard__intro">
         <div className="reset-brand reset-brand--light" aria-label="Project RESET"><span className="reset-brand__project">Project</span><span className="reset-brand__word"><b>re</b>set<b>.</b></span><span className="reset-brand__tagline">Choose Better. Together.</span></div>
@@ -123,32 +139,21 @@ export function IllustrativeDashboard({
         })}</div>
       </section>
 
-      {mode === "post_submission" ? (
-        <section className="dashboard__section dashboard__section--coral dashboard__cta dashboard__cta--card">
-          <p className="script-line script-line--white">The bigger picture includes you.</p>
-          <h2>Your RESET is next.</h2>
-          <p>Turn your reflection into a card you can keep or share.</p>
-          <a className="button button--light" href={`#${cardAnchorId}`}>See my card <span aria-hidden="true">↓</span></a>
-        </section>
-      ) : (
-        <>
-          <section className="dashboard__section dashboard__section--coral dashboard__cta">
-            <p className="script-line script-line--white">Your answer belongs here.</p><h2>Add your RESET.</h2><p>The picture grows because people choose to share.</p>
-            <button type="button" className="button button--light" onClick={onContribute}>Contribute your RESET <span aria-hidden="true">→</span></button>
-            <a href={DONATION_URL} target="_blank" rel="noreferrer">Support the work · Donate</a>
-          </section>
+      <section className="dashboard__section dashboard__section--coral dashboard__cta">
+        <p className="script-line script-line--white">Your answer belongs here.</p><h2>Add your RESET.</h2><p>The picture grows because people choose to share.</p>
+        <button type="button" className="button button--light" onClick={onContribute}>Contribute your RESET <span aria-hidden="true">→</span></button>
+        <a href={DONATION_URL} target="_blank" rel="noreferrer">Support the work · Donate</a>
+      </section>
 
-          <footer className="dashboard__footer">
-            <p className="dashboard__footer-label">Brought to you by</p>
-            <div className="dashboard__footer-lockup">
-              <Image className="dashboard__footer-jiviniti" src="/images/jiviniti-wordmark.png" alt="JIVINITI" width={112} height={52} />
-              <span>in partnership with</span>
-              <Image className="dashboard__footer-picture-motion" src="/images/picture-motion.jpg" alt="Picture Motion" width={54} height={54} />
-            </div>
-            <p>Public results are aggregated and de-identified. Free text, custom tags, participant identifiers, and demographics are never shown here.</p>
-          </footer>
-        </>
-      )}
+      <footer className="dashboard__footer">
+        <p className="dashboard__footer-label">Brought to you by</p>
+        <div className="dashboard__footer-lockup">
+          <Image className="dashboard__footer-jiviniti" src="/images/jiviniti-wordmark.png" alt="JIVINITI" width={112} height={52} />
+          <span>in partnership with</span>
+          <Image className="dashboard__footer-picture-motion" src="/images/picture-motion.jpg" alt="Picture Motion" width={54} height={54} />
+        </div>
+        <p>Public results are aggregated and de-identified. Free text, custom tags, participant identifiers, and demographics are never shown here.</p>
+      </footer>
     </div>
   );
 }
