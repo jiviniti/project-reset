@@ -198,6 +198,15 @@ Hosted pathway/journey verification on 30 August 2026:
 - the hosted success page rendered the earlier full inline Learning Lab, contained no restart controls, retained the card, and its skip anchor reached the card; this was subsequently superseded by Nivi’s request for a condensed results → access → card sequence;
 - `preview-event` and `preview-expired-event` are demonstration-only screening routes, not approved production events.
 
+Post-submission hierarchy deployment on 31 August 2026:
+
+- Nivi’s approved final sequence is now community visualization → film/trailer access → personal RESET card;
+- the post-submission view contains only the Burnout Landscape and Community RESET Map, while the standalone Learning Lab retains its full introduction, statistics, pathway view, campaign actions and footer;
+- the non-event and expired-event trailer CTA uses `https://www.thirddegreeburnout.com/` by default and remains configurable with `NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL`;
+- one clearly synthetic visual-QA submission (`visual-qa-20260831@example.invalid`) was written to the preview dataset while checking the active-event flow at 390px;
+- commit `af517ea` deployed successfully through Vercel’s Git integration; all three preview routes and the safe aggregate endpoint returned HTTP 200 after deployment;
+- no database migration, RLS policy, grant, aggregate contract or submission transaction changed in this frontend-only pass.
+
 ## Manual owner actions
 
 - Review the illustrative seeded-baseline wording with the Foundation before production.
