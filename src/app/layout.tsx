@@ -29,20 +29,31 @@ const script = localFont({
   display: "swap",
 });
 
-const manrope = localFont({
-  src: "./fonts/manrope-500.woff2",
-  variable: "--font-manrope",
-  display: "swap",
-});
+const campaignUrl = process.env.NEXT_PUBLIC_PROJECT_RESET_SIGNUP_URL?.trim() || "https://projectreset.example/signup";
+const campaignOrigin = new URL(campaignUrl).origin;
 
 export const metadata: Metadata = {
+  metadataBase: new URL(campaignOrigin),
   title: "Project RESET · Learning Lab",
-  description: "Share how burnout shows up and what helps you reset.",
+  description: "Inspired by Third Degree Burnout, Project RESET gathers how burnout shows up and what helps us come back to ourselves.",
+  alternates: { canonical: campaignUrl },
+  openGraph: {
+    type: "website",
+    url: campaignUrl,
+    title: "Project RESET · How do you reset?",
+    description: "Add your voice to a growing community picture inspired by Third Degree Burnout.",
+    siteName: "Project RESET",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Project RESET · How do you reset?",
+    description: "Add your voice to a growing community picture inspired by Third Degree Burnout.",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en-US" className={`${poppins.variable} ${ebGaramond.variable} ${script.variable} ${manrope.variable}`}>
+    <html lang="en-US" className={`${poppins.variable} ${ebGaramond.variable} ${script.variable}`}>
       <body>{children}</body>
     </html>
   );

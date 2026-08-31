@@ -1,6 +1,6 @@
 # Prototype reconciliation
 
-Last updated: 26 August 2026
+Last updated: 31 August 2026
 
 ## Source-of-truth rule
 
@@ -21,7 +21,7 @@ The opaque prototype runtime is reference-only. Production recreates approved be
 | Screen / component | Current implementation | Latest approved prototype | Difference | Required change | Technical impact | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | Experience shell | Responsive centered shell capped at 430px | Centered 390px mobile artifact on desktop; edge-to-edge at mobile size | Production measure is wider | Standardize the product measure to 390px while retaining edge-to-edge mobile behavior | CSS only | Implemented |
-| Hero navigation | White wordmark and small text Donate link | White wordmark and filled coral Donate action | Action hierarchy differs | Use the approved filled Donate treatment and existing approved URL | CSS only | Implemented |
+| Hero navigation | White wordmark and small text Donate link | White wordmark and filled coral donation action | Action hierarchy differs | Use the approved filled treatment, “Support the project” wording and existing approved URL | CSS only | Implemented |
 | Hero identity | Film-first title, “Welcome.” script line, shortened campaign copy | Project RESET lockup, “Choose Better. Together.” script line, documentary descriptor and fuller Picture Motion/campaign copy | Brand hierarchy and copy differ materially | Rebuild the hero hierarchy and copy around the approved RESET identity | React/CSS only | Implemented |
 | Hero imagery/actions | Approved collage and two actions already present | Same collage in burgundy card; stronger spacing and campaign metadata | Image framing and spacing differ | Match framing, radii, spacing and action styling | CSS only | Implemented |
 | Journey progress | Three form steps; success is a separate unnumbered view | Four-stage presentation with thank-you shown as Step 04 of 04 | Participant perception differs | Show persisted success as Step 04 without moving persistence or creating an extra submission stage | React state/CSS only | Implemented |
@@ -36,8 +36,8 @@ The opaque prototype runtime is reference-only. Production recreates approved be
 | Community-created tags | Not exposed publicly | Prototype displays seeded/new community tags | Conflicts with privacy rule and deferred moderation | Keep omitted from the public client | None | Intentionally excluded |
 | Community voices | Not exposed publicly | Prototype rotates anonymous free-text quotes | Public API forbids free text | Keep omitted until a separately approved editorial/moderation pipeline exists | None | Intentionally excluded |
 | Map | Not implemented | Explicitly labelled phase-two illustrative placeholder | Outside this pass | Keep omitted | None | Deferred |
-| Donate/footer | Hero Donate only | Additional campaign Donate CTA and partner/footer block | Product ending differs | Add approved campaign/footer composition without new integrations | React/CSS/static assets | Implemented |
-| Typography/tokens | Partial palette with system fallbacks | Poppins, EB Garamond, script accent, full Virsa palette, 8px spacing rhythm | Token coverage and font fidelity differ | Add reusable tokens and approved local font assets | Static assets/CSS | Implemented with prototype substitute script font |
+| Donation/footer | Hero donation action only | Additional campaign CTA and partner/footer block | Product ending differs | Add approved campaign/footer composition and standardize visible wording to “Support the project” | React/CSS/static assets | Implemented |
+| Typography/tokens | Partial palette with system fallbacks | Poppins, EB Garamond, script accent, full Virsa palette, 8px spacing rhythm | Token coverage and font fidelity differ | Use Poppins for normal UI and Petit Formal Script for accents while preserving EB Garamond variation in word clouds | Static assets/CSS | Implemented; word clouds are an explicit exception |
 | Motion | Step/bubble entrance only | Step rise, word drift, blooming tags, counter/ring movement and rotating-content feel | Motion language differs | Reproduce restrained relevant motion with reduced-motion support | CSS/React only | Implemented |
 | U.S. English | Mostly compliant | Prototype contains British “anonymised” in its footer | Production terminology must be U.S. English | Audit all visible and accessibility copy; use “anonymized,” “programs,” “personalized,” and “color” | Copy plus additive policy version | Implemented |
 
@@ -96,3 +96,16 @@ This product rule postdates the visual prototype, so the Foundation decision sup
 - the share card’s campaign URL must always enter the non-event pathway.
 
 The active frontend now presents the resolved reward truthfully. Actual film issuance remains deferred until KINEMA confirms its supported integration model.
+
+## Brand and share-card addendum — 31 August 2026
+
+Nivi’s later written feedback refines the prototype without changing its source-of-truth status:
+
+- branded campaign references use a constructed lowercase `reset.` treatment, with `re` and the dot sharing the accent color; plain copy uses `RESET` when the lockup is not feasible;
+- the compact Third Degree Burnout title/subtitle sits with the hero campaign identity and the redundant educational-initiative block is removed;
+- normal interface typography is Poppins, script accents use Petit Formal Script, and the existing EB Garamond/italic word-cloud variety remains intentionally unchanged;
+- donation actions read “Support the project” throughout;
+- questionnaire v2 adopts the approved label edits, adds Less social media and In-person meetings, and retires Fruit & veg from newly loaded forms and public aggregates without invalidating historical submissions;
+- the card is a bold 4:5 editorial poster, generated privately in the browser; native sharing is image-first and a generic PII-free Open Graph image covers link-only previews.
+
+These refinements do not alter consent, atomic persistence, idempotency, reward eligibility, aggregate security, realtime invalidation, KINEMA scope, custom-domain status, or production-cutover status.

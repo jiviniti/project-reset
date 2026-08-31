@@ -1,6 +1,6 @@
 # Architecture
 
-Last verified: 29 August 2026
+Last verified: 31 August 2026
 
 Project RESET is a screening-aware Next.js application deployed on Vercel. Participants complete the RESET Check-In without a Supabase Auth account. Browser submissions go only to `POST /api/v1/submissions`; raw identity and research records remain in the non-exposed Supabase `private` schema.
 
@@ -62,11 +62,15 @@ The active React implementation follows the latest prototype supplied on 25 Augu
 3. final-step PII, optional demographics, data-use consent and false-by-default future-communications preference;
 4. persisted thank-you state, transactional-reward status, Learning Lab entry and share card.
 
-The header action is Donate. Product copy uses U.S. English. SMS selection remains deferred because reward delivery is outside Milestone 2.
+The header action reads “Support the project.” Product copy uses U.S. English. Branded campaign references use the constructed lowercase `reset.` lockup when layout permits and `RESET` otherwise. SMS selection remains deferred because reward delivery is outside this pass.
 
 Persisted success is presented as Step 04 of 04; it is not a fourth write stage. Back navigation between questionnaire stages retains local answers, and each forward transition returns the viewport to the stage heading.
 
-The self-contained source prototype and checksum are preserved under `reference/prototype/`. The active production-oriented UI is the typed React implementation under `src/`. Approved fonts are extracted as local assets and loaded through `next/font/local`; no prototype runtime or opaque generated code ships in the app.
+The self-contained source prototype and checksum are preserved under `reference/prototype/`. The active production-oriented UI is the typed React implementation under `src/`. Poppins supplies interface text, headings, labels and buttons; Petit Formal Script supplies intentional script accents; EB Garamond and italic variation are confined to the word clouds. Local font assets are loaded through `next/font/local`; no prototype runtime or opaque generated code ships in the app.
+
+Questionnaire version 2 is an additive published version. Screening configuration determines the version served, while every participation retains its submitted version. The two new practice keys and revised labels flow through the existing atomic submission and aggregate pipeline; inactive compatibility options remain privately valid but are omitted from new configurations and public metric definitions.
+
+Personalized social cards are rendered entirely in the browser to a 1080×1350 canvas and are never uploaded. Generic link metadata uses the static 1200×630 `/opengraph-image` route and contains no participant data.
 
 ## Active, supporting and deferred boundaries
 

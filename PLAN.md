@@ -1,6 +1,6 @@
 # Project RESET Phase 1 Plan
 
-Last updated: 29 August 2026
+Last updated: 31 August 2026
 
 ## Current approved pass: Product + Visual Reconciliation (pre-Milestone 3)
 
@@ -49,19 +49,21 @@ Milestone 2 is accepted. Reconcile the production frontend with the latest appro
 - The revision resource contains only `revision` and `updated_at`. Browser roles receive SELECT only; no browser role can mutate it.
 - Only the revision resource is added to `supabase_realtime`. Raw response and aggregate-count tables are never streamed.
 - The outgoing aggregate response is parsed through a strict allowlisted schema and contains no participant identity, UUIDs, free text, demographics, consent or raw records.
-- The latest supplied prototype (25 August 2026) is the frontend source of truth. The participant flow moves PII to the last question step, restores private custom-tag input for the two relevant questions, uses “Donate” with the approved donation link and standardises product copy to U.S. English.
+- The latest supplied prototype (25 August 2026) remains the frontend source of truth, refined by Nivi’s 31 August brand and content feedback. The participant flow keeps PII at the last question step, private custom tags for the two relevant questions, and U.S. English throughout.
 
 ## Product and visual reconciliation decisions
 
 - `Project RESET Learning Lab Prototype - Latest.html` is byte-identical to the canonical reference, SHA-256 `bf06b5c2c8cf45aa94c05a0ab6cbac1095aca41a3b815346fa9b44d2610cd1ac`.
 - The prototype controls journey, copy and presentation; the production implementation controls data, security, consent, transaction and deployment behavior.
-- Approved embedded Poppins, EB Garamond, Petit Formal Script and Manrope assets are served locally through `next/font/local`.
+- Poppins is the interface face and Petit Formal Script is the intentional script accent. EB Garamond and italic variation are retained only inside the word clouds as an explicit visual exception. Manrope is no longer loaded.
 - The experience uses the prototype’s 390px desktop artifact measure and edge-to-edge mobile behavior.
 - Persisted success is presented as Step 04 of 04. Submission still occurs atomically at the end of Step 03; no success UI appears before persistence.
 - PII remains local until the final step and is sent only in the final complete payload.
 - Private custom tags retain trimmed participant wording, allow six tags of up to 60 characters per relevant question, and remain excluded from public aggregates and the share card.
 - The Learning Lab now uses accessible frequency-scaled word maps, cumulative statistics and pathway blooms while reading the same safe aggregate API.
-- The approved Donate URL is `https://thirddegreeburnout.com/donate`, configurable with `NEXT_PUBLIC_DONATE_URL`.
+- The approved donation URL is `https://thirddegreeburnout.com/donate`, configurable with `NEXT_PUBLIC_DONATE_URL`; all visible labels now read “Support the project.”
+- Questionnaire version 2 preserves version 1 history, revises practice labels without changing stable keys, adds `less_social_media` and `in_person_meetings`, and keeps `fruit_veg` as an inactive private compatibility option.
+- The 1080×1350 share card is a client-generated editorial poster. Native sharing attaches the PNG and places the non-event campaign URL in text without a separate URL field. A generic, PII-free 1200×630 Open Graph image covers link-only shares.
 - U.S.-English acknowledgement text is a new immutable policy version, `reset_data_use_v1_us`; prior consent wording is not rewritten.
 - The 4,283 baseline is an illustrative prototype fixture, not evidence of real Project RESET participants.
 
@@ -73,7 +75,7 @@ Milestone 2 is accepted. Reconcile the production frontend with the latest appro
 - [x] Add aggregate schema, allowlisted definitions, canonical seeded baseline, rebuild/backfill and transactional submission hook.
 - [x] Add the cumulative safe aggregate API and outgoing response validation.
 - [x] Add the PII-free revision subscription and live cumulative bubble visualization.
-- [x] Reconcile the approved final-step PII, custom-tag and Donate changes.
+- [x] Reconcile the approved final-step PII, private custom-tag and donation-action changes.
 - [x] Add database, API, realtime, security, visual and end-to-end tests.
 - [x] Update architecture, data-model, security and handover documentation.
 - [x] Apply and verify the migration and application in the hosted preview.
@@ -87,6 +89,10 @@ Milestone 2 is accepted. Reconcile the production frontend with the latest appro
 - [x] Apply the unambiguous interface feedback from the Foundation review: persistent Learning Lab check-in navigation, consumer-facing custom-response guidance, explicit required/optional detail grouping, clearer share actions, removal of the observed-check-in callout, and corrected partner-logo composition.
 - [x] Add the KINEMA-independent event/non-event pathway, expiry fallback and committed reward-intent foundation.
 - [x] Apply and verify the pathway migration in the hosted preview; retain the full rollback-safe regression in local PostgreSQL coverage.
+- [x] Implement the approved brand lockup, interface typography, support wording and consent labels while preserving the word-cloud typography exception.
+- [x] Add questionnaire version 2, revised practice labels, two new practice options and inactive `fruit_veg` compatibility behavior.
+- [x] Redesign the client-only card, make native sharing image-first and add generic Open Graph metadata.
+- [ ] Apply and verify the questionnaire-v2 migration and reconciled frontend in the hosted preview, then stop.
 - [ ] Confirm KINEMA’s access, API, account, geographic, commercial and webhook capabilities before implementing a provider adapter.
 
 ## Explicitly deferred

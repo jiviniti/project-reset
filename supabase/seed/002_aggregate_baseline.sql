@@ -17,10 +17,11 @@ with published_options as (
   join private.questions question on question.questionnaire_version_id = questionnaire.id
   join private.question_options option on option.question_id = question.id
   where questionnaire.key = 'reset-v1'
-    and questionnaire.version = 1
+    and questionnaire.version = 2
     and questionnaire.status = 'published'
     and question.key in ('burnout_signs', 'reset_pathways', 'reset_practices')
     and option.key <> 'other'
+    and coalesce((option.metadata ->> 'active')::boolean, true)
 )
 insert into aggregate.metric_definitions (
   category, metric_key, label, source_question_key, source_option_key, sort_order

@@ -19,6 +19,10 @@ const revisionSafeUpdateMigration = readFileSync(
   resolve("supabase/migrations/202608250005_fix_revision_safe_update.sql"),
   "utf8",
 ).toLowerCase();
+const questionnaireV2Migration = readFileSync(
+  resolve("supabase/migrations/202608310001_questionnaire_v2_brand_polish.sql"),
+  "utf8",
+).toLowerCase();
 
 describe("database security migration", () => {
   it("uses only invoker functions", () => {
@@ -86,6 +90,17 @@ describe("database security migration", () => {
     expect(aggregateUpdate).toBeGreaterThan(replayReturn);
     expect(aggregateSubmissionHook).toContain("security invoker");
     expect(aggregateSubmissionHook).not.toContain("security definer");
+  });
+
+  it("publishes questionnaire v2 without weakening the existing security boundary", () => {
+    expect(questionnaireV2Migration).toContain("values ('reset-v1', 2");
+    expect(questionnaireV2Migration).toContain("'less_social_media', 'less social media'");
+    expect(questionnaireV2Migration).toContain("'in_person_meetings', 'in-person meetings'");
+    expect(questionnaireV2Migration).toContain("metric_key = 'fruit_veg'");
+    expect(questionnaireV2Migration).toContain("metadata ->> 'active'");
+    expect(questionnaireV2Migration).toContain("security invoker");
+    expect(questionnaireV2Migration).not.toContain("security definer");
+    expect(questionnaireV2Migration).toContain("revoke execute on function api.get_screening_v1(text) from public, anon, authenticated");
   });
 
   it("derives cumulative observed values from screening scopes and seeded values from one baseline", () => {

@@ -1,5 +1,5 @@
 insert into private.questionnaire_versions (key, version, title, status, published_at)
-values ('reset-v1', 1, 'Project RESET Check-In', 'published', now())
+values ('reset-v1', 2, 'Project RESET Check-In', 'published', now())
 on conflict (key, version) do update set title = excluded.title, status = excluded.status;
 
 insert into private.policy_versions (version, acknowledgement_text, status, published_at)
@@ -13,7 +13,7 @@ on conflict (version) do update
 set acknowledgement_text = excluded.acknowledgement_text, status = excluded.status;
 
 with version as (
-  select id from private.questionnaire_versions where key = 'reset-v1' and version = 1
+  select id from private.questionnaire_versions where key = 'reset-v1' and version = 2
 )
 insert into private.questions (questionnaire_version_id, key, prompt, answer_type, position, required)
 select version.id, item.key, item.prompt, item.answer_type, item.position, false
@@ -33,7 +33,7 @@ set prompt = excluded.prompt, answer_type = excluded.answer_type, position = exc
 with question as (
   select q.id from private.questions q
   join private.questionnaire_versions v on v.id = q.questionnaire_version_id
-  where v.key = 'reset-v1' and v.version = 1 and q.key = 'burnout_signs'
+  where v.key = 'reset-v1' and v.version = 2 and q.key = 'burnout_signs'
 )
 insert into private.question_options (question_id, key, label, position)
 select question.id, item.key, item.label, item.position
@@ -58,7 +58,7 @@ on conflict (question_id, key) do update set label = excluded.label, position = 
 with question as (
   select q.id from private.questions q
   join private.questionnaire_versions v on v.id = q.questionnaire_version_id
-  where v.key = 'reset-v1' and v.version = 1 and q.key = 'reset_pathways'
+  where v.key = 'reset-v1' and v.version = 2 and q.key = 'reset_pathways'
 )
 insert into private.question_options (question_id, key, label, position)
 select question.id, item.key, item.label, item.position
@@ -72,25 +72,27 @@ on conflict (question_id, key) do update set label = excluded.label, position = 
 with practice_question as (
   select q.id from private.questions q
   join private.questionnaire_versions v on v.id = q.questionnaire_version_id
-  where v.key = 'reset-v1' and v.version = 1 and q.key = 'reset_practices'
+  where v.key = 'reset-v1' and v.version = 2 and q.key = 'reset_practices'
 ), pathway_question as (
   select q.id from private.questions q
   join private.questionnaire_versions v on v.id = q.questionnaire_version_id
-  where v.key = 'reset-v1' and v.version = 1 and q.key = 'reset_pathways'
+  where v.key = 'reset-v1' and v.version = 2 and q.key = 'reset_pathways'
 ), practices(key, label, pathway_key, position) as (values
-  ('eating_more_plants', 'Eating more plants', 'nourish', 1),
-  ('fruit_veg', 'Fruit & veg', 'nourish', 2), ('plant_protein', 'Plant protein', 'nourish', 3),
-  ('cooking_at_home', 'Cooking at home', 'nourish', 4),
-  ('less_ultra_processed', 'Less ultra-processed', 'nourish', 5), ('hydration', 'Hydration', 'nourish', 6),
-  ('sleep', 'Sleep', 'restore', 7), ('breathwork', 'Breathwork', 'restore', 8),
+  ('eating_more_plants', 'More plant-based foods', 'nourish', 1),
+  ('fruit_veg', 'Fruit & veg', 'nourish', 2), ('plant_protein', 'More plant protein', 'nourish', 3),
+  ('cooking_at_home', 'Home cooking', 'nourish', 4),
+  ('less_ultra_processed', 'Less ultra-processed foods', 'nourish', 5), ('hydration', 'Hydration', 'nourish', 6),
+  ('sleep', 'Sleeping', 'restore', 7), ('breathwork', 'Breathwork', 'restore', 8),
   ('meditation', 'Meditation', 'restore', 9), ('reading', 'Reading', 'restore', 10), ('therapy', 'Therapy', 'restore', 11),
-  ('walking', 'Walking', 'move', 12), ('strength', 'Strength', 'move', 13),
-  ('yoga', 'Yoga', 'move', 14), ('dance', 'Dance', 'move', 15), ('sport', 'Sport', 'move', 16),
-  ('friends', 'Friends', 'connect', 17), ('family', 'Family', 'connect', 18),
-  ('animals', 'Animals', 'connect', 19), ('community', 'Community', 'connect', 20),
-  ('volunteering', 'Volunteering', 'connect', 21), ('boundaries', 'Boundaries', 'rebalance', 22),
-  ('journaling', 'Journaling', 'rebalance', 23), ('creative_work', 'Creative work', 'rebalance', 24),
-  ('digital_detox', 'Digital detox', 'rebalance', 25), ('purpose', 'Purpose', 'rebalance', 26)
+  ('less_social_media', 'Less social media', 'restore', 12),
+  ('walking', 'Walking', 'move', 13), ('strength', 'Strength training', 'move', 14),
+  ('yoga', 'Yoga', 'move', 15), ('dance', 'Dancing', 'move', 16), ('sport', 'Sport', 'move', 17),
+  ('friends', 'Friends', 'connect', 18), ('family', 'Family', 'connect', 19),
+  ('animals', 'Animals', 'connect', 20), ('community', 'Community', 'connect', 21),
+  ('volunteering', 'Volunteering', 'connect', 22), ('in_person_meetings', 'In-person meetings', 'connect', 23),
+  ('boundaries', 'Setting boundaries', 'rebalance', 24),
+  ('journaling', 'Journaling', 'rebalance', 25), ('creative_work', 'Creative work', 'rebalance', 26),
+  ('digital_detox', 'Digital detox', 'rebalance', 27), ('purpose', 'Finding purpose', 'rebalance', 28)
 )
 insert into private.question_options (question_id, key, label, parent_option_id, position)
 select practice_question.id, practices.key, practices.label, pathway.id, practices.position
@@ -102,6 +104,15 @@ join private.question_options pathway
 on conflict (question_id, key) do update
 set label = excluded.label, parent_option_id = excluded.parent_option_id, position = excluded.position;
 
+update private.question_options option
+set metadata = jsonb_build_object('active', option.key <> 'fruit_veg')
+from private.questions question
+join private.questionnaire_versions version on version.id = question.questionnaire_version_id
+where option.question_id = question.id
+  and version.key = 'reset-v1'
+  and version.version = 2
+  and question.key = 'reset_practices';
+
 insert into private.screenings (
   slug, name, institution, status, questionnaire_version_id, cohort_metadata,
   pathway_type, check_in_opens_at, check_in_closes_at, film_access_ends_at
@@ -109,7 +120,7 @@ insert into private.screenings (
 select
   'preview-screening', 'Project RESET Preview Screening', 'The Virsa Foundation', 'active', id,
   '{"environment":"preview","seeded":true}'::jsonb, 'non_event', null, null, null
-from private.questionnaire_versions where key = 'reset-v1' and version = 1
+from private.questionnaire_versions where key = 'reset-v1' and version = 2
 on conflict (slug) do update
 set name = excluded.name, institution = excluded.institution, status = excluded.status,
     questionnaire_version_id = excluded.questionnaire_version_id,
@@ -126,7 +137,7 @@ select
   'preview-event', 'Project RESET Active Event Preview', 'The Virsa Foundation', 'active', id,
   '{"environment":"preview","seeded":true,"demonstration":"active_event"}'::jsonb,
   'event', '2026-08-01T00:00:00Z', '2026-09-30T23:59:59Z', '2026-10-07T23:59:59Z'
-from private.questionnaire_versions where key = 'reset-v1' and version = 1
+from private.questionnaire_versions where key = 'reset-v1' and version = 2
 on conflict (slug) do update
 set name = excluded.name, institution = excluded.institution, status = excluded.status,
     questionnaire_version_id = excluded.questionnaire_version_id,
@@ -143,7 +154,7 @@ select
   'preview-expired-event', 'Project RESET Expired Event Preview', 'The Virsa Foundation', 'active', id,
   '{"environment":"preview","seeded":true,"demonstration":"expired_event"}'::jsonb,
   'event', '2026-08-01T00:00:00Z', '2026-08-02T23:59:59Z', '2026-08-04T23:59:59Z'
-from private.questionnaire_versions where key = 'reset-v1' and version = 1
+from private.questionnaire_versions where key = 'reset-v1' and version = 2
 on conflict (slug) do update
 set name = excluded.name, institution = excluded.institution, status = excluded.status,
     questionnaire_version_id = excluded.questionnaire_version_id,

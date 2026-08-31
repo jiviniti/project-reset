@@ -1,6 +1,36 @@
 # Handover and verification
 
-Last updated: 29 August 2026
+Last updated: 31 August 2026
+
+## Questionnaire v2 and brand-polish rollout
+
+1. Disable preview submissions before changing the active questionnaire.
+2. Apply `supabase/migrations/202608310001_questionnaire_v2_brand_polish.sql`. It publishes v2, switches preview screenings, updates the public aggregate allowlist, rebuilds observed counts, and preserves v1 history.
+3. Do **not** reapply preview seed files to a populated preview database; they are intended for fresh/reset preview setup.
+4. Run `supabase/tests/aggregate_milestone2.sql` inside its rollback transaction.
+5. Deploy the frontend and verify `/s/preview-screening` reports questionnaire version 2, revised practices, both new practices, and no Fruit & veg option.
+6. Re-enable submissions only after the application and database versions match.
+
+Verification queries:
+
+```sql
+select key as questionnaire_key, version, status, published_at
+from private.questionnaire_versions
+where questionnaire_key = 'reset-v1'
+order by version;
+
+select s.slug, s.questionnaire_version
+from private.screenings s
+where s.slug in ('preview-screening', 'preview-event', 'preview-expired-event')
+order by s.slug;
+
+select category, metric_key, label, is_active
+from aggregate.metric_definitions
+where metric_key in ('fruit_veg', 'less_social_media', 'in_person_meetings')
+order by metric_key;
+```
+
+Expected: both questionnaire versions remain published; preview routes use v2; `fruit_veg` is inactive; both new metrics are active.
 
 ## Event/non-event pathway rollout
 
@@ -171,6 +201,13 @@ Verified locally on 25 August 2026:
 
 The exact paid “Debora Celina Script” font remains an optional Foundation-supplied dependency. The approved prototype’s embedded Petit Formal Script substitute is used in the current build.
 
+### Font roles
+
+- **Poppins:** all normal interface copy, headings, labels, navigation, controls, buttons, metadata artwork, and share-card sans-serif text.
+- **Petit Formal Script:** intentional script/italic brand accents and the share-card accent line.
+- **EB Garamond:** word-cloud words only, including their intentional roman/italic variation. This is an approved exception to the single-interface-font rule.
+- **Manrope:** retained only as an unused repository asset for provenance; it is not loaded by the application.
+
 Hosted reconciliation verification on 25 August 2026:
 
 - commit `4dac975` deployed successfully to `https://project-reset-psi.vercel.app/s/preview-screening`;
@@ -206,6 +243,16 @@ Post-submission hierarchy deployment on 31 August 2026:
 - one clearly synthetic visual-QA submission (`visual-qa-20260831@example.invalid`) was written to the preview dataset while checking the active-event flow at 390px;
 - commit `af517ea` deployed successfully through Vercel’s Git integration; all three preview routes and the safe aggregate endpoint returned HTTP 200 after deployment;
 - no database migration, RLS policy, grant, aggregate contract or submission transaction changed in this frontend-only pass.
+
+Brand, questionnaire-v2 and share-card verification on 31 August 2026:
+
+- lint, TypeScript, 31 Vitest assertions and the optimized Next.js production build passed;
+- all 14 Playwright journeys passed across iPhone 13 and desktop Chromium, including image-first native share, cancellation, unsupported sharing, PNG fallback, v2 labels, retired-option omission and generic Open Graph output;
+- the exported card canvas remained exactly 1080×1350 and a long punctuated non-ASCII name rendered without clipping;
+- visual inspection at 390px, 430px, 768px and 1440px found no horizontal overflow; the artifact is edge-to-edge on mobile and centered at 390px on tablet/desktop;
+- Poppins was verified on normal interface headings while the word cloud retained EB Garamond and its intentional italic variation;
+- the 1200×630 Open Graph image returned `image/png` and contained only generic campaign/film content;
+- hosted questionnaire-v2 migration and deployment remain pending until the rollout steps above are completed.
 
 ## Manual owner actions
 

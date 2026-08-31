@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { ResetBrand } from "@/components/brand/reset-brand";
 import { publicAggregateSnapshotSchema, type PublicAggregateMetric, type PublicAggregateSnapshot } from "@/lib/validation/aggregate";
 import { subscribeToAggregateRevision } from "@/services/aggregates/realtime";
 
@@ -75,7 +76,7 @@ export function IllustrativeDashboard({
   const total = snapshot.totals.combined;
   const stats = [
     { value: total.toLocaleString(), label: "illustrative baseline + observed responses" },
-    { value: `${metricPercent(snapshot.metrics.practices, "eating_more_plants", total)}%`, label: "choose eating more plants" },
+    { value: `${metricPercent(snapshot.metrics.practices, "eating_more_plants", total)}%`, label: "choose more plant-based foods" },
     { value: `${metricPercent(snapshot.metrics.practices, "walking", total)}%`, label: "choose walking" },
     { value: `${metricPercent(snapshot.metrics.emotions, "overwhelmed", total)}%`, label: "name feeling overwhelmed" },
   ];
@@ -109,7 +110,7 @@ export function IllustrativeDashboard({
         <button type="button" onClick={onContribute}>Take the Check-In</button>
       </header>
       <section className="dashboard__intro">
-        <div className="reset-brand reset-brand--light" aria-label="Project RESET"><span className="reset-brand__project">Project</span><span className="reset-brand__word"><b>re</b>set<b>.</b></span><span className="reset-brand__tagline">Choose Better. Together.</span></div>
+        <ResetBrand light />
         <p className="eyebrow eyebrow--orange">The Learning Lab · illustrative preview</p>
         <h2>Every answer changes the picture.</h2>
         <p>A living portrait of how burnout shows up—and the practices helping a community find its way back.</p>
@@ -142,7 +143,7 @@ export function IllustrativeDashboard({
       <section className="dashboard__section dashboard__section--coral dashboard__cta">
         <p className="script-line script-line--white">Your answer belongs here.</p><h2>Add your RESET.</h2><p>The picture grows because people choose to share.</p>
         <button type="button" className="button button--light" onClick={onContribute}>Contribute your RESET <span aria-hidden="true">→</span></button>
-        <a href={DONATION_URL} target="_blank" rel="noreferrer">Support the work · Donate</a>
+        <a href={DONATION_URL} target="_blank" rel="noreferrer">Support the project</a>
       </section>
 
       <footer className="dashboard__footer">

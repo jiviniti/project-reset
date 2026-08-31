@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { FormEvent, useState } from "react";
+import { ResetBrand } from "@/components/brand/reset-brand";
 import { Chip } from "@/components/ui/chip";
 import { IllustrativeDashboard } from "@/features/learning-lab/illustrative-dashboard";
 import { ShareCard } from "@/features/share-card/share-card";
@@ -279,18 +280,15 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
           <section className="hero">
             <nav className="nav" aria-label="Project RESET">
               <Image src="/images/jiviniti-wordmark.png" alt="JIVINITI" width={108} height={50} className="nav__logo" />
-              <a className="nav__action" href={DONATION_URL} target="_blank" rel="noreferrer">Donate</a>
+              <a className="nav__action" href={DONATION_URL} target="_blank" rel="noreferrer">Support the project</a>
             </nav>
             <div className="hero__content">
-              <div className="reset-brand" aria-label="Project RESET">
-                <span className="reset-brand__project">Project</span>
-                <span className="reset-brand__word"><b>re</b>set<b>.</b></span>
-                <span className="reset-brand__tagline">Choose Better. Together.</span>
-              </div>
-              <div className="film-lockup">
-                <p>An educational initiative based on the award-winning documentary</p>
+              <div className="hero__identity">
+                <ResetBrand />
+                <div className="film-lockup">
                 <strong>Third Degree Burnout</strong>
                 <em>A Survivor’s Guide</em>
+                </div>
               </div>
               <p className="eyebrow eyebrow--orange">The Learning Lab</p>
               <h1>How do you reset?</h1>
@@ -322,7 +320,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <h2>How does burnout show up for you?</h2>
                 <p>Choose as many as feel true.</p>
                 <div className="chips">{visibleEmotions.map((option) => <Chip tone="dark" key={option.key} selected={form.emotions.includes(option.key)} onClick={() => toggleList("emotions", option.key)}>{option.label}</Chip>)}</div>
-                <button type="button" className="text-button text-button--peach" onClick={() => setShowMoreEmotions((current) => !current)}>{showMoreEmotions ? "Show fewer" : `+ ${emotionOptions.length - 10} more ways it shows up`}</button>
+                <button type="button" className="text-button text-button--peach" onClick={() => setShowMoreEmotions((current) => !current)}>{showMoreEmotions ? "Show fewer" : "+ more ways it shows up"}</button>
                 <CustomTagField side="burnout" input={burnoutTagInput} tags={form.burnoutCustomTags} onInput={setBurnoutTagInput} onAdd={() => addCustomTag("burnout")} onRemove={(tag) => removeCustomTag("burnout", tag)} dark />
                 <label>Tell us more (optional)<textarea rows={3} maxLength={1500} value={form.burnoutNote} onChange={(event) => update("burnoutNote", event.target.value)} /></label>
                 <button className="button button--coral" type="button" onClick={() => goToStep(2)}>Continue · {form.emotions.length + form.burnoutCustomTags.length} selected</button>
@@ -360,11 +358,11 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <label>City<input autoComplete="address-level2" maxLength={120} value={form.city} onChange={(event) => update("city", event.target.value)} /></label>
                 <fieldset><legend>Age range</legend><div className="chips">{["18–24", "25–34", "35–44", "45–54", "55+"].map((age) => <Chip key={age} selected={form.ageBand === age} onClick={() => update("ageBand", form.ageBand === age ? "" : age)}>{age}</Chip>)}</div></fieldset>
                 <label>Occupation<input autoComplete="organization-title" maxLength={120} value={form.occupation} onChange={(event) => update("occupation", event.target.value)} /></label>
-                <label className="check-row"><input required type="checkbox" checked={form.consent} onChange={(event) => update("consent", event.target.checked)} /><span>{screening.policyText}</span></label>
-                <label className="check-row"><input type="checkbox" checked={form.futureCommunications} onChange={(event) => update("futureCommunications", event.target.checked)} /><span>Virsa may contact me about future programs. This is optional and off by default.</span></label>
+                <label className="check-row"><input required type="checkbox" checked={form.consent} onChange={(event) => update("consent", event.target.checked)} /><span><strong>(Required)</strong> {screening.policyText}</span></label>
+                <label className="check-row"><input type="checkbox" checked={form.futureCommunications} onChange={(event) => update("futureCommunications", event.target.checked)} /><span><strong>(Optional)</strong> Virsa may contact me about future programs.</span></label>
                 <button className="button button--primary" type="submit" disabled={submissionStatus === "submitting"}>{submissionStatus === "submitting" ? "Saving your RESET…" : "Finish"}</button>
                 <p className="error-message" role="alert">{errorMessage}</p>
-                <a className="donation-link" href={DONATION_URL} target="_blank" rel="noreferrer">We go wherever we go because of your kindness—donate</a>
+                <a className="donation-link" href={DONATION_URL} target="_blank" rel="noreferrer">Support the project</a>
               </form>
             )}
           </section>

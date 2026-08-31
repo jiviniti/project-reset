@@ -20,6 +20,9 @@ declare
   second_scope_count bigint;
   published_unsafe integer;
   stored_custom_tag text;
+  screening_snapshot jsonb;
+  less_social_before bigint;
+  less_social_after bigint;
 begin
   select * into strict source_screening
   from private.screenings
@@ -27,6 +30,18 @@ begin
 
   select api.get_public_aggregates_v1() into before_snapshot;
   seeded_before := (before_snapshot #>> '{totals,seeded}')::bigint;
+
+  select api.get_screening_v1(source_screening.slug) into screening_snapshot;
+  if (screening_snapshot ->> 'questionnaireVersion')::integer <> 2
+     or screening_snapshot::text not like '%Less social media%'
+     or screening_snapshot::text not like '%In-person meetings%'
+     or screening_snapshot::text like '%Fruit & veg%' then
+    raise exception 'questionnaire v2 public configuration is incorrect';
+  end if;
+
+  select coalesce((metric ->> 'observed')::bigint, 0) into strict less_social_before
+  from jsonb_array_elements(before_snapshot #> '{metrics,practices}') metric
+  where metric ->> 'key' = 'less_social_media';
 
   first_payload := jsonb_build_object(
     'apiVersion', '1',
@@ -43,12 +58,24 @@ begin
       jsonb_build_object('questionKey', 'burnout_signs', 'optionKeys', jsonb_build_array('exhausted')),
       jsonb_build_object('questionKey', 'burnout_custom_tags', 'text', 'private-test-tag-never-public'),
       jsonb_build_object('questionKey', 'reset_pathways', 'optionKeys', jsonb_build_array('restore')),
-      jsonb_build_object('questionKey', 'reset_practices', 'optionKeys', jsonb_build_array('sleep'))
+      jsonb_build_object('questionKey', 'reset_practices', 'optionKeys', jsonb_build_array('sleep', 'less_social_media'))
     )
   );
 
   perform api.submit_participation_v1(first_payload);
   select api.get_public_aggregates_v1() into after_first;
+
+  select coalesce((metric ->> 'observed')::bigint, 0) into strict less_social_after
+  from jsonb_array_elements(after_first #> '{metrics,practices}') metric
+  where metric ->> 'key' = 'less_social_media';
+
+  if less_social_after <> less_social_before + 1 then
+    raise exception 'new v2 practice did not increment its observed aggregate';
+  end if;
+
+  if after_first::text like '%fruit_veg%' or after_first::text like '%Fruit & veg%' then
+    raise exception 'inactive practice leaked into the public aggregate';
+  end if;
 
   if (after_first #>> '{totals,observed}')::bigint
       <> (before_snapshot #>> '{totals,observed}')::bigint + 1 then

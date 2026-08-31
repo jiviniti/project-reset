@@ -1,6 +1,6 @@
 # Data model
 
-Last verified: 29 August 2026
+Last verified: 31 August 2026
 
 ## Raw research model
 
@@ -40,6 +40,16 @@ Rituals, explanatory answers and participant-created tags are private text answe
 - They are not canonicalized, alias-matched, clustered, moderated, copied to `metric_definitions`, returned by the aggregate API, displayed in the Learning Lab or included in the share card.
 
 `private.policy_versions.reset_data_use_v1_us` contains the U.S.-English acknowledgement. The earlier `reset_data_use_v1` row remains intact so prior consent provenance is not rewritten.
+
+### Questionnaire version 2
+
+Version 2 is a new published row under questionnaire key `reset-v1`; version 1 and its responses remain immutable. Preview screenings and fresh preview fixtures point to version 2.
+
+- Existing practice keys retain their historical meaning while their v2 display labels are revised.
+- `less_social_media` is added under Restore and `in_person_meetings` under Connect.
+- `fruit_veg` remains a valid v2 option with `metadata.active = false`. This permits a form loaded immediately before rollout to finish safely, but the screening configuration endpoint filters it from newly loaded forms.
+- `fruit_veg` is inactive in `aggregate.metric_definitions`, so it is absent from public snapshots and receives no new public count. Its historical v1 responses remain private and intact.
+- New metrics are active with zero seeded counts. The word cloud suppresses zero-count items, so they appear only after an observed committed selection.
 
 ## Aggregate model
 
