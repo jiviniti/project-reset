@@ -4,6 +4,7 @@ out/
 coverage/
 playwright-report/
 test-results/
+artifacts/share-card-concepts/
 .env
 .env.local
 .env.*.local
