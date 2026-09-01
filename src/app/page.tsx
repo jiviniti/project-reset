@@ -1,11 +1,16 @@
-import { redirect } from "next/navigation";
+import Link from "next/link";
 
-/**
- * Temporary entry point for the share-card review branch.
- *
- * Do not merge this redirect into the production branch: production should
- * continue to use the participant landing page from `main`.
- */
 export default function HomePage() {
-  redirect("/share-card-concepts");
+  return (
+    <main className="landing">
+      <div className="landing__card">
+        <p className="eyebrow">Project RESET · Learning Lab</p>
+        <h1>Every screening has its own RESET link.</h1>
+        <p>This environment currently contains the approved preview screening.</p>
+        <Link className="button button--primary" href="/s/preview-screening">
+          Open preview screening
+        </Link>
+      </div>
+    </main>
+  );
 }
