@@ -193,13 +193,21 @@ function drawBrand(context: CanvasRenderingContext2D, resources: ConceptCardReso
   context.fillText("Choose Better. Together.", x, y + 92 * scale);
 }
 
-function drawFilmLockup(context: CanvasRenderingContext2D, resources: ConceptCardResources, x: number, y: number, dark = true, align: CanvasTextAlign = "left") {
+function drawFilmLockup(
+  context: CanvasRenderingContext2D,
+  resources: ConceptCardResources,
+  x: number,
+  y: number,
+  dark = true,
+  align: CanvasTextAlign = "left",
+  colors?: { primary: string; secondary: string },
+) {
   context.textAlign = align;
-  context.fillStyle = dark ? COLORS.white : COLORS.burgundy;
+  context.fillStyle = colors?.primary ?? (dark ? COLORS.white : COLORS.burgundy);
   font(context, 22, resources.fonts.sans, 700);
   context.fillText("THIRD DEGREE", x, y);
   context.fillText("BURNOUT", x, y + 29);
-  context.fillStyle = dark ? COLORS.peach : COLORS.coral;
+  context.fillStyle = colors?.secondary ?? (dark ? COLORS.peach : COLORS.coral);
   font(context, 22, resources.fonts.script, 400);
   context.fillText("A Survivor’s Guide", x, y + 63);
   context.textAlign = "left";
@@ -511,7 +519,7 @@ const personalScrapbook: ShareCardConcept = {
     context.fillStyle = COLORS.burgundy;
     fillFitted(context, displayName(data).toUpperCase(), 210, 360, 640, 92, resources.fonts.sans, 700, 48);
     context.fillStyle = COLORS.coral;
-    font(context, 40, resources.fonts.script, 400);
+    font(context, 38, resources.fonts.cloud, 500, "italic");
     context.fillText("This is how I come back to myself.", 220, 430, 610);
     context.save();
     context.globalAlpha = 0.92;
@@ -519,7 +527,9 @@ const personalScrapbook: ShareCardConcept = {
     context.restore();
     starburst(context, 835, 720, 58, 120, 12, "#efc72f");
     const selected = practices(data);
-    const notes = [
+    const notes = selected.length === 1 ? [
+      { x: 565, y: 650, w: 455, h: 330, fill: "#f5e5d7", rotation: 0.018 },
+    ] : [
       { x: 610, y: 540, w: 400, h: 170, fill: "#f5e5d7", rotation: 0.026 },
       { x: 650, y: 755, w: 360, h: 180, fill: COLORS.tealBright, rotation: -0.018 },
       { x: 560, y: 975, w: 450, h: 180, fill: COLORS.coral, rotation: 0.016 },
@@ -532,7 +542,19 @@ const personalScrapbook: ShareCardConcept = {
       context.rotate(note.rotation);
       context.translate(-(note.x + note.w / 2), -(note.y + note.h / 2));
       context.fillStyle = index === 0 ? COLORS.burgundy : COLORS.white;
-      drawFittedWrapped(context, label, note.x + 32, note.y + 22, note.w - 64, note.h - 66, 52, resources.fonts.sans, 700, 18, 1.02);
+      drawFittedWrapped(
+        context,
+        label,
+        note.x + 32,
+        note.y + (selected.length === 1 ? 72 : 22),
+        note.w - 64,
+        note.h - (selected.length === 1 ? 130 : 66),
+        selected.length === 1 ? 72 : 52,
+        resources.fonts.sans,
+        700,
+        18,
+        1.02,
+      );
       context.fillRect(note.x + 32, note.y + note.h - 35, Math.min(190 + index * 45, note.w - 70), 5);
       context.restore();
     });
@@ -710,13 +732,45 @@ const posterGrid: ShareCardConcept = {
     drawBrand(context, resources, 72, 76, true, 0.72);
     context.fillStyle = COLORS.white;
     fillFitted(context, displayName(data).toUpperCase(), 72, 278, 550, 54, resources.fonts.sans, 700, 34);
-    roundRect(context, 680, 36, 364, 285, 28, accent(data));
-    drawFilmLockup(context, resources, 715, 105, true);
-    context.fillStyle = COLORS.white;
+    const headerAccent = accent(data);
+    const lightHeader = ["restore", "connect", "rebalance"].includes(data.pathways[0]?.key ?? "");
+    const headerText = lightHeader ? COLORS.burgundy : COLORS.white;
+    roundRect(context, 680, 36, 364, 285, 28, headerAccent);
+    drawFilmLockup(context, resources, 715, 105, true, "left", {
+      primary: headerText,
+      secondary: headerText,
+    });
+    context.fillStyle = headerText;
     font(context, 22, resources.fonts.sans, 700);
     context.fillText("THE COMMUNITY", 715, 236);
-    context.fillText("RESET ISSUE", 715, 266);
+    context.fillText("RESET", 715, 266);
     const selected = practices(data);
+    if (selected.length === 1) {
+      roundRect(context, 36, 345, 650, 789, 28, COLORS.tealBright);
+      context.fillStyle = COLORS.white;
+      font(context, 20, resources.fonts.sans, 700);
+      context.fillText(data.pathways[0]?.label?.toUpperCase() ?? "MY RESET", 76, 407);
+      drawFittedWrapped(
+        context,
+        selected[0],
+        76,
+        485,
+        570,
+        500,
+        100,
+        resources.fonts.sans,
+        700,
+        30,
+        1.02,
+      );
+      context.fillRect(76, 1060, 260, 7);
+
+      context.save();
+      context.beginPath(); context.roundRect(710, 345, 334, 789, 28); context.clip();
+      context.fillStyle = COLORS.gold; context.fillRect(710, 345, 334, 789);
+      drawImageContain(context, resources.filmCollage, 585, 490, 590, 590);
+      context.restore();
+    } else {
     const tiles = [
       { x: 36, y: 345, w: 480, h: 370, fill: COLORS.tealBright, text: COLORS.white },
       { x: 540, y: 345, w: 504, h: 370, fill: COLORS.coral, text: COLORS.burgundy },
@@ -748,6 +802,7 @@ const posterGrid: ShareCardConcept = {
     context.fillStyle = COLORS.gold; context.fillRect(680, 739, 364, 395);
     drawImageContain(context, resources.filmCollage, 620, 700, 500, 500);
     context.restore();
+    }
     roundRect(context, 36, 1158, 1008, 156, 28, COLORS.teal);
     context.fillStyle = COLORS.white;
     font(context, 27, resources.fonts.script, 400);

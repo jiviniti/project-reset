@@ -47,6 +47,14 @@ const PRESETS: Array<{ label: string; data: Omit<ConceptCardData, "signupUrl"> }
     },
   },
   {
+    label: "1 pathway + 1 practice",
+    data: {
+      name: "Sha",
+      pathways: [PATHWAY_OPTIONS[0]],
+      practices: ["More plant protein"],
+    },
+  },
+  {
     label: "All 5 pathways",
     data: {
       name: "Sha",

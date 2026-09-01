@@ -45,6 +45,10 @@ test("renders every share-card direction at production dimensions", async ({ pag
 
   await page.getByRole("button", { name: "1 pathway", exact: true }).click();
   await expect(page.getByRole("button", { pressed: true })).toHaveCount(1);
+  await page.getByRole("button", { name: "1 pathway + 1 practice", exact: true }).click();
+  await expect(page.getByRole("textbox", { name: "Practice 1" })).toHaveValue("More plant protein");
+  await expect(page.getByRole("textbox", { name: "Practice 2" })).toHaveValue("");
+  await expect(page.getByRole("textbox", { name: "Practice 3" })).toHaveValue("");
   await page.getByRole("button", { name: "All 5 pathways", exact: true }).click();
   await expect(page.getByRole("button", { pressed: true })).toHaveCount(5);
 });
