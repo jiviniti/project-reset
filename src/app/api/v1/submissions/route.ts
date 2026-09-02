@@ -14,12 +14,20 @@ import { persistSubmission, SubmissionDatabaseError } from "@/services/submissio
 
 export const runtime = "nodejs";
 
+// Temporary rollout guard. Remove immediately after the hosted questionnaire-v2
+// migration and regression checks have completed successfully.
+const QUESTIONNAIRE_V2_ROLLOUT_MAINTENANCE = true;
+
 function errorResponse(status: number, code: string, correlationId: string) {
   return NextResponse.json({ error: code, correlationId }, { status });
 }
 
 export async function POST(request: Request) {
   const correlationId = crypto.randomUUID();
+
+  if (QUESTIONNAIRE_V2_ROLLOUT_MAINTENANCE) {
+    return errorResponse(503, "submissions_disabled", correlationId);
+  }
 
   try {
     const env = getServerEnv();
