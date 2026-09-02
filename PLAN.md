@@ -1,6 +1,6 @@
 # Project RESET Phase 1 Plan
 
-Last updated: 31 August 2026
+Last updated: 2 September 2026
 
 ## Current approved pass: Product + Visual Reconciliation (pre-Milestone 3)
 
@@ -92,7 +92,7 @@ Milestone 2 is accepted. Reconcile the production frontend with the latest appro
 - [x] Implement the approved brand lockup, interface typography, support wording and consent labels while preserving the word-cloud typography exception.
 - [x] Add questionnaire version 2, revised practice labels, two new practice options and inactive `fruit_veg` compatibility behavior.
 - [x] Redesign the client-only card, make native sharing image-first and add generic Open Graph metadata.
-- [ ] Apply and verify the questionnaire-v2 migration and reconciled frontend in the hosted preview, then stop.
+- [x] Apply and verify the questionnaire-v2 migration and reconciled frontend in the hosted preview, then stop.
 - [ ] Confirm KINEMA’s access, API, account, geographic, commercial and webhook capabilities before implementing a provider adapter.
 
 ## Explicitly deferred

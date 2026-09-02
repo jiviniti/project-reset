@@ -1,6 +1,6 @@
 # Handover and verification
 
-Last updated: 31 August 2026
+Last updated: 2 September 2026
 
 ## Questionnaire v2 and brand-polish rollout
 
@@ -16,11 +16,12 @@ Verification queries:
 ```sql
 select key as questionnaire_key, version, status, published_at
 from private.questionnaire_versions
-where questionnaire_key = 'reset-v1'
+where key = 'reset-v1'
 order by version;
 
-select s.slug, s.questionnaire_version
+select s.slug, qv.version as questionnaire_version
 from private.screenings s
+join private.questionnaire_versions qv on qv.id = s.questionnaire_version_id
 where s.slug in ('preview-screening', 'preview-event', 'preview-expired-event')
 order by s.slug;
 
@@ -244,7 +245,7 @@ Post-submission hierarchy deployment on 31 August 2026:
 - commit `af517ea` deployed successfully through Vercel’s Git integration; all three preview routes and the safe aggregate endpoint returned HTTP 200 after deployment;
 - no database migration, RLS policy, grant, aggregate contract or submission transaction changed in this frontend-only pass.
 
-Brand, questionnaire-v2 and share-card verification on 31 August 2026:
+Brand, questionnaire-v2 and share-card application verification on 31 August 2026:
 
 - lint, TypeScript, 31 Vitest assertions and the optimized Next.js production build passed;
 - all 14 Playwright journeys passed across iPhone 13 and desktop Chromium, including image-first native share, cancellation, unsupported sharing, PNG fallback, v2 labels, retired-option omission and generic Open Graph output;
@@ -252,7 +253,16 @@ Brand, questionnaire-v2 and share-card verification on 31 August 2026:
 - visual inspection at 390px, 430px, 768px and 1440px found no horizontal overflow; the artifact is edge-to-edge on mobile and centered at 390px on tablet/desktop;
 - Poppins was verified on normal interface headings while the word cloud retained EB Garamond and its intentional italic variation;
 - the 1200×630 Open Graph image returned `image/png` and contained only generic campaign/film content;
-- hosted questionnaire-v2 migration and deployment remain pending until the rollout steps above are completed.
+- the hosted questionnaire-v2 migration was deliberately deferred until a guarded rollout.
+
+Questionnaire-v2 hosted rollout on 2 September 2026:
+
+- commit `b3c5728` temporarily disabled the submission route during the database change; the hosted route returned `503 submissions_disabled` before migration;
+- migration `202608310001_questionnaire_v2_brand_polish.sql` ran as one explicit transaction and rebuilt 32 observed responses at revision 32;
+- the rollback-safe `supabase/tests/aggregate_milestone2.sql` suite completed without an exception and returned no rows after its final rollback;
+- `/s/preview-screening` reported questionnaire version 2 with the revised labels, `less_social_media` and `in_person_meetings`, while omitting inactive `fruit_veg`;
+- `/api/v1/aggregates` retained separate seeded (4,283), observed (32) and combined (4,315) totals, exposed the revised allowlisted labels, omitted `fruit_veg`, and contained no participant data or free text;
+- the temporary submission guard was removed only after these database and hosted-read checks passed; the normal environment-controlled submission guard remains in force.
 
 ## Manual owner actions
 

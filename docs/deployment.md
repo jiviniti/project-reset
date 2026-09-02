@@ -2,7 +2,7 @@
 
 ## Preview
 
-Milestone 1 was verified on 24 August 2026, Milestone 2 and the pre-Milestone-3 product/visual reconciliation on 25 August 2026 at [project-reset-psi.vercel.app](https://project-reset-psi.vercel.app/). The reconciliation check verified the new frontend and a no-reload update from five to six observed responses (revision 4 to 5) without making another hosted submission.
+Milestone 1 was verified on 24 August 2026, Milestone 2 and the pre-Milestone-3 product/visual reconciliation on 25 August 2026 at [project-reset-psi.vercel.app](https://project-reset-psi.vercel.app/). Questionnaire version 2 was transactionally rolled out and verified there on 2 September 2026 with 32 observed preview responses at aggregate revision 32.
 
 1. Apply the committed files in `supabase/migrations/` in filename order, including `202608290001_event_non_event_pathways.sql` and `202608310001_questionnaire_v2_brand_polish.sql`, then apply `supabase/seed/001_preview.sql` and `supabase/seed/002_aggregate_baseline.sql` only when preparing a fresh preview project. `supabase/seed.sql` is a psql entry point and its `\ir` command is not accepted by the Dashboard SQL Editor.
 2. In Supabase **Data API → Settings**, add `api` to the exposed schemas and leave `private` and `aggregate` excluded. Do not use dashboard exposure toggles for server-only functions. The migration explicitly grants execution to `service_role`.
