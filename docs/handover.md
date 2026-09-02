@@ -262,7 +262,7 @@ Questionnaire-v2 hosted rollout on 2 September 2026:
 - the rollback-safe `supabase/tests/aggregate_milestone2.sql` suite completed without an exception and returned no rows after its final rollback;
 - `/s/preview-screening` reported questionnaire version 2 with the revised labels, `less_social_media` and `in_person_meetings`, while omitting inactive `fruit_veg`;
 - `/api/v1/aggregates` retained separate seeded (4,283), observed (32) and combined (4,315) totals, exposed the revised allowlisted labels, omitted `fruit_veg`, and contained no participant data or free text;
-- the temporary submission guard was removed only after these database and hosted-read checks passed; the normal environment-controlled submission guard remains in force.
+- commit `07ad991` removed the temporary submission guard only after these database and hosted-read checks passed; an intentionally invalid hosted request then returned `422 validation_failed` rather than the maintenance `503`, confirming writes were re-enabled without creating participant data. The normal environment-controlled submission guard remains in force.
 
 ## Manual owner actions
 
