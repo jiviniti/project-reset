@@ -2,6 +2,8 @@
 -- historical version-1 responses. fruit_veg remains privately valid for a
 -- form loaded before cutover, but is hidden from new forms and public metrics.
 
+begin;
+
 insert into private.questionnaire_versions (key, version, title, status, published_at)
 values ('reset-v1', 2, 'Project RESET Check-In', 'published', now())
 on conflict (key, version) do update
@@ -236,3 +238,5 @@ revoke execute on function api.get_screening_v1(text) from public, anon, authent
 grant execute on function api.get_screening_v1(text) to service_role;
 
 select aggregate.rebuild_observed_v1();
+
+commit;
