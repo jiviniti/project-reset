@@ -36,6 +36,19 @@ export const metadata: Metadata = {
   metadataBase: new URL(campaignOrigin),
   title: "Project RESET · Learning Lab",
   description: "Inspired by Third Degree Burnout, Project RESET gathers how burnout shows up and what helps us come back to ourselves.",
+  icons: {
+    icon: [{
+      url: "https://framerusercontent.com/images/IqNZKoQWnl9hrhTiiu4gVCfY0w.png",
+      type: "image/png",
+      sizes: "1024x1024",
+    }],
+    shortcut: ["https://framerusercontent.com/images/IqNZKoQWnl9hrhTiiu4gVCfY0w.png"],
+    apple: [{
+      url: "https://framerusercontent.com/images/IqNZKoQWnl9hrhTiiu4gVCfY0w.png",
+      type: "image/png",
+      sizes: "1024x1024",
+    }],
+  },
   alternates: { canonical: campaignUrl },
   openGraph: {
     type: "website",
