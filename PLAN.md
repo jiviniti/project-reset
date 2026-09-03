@@ -1,6 +1,6 @@
 # Project RESET Phase 1 Plan
 
-Last updated: 2 September 2026
+Last updated: 3 September 2026
 
 ## Current approved pass: Product + Visual Reconciliation (pre-Milestone 3)
 
@@ -93,6 +93,7 @@ Milestone 2 is accepted. Reconcile the production frontend with the latest appro
 - [x] Add questionnaire version 2, revised practice labels, two new practice options and inactive `fruit_veg` compatibility behavior.
 - [x] Redesign the client-only card, make native sharing image-first and add generic Open Graph metadata.
 - [x] Apply and verify the questionnaire-v2 migration and reconciled frontend in the hosted preview, then stop.
+- [x] Add the public-but-unlinked, client-only “Take It to the Table” conversation prototype for Foundation review without changing the participant journey or data architecture.
 - [ ] Confirm KINEMA’s access, API, account, geographic, commercial and webhook capabilities before implementing a provider adapter.
 
 ## Explicitly deferred
@@ -107,6 +108,7 @@ Milestone 2 is accepted. Reconcile the production frontend with the latest appro
 - Final identity requirements (whether name/initials and email remain mandatory) pending Foundation discussion
 - Final consumer copy for the identity/reward stage pending Foundation wording
 - Copyright wording pending confirmation of the legal owner and approved phrase
+- Conversation-tool working title, prompt copy and participant-journey placement pending Foundation review
 
 ## Production cutover guardrail
 
