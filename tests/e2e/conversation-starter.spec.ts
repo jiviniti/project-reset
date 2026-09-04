@@ -6,15 +6,22 @@ test.beforeEach(async ({ page }) => {
   await page.reload();
 });
 
-test("runs a complete 15-minute conversation without collecting responses", async ({ page }) => {
+async function startConversation(page: import("@playwright/test").Page, theme: string, mode: string) {
+  await page.getByRole("button", { name: new RegExp(theme, "i") }).click();
+  await page.getByRole("button", { name: new RegExp(mode, "i") }).click();
+}
+
+test("lets participants choose a film theme and completes a short conversation without collecting responses", async ({ page }) => {
   const apiRequests: string[] = [];
   page.on("request", (request) => {
     if (new URL(request.url()).pathname.startsWith("/api/")) apiRequests.push(request.url());
   });
   await expect(page.getByRole("heading", { name: /Take it to the table/i })).toBeVisible();
-  await page.getByRole("button", { name: /15 minutes/i }).click();
+  await expect(page.getByRole("heading", { name: "What do you want to talk about?" })).toBeVisible();
+  await expect(page.getByText(/minutes/)).toHaveCount(0);
+  await startConversation(page, "Burnout beyond work", "A short conversation");
 
-  await expect(page.getByText("Question 1 of 4.")).toBeVisible();
+  await expect(page.getByText("Question 1 of 3.")).toBeVisible();
   await page.getByRole("button", { name: "Go a little deeper" }).click();
   await expect(page.getByRole("button", { name: "Close the follow-up" })).toBeVisible();
 
@@ -23,12 +30,12 @@ test("runs a complete 15-minute conversation without collecting responses", asyn
   await expect(page.locator("article h1")).not.toHaveText(firstQuestion ?? "");
 
   await page.getByRole("button", { name: "Continue" }).click();
-  await expect(page.getByText("Question 2 of 4.")).toBeVisible();
+  await expect(page.getByText("Question 2 of 3.")).toBeVisible();
   await page.getByRole("button", { name: "Back" }).click();
-  await expect(page.getByText("Question 1 of 4.")).toBeVisible();
+  await expect(page.getByText("Question 1 of 3.")).toBeVisible();
 
-  for (let index = 0; index < 4; index += 1) {
-    await page.getByRole("button", { name: index === 3 ? "Finish conversation" : "Continue" }).click();
+  for (let index = 0; index < 3; index += 1) {
+    await page.getByRole("button", { name: index === 2 ? "Finish conversation" : "Continue" }).click();
   }
 
   await expect(page.getByRole("heading", { name: "Which question will you carry with you?" })).toBeVisible();
@@ -38,7 +45,7 @@ test("runs a complete 15-minute conversation without collecting responses", asyn
 });
 
 test("restores a session after refresh and can restart without retaining it", async ({ page }) => {
-  await page.getByRole("button", { name: /30 minutes/i }).click();
+  await startConversation(page, "Food, memory, and care", "Go deeper");
   await page.getByRole("button", { name: "Continue" }).click();
   const question = await page.locator("article h1").textContent();
 
@@ -49,7 +56,7 @@ test("restores a session after refresh and can restart without retaining it", as
   for (let index = 0; index < 4; index += 1) {
     await page.getByRole("button", { name: index === 3 ? "Finish conversation" : "Continue" }).click();
   }
-  await page.getByRole("button", { name: "Start another conversation" }).click();
+  await page.getByRole("button", { name: "Choose another theme" }).click();
   await expect(page.getByRole("heading", { name: /Take it to the table/i })).toBeVisible();
   await expect(page.evaluate(() => sessionStorage.length)).resolves.toBe(0);
 });
@@ -68,10 +75,8 @@ test("copies only the generic conversation-tool link", async ({ page }) => {
     });
   });
   await page.goto("/take-it-to-the-table");
-  await page.getByRole("button", { name: /15 minutes/i }).click();
-  for (let index = 0; index < 4; index += 1) {
-    await page.getByRole("button", { name: index === 3 ? "Finish conversation" : "Continue" }).click();
-  }
+  await startConversation(page, "Living with climate feelings", "One question");
+  await page.getByRole("button", { name: "Finish conversation" }).click();
   await page.getByRole("button", { name: "Copy link to this tool" }).click();
   await expect(page.getByText("Link copied. Invite someone to the table.")).toBeVisible();
   await expect(page.evaluate(() => sessionStorage.getItem("copied-test-link"))).resolves.toBe(
@@ -90,6 +95,6 @@ test("fits responsive viewports and respects reduced motion", async ({ page }) =
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/take-it-to-the-table");
-  await page.getByRole("button", { name: /60 minutes/i }).click();
+  await startConversation(page, "Across the film", "Go deeper");
   await expect(page.locator("article")).toHaveCSS("animation-name", "none");
 });

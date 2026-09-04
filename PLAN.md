@@ -1,6 +1,6 @@
 # Project RESET Phase 1 Plan
 
-Last updated: 3 September 2026
+Last updated: 4 September 2026
 
 ## Current approved pass: Product + Visual Reconciliation (pre-Milestone 3)
 
@@ -63,7 +63,7 @@ Milestone 2 is accepted. Reconcile the production frontend with the latest appro
 - The Learning Lab now uses accessible frequency-scaled word maps, cumulative statistics and pathway blooms while reading the same safe aggregate API.
 - The approved donation URL is `https://thirddegreeburnout.com/donate`, configurable with `NEXT_PUBLIC_DONATE_URL`; all visible labels now read “Support the project.”
 - Questionnaire version 2 preserves version 1 history, revises practice labels without changing stable keys, adds `less_social_media` and `in_person_meetings`, and keeps `fruit_veg` as an inactive private compatibility option.
-- The 1080×1350 share card is a client-generated editorial poster. Native sharing attaches the PNG and places the non-event campaign URL in text without a separate URL field. A generic, PII-free 1200×630 Open Graph image covers link-only shares.
+- The Foundation has rejected the share card as a participant-facing feature in favor of the reflective conversation tool. Its isolated concept route remains temporarily available as a dormant review artifact in case the decision is revisited.
 - U.S.-English acknowledgement text is a new immutable policy version, `reset_data_use_v1_us`; prior consent wording is not rewritten.
 - The 4,283 baseline is an illustrative prototype fixture, not evidence of real Project RESET participants.
 
@@ -94,6 +94,7 @@ Milestone 2 is accepted. Reconcile the production frontend with the latest appro
 - [x] Redesign the client-only card, make native sharing image-first and add generic Open Graph metadata.
 - [x] Apply and verify the questionnaire-v2 migration and reconciled frontend in the hosted preview, then stop.
 - [x] Add the public-but-unlinked, client-only “Take It to the Table” conversation prototype for Foundation review without changing the participant journey or data architecture.
+- [x] Revise the conversation prototype around ten participant-selected film themes, low-lift conversation modes and a 60-question versioned bank that does not require prior viewing.
 - [ ] Confirm KINEMA’s access, API, account, geographic, commercial and webhook capabilities before implementing a provider adapter.
 
 ## Explicitly deferred
@@ -108,7 +109,7 @@ Milestone 2 is accepted. Reconcile the production frontend with the latest appro
 - Final identity requirements (whether name/initials and email remain mandatory) pending Foundation discussion
 - Final consumer copy for the identity/reward stage pending Foundation wording
 - Copyright wording pending confirmation of the legal owner and approved phrase
-- Conversation-tool working title, prompt copy and participant-journey placement pending Foundation review
+- Conversation-tool working title and prompt copy pending Foundation review; replacement of the share card and eventual KINEMA linking are approved directions, but participant-journey integration remains deferred
 
 ## Production cutover guardrail
 
