@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { ResetBrand } from "@/components/brand/reset-brand";
 import {
@@ -71,6 +72,51 @@ function createSeed() {
   return values[0] || 1;
 }
 
+function PathwayBand() {
+  return (
+    <div className={styles.pathwayBand} aria-hidden="true">
+      <span /><span /><span /><span /><span />
+    </div>
+  );
+}
+
+function FilmLockup() {
+  return (
+    <div className={styles.filmLockup}>
+      <strong>Third Degree<br />Burnout</strong>
+      <span>A Survivor&apos;s Guide</span>
+    </div>
+  );
+}
+
+function PartnerFooter({ reminder }: { reminder?: string }) {
+  return (
+    <footer className={styles.footer}>
+      {reminder && <p>{reminder}</p>}
+      <div className={styles.partnerPlate} aria-label="Brought to you by JIVINITI in partnership with Picture Motion">
+        <span>Brought to you by</span>
+        <Image src="/images/jiviniti-wordmark.png" width={1118} height={518} alt="JIVINITI by The Virsa Foundation" />
+        <span>in partnership with</span>
+        <Image src="/images/picture-motion.jpg" width={200} height={200} alt="Picture Motion" />
+      </div>
+      <p className={styles.safety}>This is a conversation guide, not therapy or crisis support. Please pause if anyone feels overwhelmed.</p>
+      <PathwayBand />
+    </footer>
+  );
+}
+
+function CompactHeader({ topic }: { topic?: string }) {
+  return (
+    <>
+      <header className={styles.compactHeader}>
+        <ResetBrand light />
+        <FilmLockup />
+      </header>
+      {topic && <p className={styles.topicMarker}><span>Topic</span>{topic}</p>}
+    </>
+  );
+}
+
 export function ConversationStarter() {
   const [session, setSession] = useState<ConversationSession | null>(null);
   const [selectedTheme, setSelectedTheme] = useState<ConversationThemeChoice | null>(null);
@@ -102,10 +148,11 @@ export function ConversationStarter() {
     return () => cancelAnimationFrame(frame);
   }, [hydrated, session]);
 
-  function chooseTheme(theme: ConversationThemeChoice) {
-    setSelectedTheme(theme);
-    requestAnimationFrame(() => modeHeadingRef.current?.focus());
-  }
+  useEffect(() => {
+    if (!hydrated || !selectedTheme || session) return;
+    const frame = requestAnimationFrame(() => modeHeadingRef.current?.focus());
+    return () => cancelAnimationFrame(frame);
+  }, [hydrated, selectedTheme, session]);
 
   function start(mode: ConversationMode) {
     if (!selectedTheme) return;
@@ -173,104 +220,120 @@ export function ConversationStarter() {
     const url = `${window.location.origin}/take-it-to-the-table`;
     try {
       await navigator.clipboard.writeText(url);
-      setCopyStatus("Link copied. Invite someone to the table.");
+      setCopyStatus("Link copied. Paste it into a message to invite someone.");
       setCopyFallback("");
     } catch {
-      setCopyStatus("Copy this link to share the conversation.");
+      setCopyStatus("Copy this link and paste it into a message.");
       setCopyFallback(url);
     }
   }
 
-  if (!hydrated) return <main className={styles.page}><p className={styles.loading}>Preparing the table…</p></main>;
+  if (!hydrated) return <main className={styles.page}><p className={styles.loading}>Preparing the conversation…</p></main>;
 
-  if (!session) {
+  if (!session && !selectedTheme) {
     return (
       <main className={styles.page}>
         <div className={styles.shell}>
           <header className={styles.hero}>
-            <div className={styles.heroTop}>
-              <ResetBrand light />
-              <div className={styles.filmLockup}><strong>Third Degree<br />Burnout</strong><span>A Survivor’s Guide</span></div>
+            <div className={styles.heroTop}><ResetBrand light /><FilmLockup /></div>
+            <div className={styles.heroBody}>
+              <div className={styles.heroCopy}>
+                <p className={styles.reviewFlag}>Draft for Foundation review</p>
+                <p className={styles.eyebrow}>A conversation worth making room for</p>
+                <h1>Take it to the table.</h1>
+                <p>Choose something that feels relevant today. You do not need to have seen the film.</p>
+              </div>
+              <div className={styles.collage} aria-hidden="true" />
             </div>
-            <p className={styles.reviewFlag}>Draft for Foundation review</p>
-            <div className={styles.heroCopy}>
-              <p className={styles.kicker}>A conversation worth making room for</p>
-              <h1>Take it to<br /><em>the table.</em></h1>
-              <p>Choose what is on your mind. No prior viewing, preparation, or perfect answer is required.</p>
+            <div className={styles.tornBand}>
+              <p>Questions for meals, walks, calls, classrooms, and gatherings.</p>
             </div>
-            <div className={styles.collage} aria-hidden="true" />
           </header>
 
           <section className={styles.startPanel} aria-labelledby="choose-theme-title">
-            <p className={styles.eyebrow}>Begin where you are</p>
-            <h2 id="choose-theme-title">What do you want to talk about?</h2>
-            <p className={styles.introText}>Themes come from <em>Third Degree Burnout</em>, but every question stands on its own.</p>
+            <div className={styles.stepLabel}><span>01</span><p>Choose a topic</p></div>
+            <h2 id="choose-theme-title">What feels worth talking about?</h2>
+            <p className={styles.introText}>Pick what is on your mind. Every question can be discussed whether or not you have watched <em>Third Degree Burnout</em>.</p>
 
             <div className={styles.themeGrid}>
-              <button className={styles.acrossTheme} type="button" aria-pressed={selectedTheme === "across"} onClick={() => chooseTheme("across")}>
-                <span>Across the film</span><small>Let the tool move between several themes</small>
+              <button className={styles.acrossTheme} type="button" onClick={() => setSelectedTheme("across")}>
+                <b>Across the film</b><span>Move between several themes</span><i aria-hidden="true">→</i>
               </button>
               {THEME_IDS.map((themeId) => {
                 const theme = CONVERSATION_THEMES[themeId];
                 return (
-                  <button type="button" aria-pressed={selectedTheme === themeId} onClick={() => chooseTheme(themeId)} key={themeId}>
-                    <b>{theme.number}</b><span>{theme.label}</span><small>{theme.description}</small>
+                  <button type="button" onClick={() => setSelectedTheme(themeId)} key={themeId}>
+                    <b>{theme.number}</b><span>{theme.label}</span><small>{theme.description}</small><i aria-hidden="true">→</i>
                   </button>
                 );
               })}
             </div>
 
-            {selectedTheme && (
-              <div className={styles.modePanel}>
-                <p className={styles.eyebrow}>You chose · {getThemeLabel(selectedTheme)}</p>
-                <h3 ref={modeHeadingRef} tabIndex={-1}>How would you like to begin?</h3>
-                <div className={styles.modeGrid}>
-                  {MODE_IDS.map((mode) => (
-                    <button type="button" onClick={() => start(mode)} key={mode}>
-                      <strong>{CONVERSATION_MODES[mode].label}</strong>
-                      <span>{CONVERSATION_MODES[mode].description}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className={styles.agreement}>
-              <p className={styles.eyebrow}>Before you begin</p>
+            <aside className={styles.agreement}>
+              <p className={styles.eyebrow}>A few things to hold gently</p>
               <ul>
-                <li>Passing is always allowed.</li>
-                <li>Listen to understand, not immediately fix.</li>
-                <li>Speak from your own experience.</li>
+                <li>Share only what feels comfortable.</li>
+                <li>You can skip any question, pause, or stop.</li>
+                <li>Listen without feeling that you need to fix anything.</li>
                 <li>Keep personal stories private.</li>
               </ul>
-            </div>
+            </aside>
           </section>
-          <footer className={styles.safety}><p>This is a conversation guide, not therapy or crisis support. Pause if anyone feels overwhelmed.</p></footer>
+          <PartnerFooter />
         </div>
       </main>
     );
   }
 
+  if (!session && selectedTheme) {
+    return (
+      <main className={styles.page}>
+        <div className={`${styles.shell} ${styles.sessionShell}`}>
+          <CompactHeader />
+          <section className={styles.modePanel}>
+            <div className={styles.stepLabel}><span>02</span><p>Choose how far to go</p></div>
+            <p className={styles.selectedLabel}>You chose</p>
+            <h1 ref={modeHeadingRef} tabIndex={-1}>{getThemeLabel(selectedTheme)}</h1>
+            <button className={styles.changeTopic} type="button" onClick={() => setSelectedTheme(null)}>← Change topic</button>
+            <p className={styles.modeIntro}>Start small or make more room. There is no timer, and you can stop whenever you need to.</p>
+            <div className={styles.modeGrid}>
+              {MODE_IDS.map((mode) => (
+                <button type="button" onClick={() => start(mode)} key={mode}>
+                  <span>{CONVERSATION_MODES[mode].count.toString().padStart(2, "0")}</span>
+                  <strong>{CONVERSATION_MODES[mode].label}</strong>
+                  <small>{CONVERSATION_MODES[mode].description}</small>
+                  <i aria-hidden="true">→</i>
+                </button>
+              ))}
+            </div>
+          </section>
+          <PartnerFooter reminder="Share only what feels comfortable. You can skip any question, pause, or stop." />
+        </div>
+      </main>
+    );
+  }
+
+  if (!session) return null;
+
   if (session.complete) {
     return (
       <main className={styles.page}>
         <div className={`${styles.shell} ${styles.sessionShell}`}>
-          <header className={styles.compactHeader}><ResetBrand light /><p>{getThemeLabel(session.theme)}</p></header>
+          <CompactHeader topic={getThemeLabel(session.theme)} />
           <section className={styles.completion}>
             <p className={styles.reviewFlag}>Draft for Foundation review</p>
-            <p className={styles.eyebrow}>The conversation can stay open</p>
-            <h1 ref={focusRef} tabIndex={-1}>Which question will you carry with you?</h1>
+            <p className={styles.eyebrow}>Carry it forward</p>
+            <h1 ref={focusRef} tabIndex={-1}>Which question would you like to keep thinking about?</h1>
             <p>You do not need to settle on an answer. Sometimes noticing what deserves another conversation is enough.</p>
-            <p className={styles.scriptLine}>Keep listening for what comes next.</p>
             <div className={styles.completionActions}>
-              <button className={styles.primaryButton} type="button" onClick={restart}>Choose another theme</button>
-              <button className={styles.secondaryButton} type="button" onClick={() => void copyLink()}>Copy link to this tool</button>
+              <button className={styles.primaryButton} type="button" onClick={restart}>Explore another topic</button>
+              <button className={styles.secondaryButton} type="button" onClick={() => void copyLink()}>Invite someone to a conversation</button>
               <button className={styles.textButton} type="button" onClick={goBack}>Back to the last question</button>
             </div>
             <p className={styles.copyStatus} aria-live="polite">{copyStatus}</p>
             {copyFallback && <input className={styles.copyFallback} aria-label="Conversation tool link" readOnly value={copyFallback} onFocus={(event) => event.currentTarget.select()} />}
           </section>
-          <footer className={styles.safety}><p>This is a conversation guide, not therapy or crisis support. Pause if anyone feels overwhelmed.</p></footer>
+          <PartnerFooter />
         </div>
       </main>
     );
@@ -285,24 +348,25 @@ export function ConversationStarter() {
   return (
     <main className={styles.page}>
       <div className={`${styles.shell} ${styles.sessionShell}`}>
-        <header className={styles.compactHeader}><ResetBrand light /><p>{getThemeLabel(session.theme)}</p></header>
+        <CompactHeader topic={getThemeLabel(session.theme)} />
         <div className={styles.progress} aria-hidden="true"><span style={{ width: `${progress}%` }} /></div>
-        <p className={styles.progressText} aria-live="polite">Question {session.currentIndex + 1} of {session.promptIds.length}. {remaining ? `${remaining} remaining.` : "Final question."}</p>
-        <article className={`${styles.promptCard} ${styles[`theme_${currentPrompt.theme}`]}`} key={currentPrompt.id}>
+        <p className={styles.progressText} aria-live="polite">Question {session.currentIndex + 1} of {session.promptIds.length}<span>{remaining ? `${remaining} remaining` : "Final question"}</span></p>
+        <article className={styles.promptCard} key={currentPrompt.id}>
           <div className={styles.stageHeading}><p>{theme.label}</p><span>{theme.number}</span></div>
           <p className={styles.context}>{currentPrompt.context}</p>
           <h1 ref={focusRef} tabIndex={-1}>{currentPrompt.question}</h1>
           <div className={styles.followUp}>
-            <button type="button" aria-expanded={followUpOpen} onClick={() => setFollowUpOpen((open) => !open)}>{followUpOpen ? "Close the follow-up" : "Go a little deeper"}</button>
+            <button type="button" aria-expanded={followUpOpen} onClick={() => setFollowUpOpen((open) => !open)}>{followUpOpen ? "Hide the follow-up" : "Explore this a little further"}</button>
             {followUpOpen && <p>{currentPrompt.followUp}</p>}
           </div>
+          <PathwayBand />
         </article>
         <nav className={styles.controls} aria-label="Conversation questions">
           <button className={styles.textButton} type="button" onClick={goBack} disabled={session.currentIndex === 0}>Back</button>
-          <button className={styles.secondaryButton} type="button" onClick={pass}>Pass · another question</button>
+          <button className={styles.secondaryButton} type="button" onClick={pass}>Try another question</button>
           <button className={styles.primaryButton} type="button" onClick={advance}>{remaining ? "Continue" : "Finish conversation"}</button>
         </nav>
-        <footer className={styles.safety}><p>Passing is always allowed. Listen to understand, not immediately fix.</p></footer>
+        <PartnerFooter reminder="Share only what feels comfortable. You can skip any question, pause, or stop." />
       </div>
     </main>
   );

@@ -8,6 +8,8 @@ test.beforeEach(async ({ page }) => {
 
 async function startConversation(page: import("@playwright/test").Page, theme: string, mode: string) {
   await page.getByRole("button", { name: new RegExp(theme, "i") }).click();
+  await expect(page.getByText("You chose", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: new RegExp(theme, "i") })).toBeVisible();
   await page.getByRole("button", { name: new RegExp(mode, "i") }).click();
 }
 
@@ -17,30 +19,30 @@ test("lets participants choose a film theme and completes a short conversation w
     if (new URL(request.url()).pathname.startsWith("/api/")) apiRequests.push(request.url());
   });
   await expect(page.getByRole("heading", { name: /Take it to the table/i })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "What do you want to talk about?" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "What feels worth talking about?" })).toBeVisible();
   await expect(page.getByText(/minutes/)).toHaveCount(0);
   await startConversation(page, "Burnout beyond work", "A short conversation");
 
-  await expect(page.getByText("Question 1 of 3.")).toBeVisible();
-  await page.getByRole("button", { name: "Go a little deeper" }).click();
-  await expect(page.getByRole("button", { name: "Close the follow-up" })).toBeVisible();
+  await expect(page.locator("p").filter({ hasText: /^Question 1 of 3/ })).toBeVisible();
+  await page.getByRole("button", { name: "Explore this a little further" }).click();
+  await expect(page.getByRole("button", { name: "Hide the follow-up" })).toBeVisible();
 
   const firstQuestion = await page.locator("article h1").textContent();
-  await page.getByRole("button", { name: /Pass · another question/i }).click();
+  await page.getByRole("button", { name: "Try another question" }).click();
   await expect(page.locator("article h1")).not.toHaveText(firstQuestion ?? "");
 
   await page.getByRole("button", { name: "Continue" }).click();
-  await expect(page.getByText("Question 2 of 3.")).toBeVisible();
+  await expect(page.locator("p").filter({ hasText: /^Question 2 of 3/ })).toBeVisible();
   await page.getByRole("button", { name: "Back" }).click();
-  await expect(page.getByText("Question 1 of 3.")).toBeVisible();
+  await expect(page.locator("p").filter({ hasText: /^Question 1 of 3/ })).toBeVisible();
 
   for (let index = 0; index < 3; index += 1) {
     await page.getByRole("button", { name: index === 2 ? "Finish conversation" : "Continue" }).click();
   }
 
-  await expect(page.getByRole("heading", { name: "Which question will you carry with you?" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Which question would you like to keep thinking about?" })).toBeVisible();
   await expect(page.locator("input:not([readonly]), textarea")).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Copy link to this tool" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Invite someone to a conversation" })).toBeVisible();
   expect(apiRequests).toEqual([]);
 });
 
@@ -50,13 +52,13 @@ test("restores a session after refresh and can restart without retaining it", as
   const question = await page.locator("article h1").textContent();
 
   await page.reload();
-  await expect(page.getByText("Question 2 of 5.")).toBeVisible();
+  await expect(page.locator("p").filter({ hasText: /^Question 2 of 5/ })).toBeVisible();
   await expect(page.locator("article h1")).toHaveText(question ?? "");
 
   for (let index = 0; index < 4; index += 1) {
     await page.getByRole("button", { name: index === 3 ? "Finish conversation" : "Continue" }).click();
   }
-  await page.getByRole("button", { name: "Choose another theme" }).click();
+  await page.getByRole("button", { name: "Explore another topic" }).click();
   await expect(page.getByRole("heading", { name: /Take it to the table/i })).toBeVisible();
   await expect(page.evaluate(() => sessionStorage.length)).resolves.toBe(0);
 });
@@ -77,8 +79,8 @@ test("copies only the generic conversation-tool link", async ({ page }) => {
   await page.goto("/take-it-to-the-table");
   await startConversation(page, "Living with climate feelings", "One question");
   await page.getByRole("button", { name: "Finish conversation" }).click();
-  await page.getByRole("button", { name: "Copy link to this tool" }).click();
-  await expect(page.getByText("Link copied. Invite someone to the table.")).toBeVisible();
+  await page.getByRole("button", { name: "Invite someone to a conversation" }).click();
+  await expect(page.getByText("Link copied. Paste it into a message to invite someone.")).toBeVisible();
   await expect(page.evaluate(() => sessionStorage.getItem("copied-test-link"))).resolves.toBe(
     "http://localhost:3000/take-it-to-the-table",
   );
@@ -97,4 +99,16 @@ test("fits responsive viewports and respects reduced motion", async ({ page }) =
   await page.goto("/take-it-to-the-table");
   await startConversation(page, "Across the film", "Go deeper");
   await expect(page.locator("article")).toHaveCSS("animation-name", "none");
+});
+
+test("makes the topic-to-depth relationship explicit without a distant-page selection state", async ({ page }) => {
+  await page.getByRole("button", { name: /Choice and its limits/i }).click();
+  await expect(page.getByText("You chose", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Choice and its limits" })).toBeFocused();
+  await expect(page.getByRole("button", { name: /One question/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Change topic/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "What feels worth talking about?" })).toHaveCount(0);
+
+  await page.getByRole("button", { name: /Change topic/i }).click();
+  await expect(page.getByRole("heading", { name: "What feels worth talking about?" })).toBeVisible();
 });

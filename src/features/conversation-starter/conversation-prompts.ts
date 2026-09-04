@@ -16,7 +16,7 @@ export type ConversationPrompt = {
 };
 
 export const CONVERSATION_MODES: Record<ConversationMode, { label: string; description: string; count: number }> = {
-  one: { label: "One question", description: "A single place to begin", count: 1 },
+  one: { label: "One question", description: "A gentle place to begin", count: 1 },
   short: { label: "A short conversation", description: "Three questions with room to talk", count: 3 },
   deep: { label: "Go deeper", description: "Five questions that unfold gradually", count: 5 },
 };
