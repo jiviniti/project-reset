@@ -131,7 +131,7 @@ legend, .field-group-label { margin: 9px 0 7px; color: #756d68; font-family: var
 .success__confirmation { position: relative; overflow: hidden; padding: 36px 24px 34px; color: var(--burgundy); background: var(--peach); text-align: left; }
 .success__confirmation .eyebrow { color: var(--coral); }
 .success__confirmation h2 { max-width: 330px; font-size: 1.55rem; font-weight: 500; line-height: 1.12; letter-spacing: -.03em; text-transform: none; }
-.success-burst { position: absolute; top: 20px; right: 22px; width: 70px; height: 70px; animation: success-burst-in .65s cubic-bezier(.2,.8,.2,1) both; }
+.success-burst { position: absolute; top: 20px; right: 22px; width: 70px; height: 70px; animation: success-burst-in 1.3s cubic-bezier(.2,.8,.2,1) .5s both; }
 .success-burst span { position: absolute; top: 31px; left: 31px; width: 10px; height: 10px; border-radius: 50%; background: var(--coral); transform-origin: 4px 4px; }
 .success-burst span:nth-child(1) { transform: translateY(-28px); background: var(--teal); }
 .success-burst span:nth-child(2) { transform: rotate(72deg) translateY(-28px); }

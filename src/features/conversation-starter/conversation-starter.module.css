@@ -710,7 +710,7 @@
 .carryPanel .secondaryButton:hover { color: var(--shweta); background: var(--kalika); }
 .shareStatus { min-height: 18px; margin: 13px 0 0; color: var(--kalika); font-size: .63rem; }
 .carryPanel > input { width: 100%; min-height: 40px; padding: 8px 10px; color: var(--kalika); border: 0; background: var(--shweta); font: .62rem/1.2 var(--ui); }
-.miniBurst { position: relative; width: 126px; height: 18px; margin: 0 0 22px auto; animation: burstIn .55s ease both; }
+.miniBurst { position: relative; width: 126px; height: 18px; margin: 0 0 22px auto; animation: burstIn 1.3s cubic-bezier(.2,.8,.2,1) .5s both; }
 .miniBurst span { position: absolute; top: 4px; width: 9px; height: 9px; border-radius: 50%; }
 .miniBurst span:nth-child(1) { left: 0; background: var(--nourish); }
 .miniBurst span:nth-child(2) { left: 28px; background: var(--restore); }
