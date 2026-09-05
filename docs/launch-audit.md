@@ -6,33 +6,33 @@ Scope: participant check-in, questionnaire v3, KINEMA manual rewards, Take It to
 
 ## Current assessment
 
-The implementation is structurally sound and the review experience is suitable for stakeholder testing. It is not ready to enable the two live event routes until the database migration, event windows, and server-only KINEMA settings are completed and verified.
+The implementation is deployed and the review experience is suitable for stakeholder testing. Questionnaire v3 is active and the server-only KINEMA production settings are configured. The two live event routes must remain disabled until their exact event windows are approved and controlled redemption tests can be performed.
 
 ## Launch blockers
 
-### 1. Questionnaire v3 migration is not yet applied
+### Completed: questionnaire v3 migration
 
-`202609050001_questionnaire_v3_commitment.sql` must be applied to the target Supabase project. Until then, deployed database-backed screenings remain on their current questionnaire version and the optional commitment question stays hidden by design.
+`202609050001_questionnaire_v3_commitment.sql` was applied to the target Supabase project on 5 September 2026. The deployed preview screening now reports questionnaire version 3 and includes the optional private commitment question.
 
-### 2. Live event records need approved windows
+### 1. Live event records need approved windows
 
 The Climate Week and Columbia screening records must not be created or activated until their exact opening timestamp, closing timestamp, and time zone are approved. The implementation already reserves these slugs:
 
 - `climate-week-nyc-2026`
 - `columbia-climate-school-2026`
 
-### 3. KINEMA secrets must be configured server-side
+### Completed: KINEMA production settings
 
-The following Vercel values are required before an eligible event submission can receive access:
+The following Vercel production values were configured on 5 September 2026:
 
 - `REWARD_PROVIDER=kinema_manual`
 - `KINEMA_FILM_URL`
 - `KINEMA_CLIMATE_WEEK_NYC_2026_CODE`
 - `KINEMA_COLUMBIA_CLIMATE_SCHOOL_2026_CODE`
 
-The provider must remain disabled until a controlled check-in confirms that each route returns only its own code.
+The provider is enabled in Production, but no launch event route exists yet. After the approved windows are added, a controlled check-in must confirm that each route returns only its own code before either QR code is distributed.
 
-### 4. Editorial approval remains outstanding
+### 2. Editorial approval remains outstanding
 
 The 60-question conversation bank and participant-facing copy remain draft content for Foundation review. The tool is correctly marked `noindex, nofollow` during this stage.
 
@@ -118,7 +118,6 @@ The 60-question conversation bank and participant-facing copy remain draft conte
 
 ## Deferred by product decision
 
-- Production cutover
 - Creating or activating launch screening records before event windows are approved
 - Analytics or a 1-10 likelihood survey
 - Transactional email delivery
