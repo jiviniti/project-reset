@@ -149,7 +149,7 @@ The conversation tool should feel like the hero and topic selector belong to the
 
 - Hero: Kalika identity header, Shweta content field, approved collage, and one Sindoor crimp transition.
 - Theme selector: Shweta surface, square ruled grid, and explicit selected state.
-- Question library: Kalika surface, Sindoor crimp transition, white ruled grid, coral numbering, and a single Sindoor action hierarchy.
+- Question library: Shweta surface, Sindoor crimp transition, black ruled grid, coral numbering, and a single Sindoor action hierarchy. It should feel continuous with the theme selector rather than introducing a new dark mode.
 - The question themes are film themes, not RESET pathways. Do not assign pathway colors to question cards.
 - The five-band strip remains at the shared footer as the all-pathways marker.
 

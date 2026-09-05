@@ -49,7 +49,7 @@ The 60-question conversation bank and participant-facing copy remain draft conte
 
 ### Corrected in this pass
 
-- Replaced the generic cream question section and floating white cards with a Kalika editorial section and ruled question grid.
+- Replaced the generic cream panel and floating-card treatment with a Shweta editorial section and black ruled question grid that continues the visual language of the topic selector.
 - Added a single Sindoor crimp transition, matching the event creative without introducing a second full torn band.
 - Removed decorative pathway-color assignment from question cards. Film themes are not RESET pathways.
 - Changed selected topic surfaces from reserved Marigold Light and unrelated pathway colors to Sindoor.

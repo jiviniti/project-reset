@@ -593,8 +593,8 @@
 .questionLibrary {
   position: relative;
   padding: 78px 42px 64px;
-  color: var(--shweta);
-  background: var(--kalika);
+  color: var(--kalika);
+  background: var(--shweta);
   scroll-margin-top: 20px;
   animation: libraryReveal .7s cubic-bezier(.2,.72,.25,1) both;
 }
@@ -613,39 +613,38 @@
 .libraryHeading > div { max-width: 520px; }
 .stepLabelDark { margin-bottom: 18px; }
 .stepLabelDark span { color: var(--sindoor); }
-.stepLabelDark p { color: var(--shweta); }
-.libraryHeading h2 { margin: 0 0 14px; color: var(--shweta); font-size: clamp(2rem, 6vw, 3.2rem); line-height: 1.02; letter-spacing: -.05em; outline: none; }
-.libraryHeading > div > p { margin: 0; color: #cfcfcb; font-size: .77rem; line-height: 1.6; }
+.stepLabelDark p { color: var(--kalika); }
+.libraryHeading h2 { margin: 0 0 14px; color: var(--kalika); font-size: clamp(2rem, 6vw, 3.2rem); line-height: 1.02; letter-spacing: -.05em; outline: none; }
+.libraryHeading > div > p { margin: 0; color: #555; font-size: .77rem; line-height: 1.6; }
 .libraryHeading > button {
   flex: none;
   min-height: 42px;
   padding: 10px 13px;
-  color: var(--shweta);
-  border: 1px solid var(--shweta);
+  color: var(--kalika);
+  border: 1px solid var(--kalika);
   background: transparent;
   cursor: pointer;
   font: 600 .62rem/1.2 var(--ui);
 }
-.libraryHeading > button:hover { color: var(--kalika); background: var(--shweta); }
+.libraryHeading > button:hover { color: var(--shweta); background: var(--kalika); }
 
 .questionGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-top: 42px;
-  border-top: 1px solid rgb(255 255 255 / 58%);
-  border-left: 1px solid rgb(255 255 255 / 58%);
+  border-top: 1px solid var(--kalika);
+  border-left: 1px solid var(--kalika);
 }
 .questionCard {
   position: relative;
   display: flex;
-  min-height: 380px;
   padding: 28px 26px 26px;
   overflow: hidden;
-  color: var(--shweta);
+  color: var(--kalika);
   border: 0;
-  border-right: 1px solid rgb(255 255 255 / 58%);
-  border-bottom: 1px solid rgb(255 255 255 / 58%);
-  background: transparent;
+  border-right: 1px solid var(--kalika);
+  border-bottom: 1px solid var(--kalika);
+  background: var(--shweta);
   flex-direction: column;
   transition: color .25s ease, background-color .25s ease;
   animation: questionReveal .62s cubic-bezier(.2,.72,.25,1) both;
@@ -655,24 +654,26 @@
 .questionCard:nth-child(4) { animation-delay: .15s; }
 .questionCard:nth-child(5) { animation-delay: .2s; }
 .questionCard:nth-child(6) { animation-delay: .25s; }
-.questionCard:hover { background: #292929; }
+.questionCard:hover { background: rgb(237 186 166 / 14%); }
 .questionCard.carriedCard { color: var(--kalika); background: var(--pavitra); box-shadow: inset 0 0 0 4px var(--sindoor); }
 .questionNumber { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
-.questionNumber span { color: var(--pavitra); font-size: .68rem; font-weight: 700; letter-spacing: .13em; }
-.questionNumber small { color: #aaa; font-size: .55rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.questionNumber span { color: var(--sindoor); font-size: .68rem; font-weight: 700; letter-spacing: .13em; }
+.questionNumber small { color: #686868; font-size: .55rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
 .questionCard.carriedCard .questionNumber span,
 .questionCard.carriedCard .questionNumber small { color: var(--mrida); }
-.questionCard > p { max-width: 560px; margin: 42px 0 10px; color: #bbb; font-size: .68rem; line-height: 1.55; }
+.questionCard > p { max-width: 560px; margin: 28px 0 10px; color: #555; font-size: .68rem; line-height: 1.55; }
 .questionCard.carriedCard > p { color: #664d4e; }
 .questionCard h3 { max-width: 610px; margin: 0; font-size: clamp(1.3rem, 4.2vw, 2rem); font-weight: 600; line-height: 1.15; letter-spacing: -.035em; }
 .followUpButton {
-  margin-top: 25px;
+  width: max-content;
+  margin-top: 18px;
   padding: 0;
-  color: var(--pavitra);
+  color: var(--mrida);
+  text-align: left;
   border: 0;
   background: transparent;
   cursor: pointer;
-  font: 600 .64rem/1.3 var(--ui);
+  font: 600 .7rem/1.3 var(--ui);
   text-decoration: underline;
   text-underline-offset: 4px;
 }
@@ -682,17 +683,17 @@
 .carryButton {
   width: 100%;
   min-height: 46px;
-  margin-top: auto;
-  padding: 16px 14px 10px;
-  color: var(--pavitra);
+  margin-top: 24px;
+  padding: 14px 0 0;
+  color: var(--mrida);
   text-align: left;
   border: 0;
   border-top: 1px solid var(--pavitra);
   background: transparent;
   cursor: pointer;
-  font: 600 .64rem/1.2 var(--ui);
+  font: 600 .7rem/1.2 var(--ui);
 }
-.carryButton:hover { color: var(--shweta); border-color: var(--shweta); }
+.carryButton:hover { color: var(--sindoor); border-color: var(--sindoor); }
 .carryButton[aria-pressed="true"] { color: var(--mrida); border-color: var(--mrida); }
 
 .carryPanel { position: relative; margin-top: 30px; padding: 40px 30px 32px; overflow: hidden; color: var(--kalika); background: var(--sindoor); }
