@@ -1,5 +1,4 @@
 import { expect, test } from "@playwright/test";
-import type { Page } from "@playwright/test";
 
 const aggregateSnapshot = {
   apiVersion: "1",
@@ -16,28 +15,6 @@ const aggregateSnapshot = {
   },
 };
 
-async function completeMinimalCheckIn(page: Page, slug = "preview-screening") {
-  await page.goto(`/s/${slug}`);
-  await page.getByRole("button", { name: "Contribute your RESET" }).click();
-  await page.getByRole("button", { name: /Continue · 0 selected/ }).click();
-  await page.getByRole("button", { name: /Continue · 0 selected/ }).click();
-  await page.getByLabel("Name / initials (required)").fill("Guest");
-  await page.getByLabel("Email (required)").fill("guest@example.org");
-  await page.getByLabel(/I understand that my responses/).check();
-  await page.getByRole("button", { name: "Finish", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "My RESET card", exact: true })).toBeVisible();
-}
-
-function mockCompletedSubmission(page: Page) {
-  return page.route("**/api/v1/submissions", async (route) => {
-    await route.fulfill({
-      status: 201,
-      contentType: "application/json",
-      body: JSON.stringify({ submissionId: crypto.randomUUID(), participationId: crypto.randomUUID(), rewardDeliveryId: crypto.randomUUID(), status: "completed", replayed: false, entryPathway: "non_event", rewardType: "trailer_access", eventWindowStatus: "non_event", accessEndsAt: null }),
-    });
-  });
-}
-
 test.beforeEach(async ({ page }) => {
   await page.route("**/api/v1/aggregates", async (route) => {
     await route.fulfill({
@@ -48,20 +25,11 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("completes the preview check-in and reaches the persisted success state", async ({ page }, testInfo) => {
+test("completes the preview check-in and reaches the persisted success state", async ({ page }) => {
   await page.addInitScript(() => {
-    Object.defineProperty(navigator, "canShare", { configurable: true, value: () => true });
-    Object.defineProperty(navigator, "share", {
+    Object.defineProperty(navigator, "clipboard", {
       configurable: true,
-      value: async (payload: ShareData) => {
-        (window as typeof window & { __sharePayload?: unknown }).__sharePayload = {
-          text: payload.text,
-          hasUrlField: "url" in payload,
-          fileCount: payload.files?.length ?? 0,
-          fileName: payload.files?.[0]?.name,
-          fileType: payload.files?.[0]?.type,
-        };
-      },
+      value: { writeText: async (value: string) => { (window as typeof window & { __copied?: string }).__copied = value; } },
     });
   });
   await page.route("**/api/v1/submissions", async (route) => {
@@ -72,10 +40,11 @@ test("completes the preview check-in and reaches the persisted success state", a
     expect(payload.communication.futureCommunicationsAllowed).toBe(false);
     expect(payload.answers.find((answer: { questionKey: string }) => answer.questionKey === "burnout_custom_tags")?.text).toBe("Doomscrolling   at 2 a.m.");
     expect(payload.answers.find((answer: { questionKey: string }) => answer.questionKey === "reset_custom_tags")?.text).toBe("Making ceramics");
+    expect(payload.answers.find((answer: { questionKey: string }) => answer.questionKey === "today_commitment")?.text).toBe("Call a friend after dinner");
     await route.fulfill({
       status: 201,
       contentType: "application/json",
-      body: JSON.stringify({ submissionId: crypto.randomUUID(), participationId: crypto.randomUUID(), rewardDeliveryId: crypto.randomUUID(), status: "completed", replayed: false, entryPathway: "event", rewardType: "film_access", eventWindowStatus: "active_event", accessEndsAt: "2026-10-07T23:59:59.000Z" }),
+      body: JSON.stringify({ submissionId: crypto.randomUUID(), participationId: crypto.randomUUID(), rewardDeliveryId: crypto.randomUUID(), status: "completed", replayed: false, entryPathway: "event", rewardType: "film_access", eventWindowStatus: "active_event", accessEndsAt: null, rewardAccess: { provider: "kinema", filmUrl: "https://kinema.com/films/private-film", promoCode: "EVENT_CODE", accountRequired: true, startWithinDays: 30, finishWithinHours: 48 } }),
     });
   });
 
@@ -93,68 +62,33 @@ test("completes the preview check-in and reaches the persisted success state", a
   await page.getByRole("button", { name: /Continue · 2 selected/ }).click();
   await page.getByLabel("Name / initials (required)").fill("María-José-Alexandria");
   await page.getByLabel("Email (required)").fill("nivi@example.org");
+  await page.getByLabel(/What is one small thing/).fill("Call a friend after dinner");
   await expect(page.getByText("(Required)", { exact: true })).toBeVisible();
   await expect(page.getByText("(Optional)", { exact: true })).toBeVisible();
   await page.getByLabel(/I understand that my responses/).check();
   await page.getByRole("button", { name: "Finish", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Thank you—your RESET has been added to the picture." })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Film access is being prepared." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Your film access is ready." })).toBeVisible();
+  await expect(page.getByText("Call a friend after dinner")).toBeVisible();
   await expect(page.getByText("The burnout landscape", { exact: true })).toBeVisible();
   await expect(page.getByText("The community RESET map", { exact: true })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "My RESET card", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Continue the conversation.", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Every answer changes the picture." })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "The picture in numbers." })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Where we begin again." })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Take the Check-In" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: /Contribute your RESET/ })).toHaveCount(0);
-  const sequence = await page.locator(".dashboard--post-submission .dashboard__section--dark, .dashboard--post-submission .dashboard__section--cream, .success__reward, .success__card-target").evaluateAll((elements) => elements.map((element) => element.className));
+  const sequence = await page.locator(".dashboard--post-submission .dashboard__section--dark, .dashboard--post-submission .dashboard__section--cream, .success__reward, .success__conversation").evaluateAll((elements) => elements.map((element) => element.className));
   expect(sequence).toEqual([
     "dashboard__section dashboard__section--dark",
     "dashboard__section dashboard__section--cream",
     "success__reward",
-    "success__card-target",
+    "success__conversation",
   ]);
-  await expect(page.locator("canvas").evaluate((canvas: HTMLCanvasElement) => [canvas.width, canvas.height])).resolves.toEqual([1080, 1350]);
-  await page.locator("canvas").screenshot({ path: testInfo.outputPath("share-card.png") });
-  await expect(page.getByRole("button", { name: "Save card to device" })).toBeVisible();
-  await page.getByRole("button", { name: "Share with your network" }).click();
-  await expect.poll(() => page.evaluate(() => (window as typeof window & { __sharePayload?: unknown }).__sharePayload)).toEqual({
-    text: expect.stringContaining("Third Degree Burnout"),
-    hasUrlField: false,
-    fileCount: 1,
-    fileName: "my-project-reset-card.png",
-    fileType: "image/png",
-  });
-  const downloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Save card to device" }).click();
-  expect((await downloadPromise).suggestedFilename()).toBe("my-project-reset-card.png");
-  await expect(page.getByText("Your card has downloaded.")).toBeVisible();
-});
-
-test("keeps the PNG download available when native file sharing is unsupported", async ({ page }) => {
-  await page.addInitScript(() => {
-    Object.defineProperty(navigator, "share", { configurable: true, value: undefined });
-  });
-  await mockCompletedSubmission(page);
-  await completeMinimalCheckIn(page);
-  await page.getByRole("button", { name: "Share with your network" }).click();
-  await expect(page.getByText("Sharing isn’t available here — download your card to post it.")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Save card to device" })).toBeVisible();
-});
-
-test("treats native share cancellation as non-destructive", async ({ page }) => {
-  await page.addInitScript(() => {
-    Object.defineProperty(navigator, "canShare", { configurable: true, value: () => true });
-    Object.defineProperty(navigator, "share", {
-      configurable: true,
-      value: async () => { throw new DOMException("cancelled", "AbortError"); },
-    });
-  });
-  await mockCompletedSubmission(page);
-  await completeMinimalCheckIn(page);
-  await page.getByRole("button", { name: "Share with your network" }).click();
-  await expect(page.getByText("Sharing cancelled. Your card is still ready to download.")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Save card to device" })).toBeVisible();
+  await page.getByRole("button", { name: "Copy code" }).click();
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).toBe("EVENT_CODE");
+  await expect(page.getByRole("link", { name: /Open the film on KINEMA/ })).toHaveAttribute("href", "https://kinema.com/films/private-film");
+  await expect(page.getByRole("link", { name: /Explore the questions/ })).toHaveAttribute("href", "/take-it-to-the-table");
 });
 
 test("an expired event link becomes a trailer check-in", async ({ page }) => {

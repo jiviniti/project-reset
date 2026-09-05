@@ -1,6 +1,6 @@
 # Architecture
 
-Last verified: 31 August 2026
+Last verified: 5 September 2026
 
 Project RESET is a screening-aware Next.js application deployed on Vercel. Participants complete the RESET Check-In without a Supabase Auth account. Browser submissions go only to `POST /api/v1/submissions`; raw identity and research records remain in the non-exposed Supabase `private` schema.
 
@@ -30,7 +30,7 @@ configured event, within [opening, closing)  -> event + film
 configured event, at/after closing           -> non-event + trailer
 ```
 
-The resolved pathway, window status and reward type are frozen on the participation. A copied event QR therefore continues to collect screening-attributed responses after expiry without continuing to grant film access. The browser cannot request or override the reward. The actual KINEMA adapter remains outside this foundation.
+The resolved pathway, window status and reward type are frozen on the participation. A copied event QR therefore continues to collect screening-attributed responses after expiry without continuing to grant film access. The browser cannot request or override the reward. After an eligible commit, the submission route may append server-held KINEMA manual-redemption details for the two allowlisted launch slugs. Replays use the frozen database decision, not the current event window.
 
 ### Public cumulative snapshot
 
@@ -59,8 +59,8 @@ The active React implementation follows the latest prototype supplied on 25 Augu
 
 1. burnout signs plus optional private custom tags/free text;
 2. RESET pathways/practices plus optional private custom tags/ritual;
-3. final-step PII, optional demographics, data-use consent and false-by-default future-communications preference;
-4. persisted thank-you state, transactional-reward status, Learning Lab entry and share card.
+3. final-step PII, optional demographics, an optional private commitment, data-use consent and false-by-default future-communications preference;
+4. persisted thank-you state, Learning Lab, film/trailer reward and conversation-tool entry.
 
 The header action reads “Support the project.” Product copy uses U.S. English. Branded campaign references use the constructed lowercase `reset.` lockup when layout permits and `RESET` otherwise. SMS selection remains deferred because reward delivery is outside this pass.
 
@@ -68,12 +68,12 @@ Persisted success is presented as Step 04 of 04; it is not a fourth write stage.
 
 The self-contained source prototype and checksum are preserved under `reference/prototype/`. The active production-oriented UI is the typed React implementation under `src/`. Poppins supplies interface text, headings, labels and buttons; Petit Formal Script supplies intentional script accents; EB Garamond and italic variation are confined to the word clouds. Local font assets are loaded through `next/font/local`; no prototype runtime or opaque generated code ships in the app.
 
-Questionnaire version 2 is an additive published version. Screening configuration determines the version served, while every participation retains its submitted version. The two new practice keys and revised labels flow through the existing atomic submission and aggregate pipeline; inactive compatibility options remain privately valid but are omitted from new configurations and public metric definitions.
+Questionnaire version 3 copies version 2 and adds the optional private `today_commitment` text response. Screening configuration determines the version served, while every participation retains its submitted version. The commitment is not an aggregate metric.
 
-Personalized social cards are rendered entirely in the browser to a 1080×1350 canvas and are never uploaded. Generic link metadata uses the static 1200×630 `/opengraph-image` route and contains no participant data.
+The share-card renderer remains available only in the internal concept route. The active participant journey does not create or request a personalized card.
 
 ## Active, supporting and deferred boundaries
 
-- **Active core:** check-in, private submission, cumulative safe aggregates, revision invalidation, public word-map/statistics/pathway visualization and share card.
+- **Active core:** check-in, private submission, cumulative safe aggregates, revision invalidation, public visualization, manual KINEMA reward handoff and conversation-tool entry.
 - **Supporting:** canonical seeded baseline, rebuild/backfill function, preview seed, security tests and production-cleanup guard.
-- **Deferred:** KINEMA provider integration, actual email/SMS delivery, personalized Learning Lab persistence, public screening/cohort views, custom domain and production cutover.
+- **Deferred:** automated KINEMA API/email/SMS delivery, personalized Learning Lab persistence, conversation analytics, public screening/cohort views, custom domain and production cutover.

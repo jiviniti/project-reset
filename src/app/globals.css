@@ -123,11 +123,23 @@ legend, .field-group-label { margin: 9px 0 7px; color: #756d68; font-family: var
 .tag-suggestion > span:last-child { min-width: 0; overflow-wrap: anywhere; font-size: .74rem; font-weight: 700; }
 .tag-suggestion small { display: block; margin-top: 2px; color: #777; font-size: .57rem; font-weight: 500; }
 .donation-link { color: var(--teal); font-size: .68rem; line-height: 1.5; text-align: center; }
+.commitment-field { margin: 10px 0 2px; padding: 20px 18px 16px; border-left: 4px solid var(--coral); background: rgb(255 255 255 / 55%); }
+.commitment-field .field-group-label { margin-top: 0; color: var(--coral); }
+.commitment-field > p:last-child { margin: 8px 0 0; color: #756b65; font-size: .61rem; line-height: 1.5; }
 
 .success { color: white; background: var(--coral); text-align: center; }
-.success__confirmation { padding: 28px 24px 30px; color: var(--burgundy); background: var(--peach); text-align: left; }
+.success__confirmation { position: relative; overflow: hidden; padding: 36px 24px 34px; color: var(--burgundy); background: var(--peach); text-align: left; }
 .success__confirmation .eyebrow { color: var(--coral); }
 .success__confirmation h2 { max-width: 330px; font-size: 1.55rem; font-weight: 500; line-height: 1.12; letter-spacing: -.03em; text-transform: none; }
+.success-burst { position: absolute; top: 20px; right: 22px; width: 70px; height: 70px; animation: success-burst-in .65s cubic-bezier(.2,.8,.2,1) both; }
+.success-burst span { position: absolute; top: 31px; left: 31px; width: 10px; height: 10px; border-radius: 50%; background: var(--coral); transform-origin: 4px 4px; }
+.success-burst span:nth-child(1) { transform: translateY(-28px); background: var(--teal); }
+.success-burst span:nth-child(2) { transform: rotate(72deg) translateY(-28px); }
+.success-burst span:nth-child(3) { transform: rotate(144deg) translateY(-28px); background: #d4953b; }
+.success-burst span:nth-child(4) { transform: rotate(216deg) translateY(-28px); background: #82bcc8; }
+.success-burst span:nth-child(5) { transform: rotate(288deg) translateY(-28px); background: var(--burgundy); }
+.commitment-echo { max-width: 360px; margin: 24px 0 0; padding: 15px 17px; border-left: 4px solid var(--coral); background: rgb(255 255 255 / 35%); font-size: .78rem; line-height: 1.5; }
+.commitment-echo span { display: block; margin-bottom: 5px; color: var(--coral); font-size: .55rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .success .eyebrow { color: #6f2922; }
 .success > .button { width: calc(100% - 48px); margin: 0 24px 30px; }
 .success__reward { padding: 34px 24px 38px; color: var(--ink); background: var(--coral); text-align: left; }
@@ -137,6 +149,15 @@ legend, .field-group-label { margin: 9px 0 7px; color: #756d68; font-family: var
 .reward-card h3 { margin: 0 0 8px; font-size: 1.14rem; font-weight: 500; }
 .reward-card p { margin-bottom: 0; color: #665f5a; font-size: .71rem; line-height: 1.55; }
 .reward-card__action { width: 100%; margin-top: 16px; text-decoration: none; }
+.reward-code-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; margin-top: 18px; }
+.reward-code-row input { min-width: 0; padding: 13px 12px; color: var(--burgundy); border: 1px solid #d5b7a8; border-radius: 10px; background: white; font: 700 .72rem/1.2 var(--ui); letter-spacing: .03em; }
+.reward-code-row button { padding: 0 15px; color: white; border: 0; border-radius: 10px; background: var(--burgundy); cursor: pointer; font: 700 .65rem/1 var(--ui); }
+.reward-copy-status { min-height: 17px; margin-top: 7px; color: var(--burgundy) !important; }
+.reward-terms { margin-top: 14px; padding-top: 13px; border-top: 1px solid #e2cfc4; }
+.success__conversation { padding: 38px 24px 42px; color: var(--burgundy); background: var(--peach); text-align: left; }
+.success__conversation h3 { margin: 7px 0 10px; font-size: 1.35rem; font-weight: 600; }
+.success__conversation > p:not(.eyebrow) { margin: 0; color: #665f5a; font-size: .72rem; line-height: 1.6; }
+.success__conversation .button { width: 100%; margin-top: 20px; text-decoration: none; }
 .share-card { margin: 0; padding: 34px 24px 36px; color: var(--ink); background: var(--peach); text-align: left; }
 .share-card .eyebrow { color: var(--coral); }
 .share-card h3 { margin: 0 0 15px; color: var(--burgundy); font-size: 1.08rem; font-weight: 600; }
@@ -198,6 +219,7 @@ legend, .field-group-label { margin: 9px 0 7px; color: #756d68; font-family: var
 @keyframes word-arrive { from { opacity: 0; transform: translateY(14px) scale(.88); } to { opacity: 1; transform: none; } }
 @keyframes word-drift { 0%, 100% { translate: 0 0; } 50% { translate: 0 -4px; } }
 @keyframes bloom { from { opacity: .2; transform: scale(.2); } to { opacity: 1; transform: scale(var(--bloom-scale)); } }
+@keyframes success-burst-in { from { opacity: 0; transform: scale(.25) rotate(-18deg); } to { opacity: 1; transform: none; } }
 
 @media (max-width: 480px) {
   .experience { padding: 0; }

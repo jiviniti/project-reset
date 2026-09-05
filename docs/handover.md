@@ -274,4 +274,12 @@ Questionnaire-v2 hosted rollout on 2 September 2026:
 - Supply the exact copyright owner and approved copyright phrase before a site-wide footer is introduced.
 - Confirm that native device sharing plus PNG download is the intended share-card scope; direct posting destinations cannot be guaranteed by a web application.
 
-Production cutover, custom domain, KINEMA and actual reward delivery remain deferred.
+## Questionnaire v3, KINEMA handoff and conversation-library update — 5 September 2026
+
+- Apply `supabase/migrations/202609050001_questionnaire_v3_commitment.sql` before testing new submissions. It preserves v1/v2 and moves preview and any existing launch screening rows to v3.
+- The active success journey is now confirmation, two Learning Lab visualizations, film/trailer access, then Take It to the Table. The share-card concept gallery remains available separately.
+- Manual KINEMA delivery uses server-only `KINEMA_FILM_URL`, `KINEMA_CLIMATE_WEEK_NYC_2026_CODE`, and `KINEMA_COLUMBIA_CLIMATE_SCHOOL_2026_CODE` with `REWARD_PROVIDER=kinema_manual`.
+- Do not activate the launch screenings until exact check-in windows are approved. The application cannot revoke a KINEMA rental or schedule promo-code shutdown.
+- The conversation tool is a browseable 60-question library with four featured themes, all-theme reveal, stable deep links, native sharing/clipboard fallback and no answer collection.
+
+Production cutover and custom-domain work remain deferred. Automated KINEMA API or email delivery is not part of this launch implementation.

@@ -28,6 +28,13 @@ describe("submission validation", () => {
   it("permits exactly one answer representation", () => {
     expect(() => submissionSchema.parse({ ...validPayload, answers: [{ questionKey: "burnout_signs", optionKeys: [], text: "both" }] })).toThrow();
   });
+
+  it("limits the private commitment response to 500 characters", () => {
+    expect(() => submissionSchema.parse({
+      ...validPayload,
+      answers: [{ questionKey: "today_commitment", text: "x".repeat(501) }],
+    })).toThrow();
+  });
 });
 
 describe("email normalization", () => {
@@ -60,5 +67,20 @@ describe("submission result validation", () => {
       eventWindowStatus: "event_expired",
       accessEndsAt: null,
     }).rewardType).toBe("trailer_access");
+  });
+
+  it("accepts an allowlisted KINEMA access payload", () => {
+    const parsed = submissionResultSchema.parse({
+      ...baseResult,
+      rewardAccess: {
+        provider: "kinema",
+        filmUrl: "https://kinema.com/films/private-film",
+        promoCode: "EVENT_CODE",
+        accountRequired: true,
+        startWithinDays: 30,
+        finishWithinHours: 48,
+      },
+    });
+    expect(parsed.rewardAccess?.promoCode).toBe("EVENT_CODE");
   });
 });

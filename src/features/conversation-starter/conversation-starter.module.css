@@ -230,6 +230,12 @@
   background: var(--sindoor);
 }
 
+.themeGrid button[aria-pressed="true"] {
+  color: var(--kalika);
+  background: var(--marigold-light);
+  box-shadow: inset 0 0 0 3px var(--kalika);
+}
+
 .themeGrid button:focus-visible,
 .modeGrid button:focus-visible,
 .primaryButton:focus-visible,
@@ -293,6 +299,21 @@
 .themeGrid .acrossTheme:focus-visible { background: var(--sindoor); }
 .themeGrid .acrossTheme:hover b,
 .themeGrid .acrossTheme:focus-visible b { color: var(--kalika); }
+
+.themeGrid .acrossTheme[aria-pressed="true"] { color: var(--kalika); background: var(--connect); }
+.themeGrid .acrossTheme[aria-pressed="true"] b { color: var(--kalika); }
+
+.showThemesButton {
+  width: 100%;
+  min-height: 50px;
+  margin-top: 14px;
+  color: var(--kalika);
+  border: 1px solid var(--kalika);
+  background: transparent;
+  cursor: pointer;
+  font: 600 .68rem/1.2 var(--ui);
+}
+.showThemesButton:hover { color: var(--shweta); background: var(--kalika); }
 
 .agreement {
   margin-top: 38px;
@@ -566,6 +587,102 @@
 .completion .secondaryButton:hover { color: var(--shweta); background: var(--kalika); }
 .copyStatus { min-height: 20px; margin: 14px 0 0; color: var(--nourish); font-size: .68rem; }
 .copyFallback { width: 100%; min-height: 42px; padding: 8px 10px; color: var(--kalika); border: 1px solid var(--kalika); border-radius: 0; background: var(--shweta); font: inherit; font-size: .68rem; }
+
+.questionLibrary {
+  padding: 54px 42px 64px;
+  color: var(--kalika);
+  background: #f4eee7;
+  border-top: 9px solid var(--nourish);
+  scroll-margin-top: 20px;
+  animation: libraryReveal .7s cubic-bezier(.2,.72,.25,1) both;
+}
+
+.libraryHeading { display: flex; align-items: flex-start; justify-content: space-between; gap: 28px; }
+.libraryHeading > div { max-width: 520px; }
+.libraryHeading h2 { margin: 10px 0 12px; font-size: clamp(2rem, 6vw, 3.2rem); line-height: 1.02; letter-spacing: -.05em; outline: none; }
+.libraryHeading p:not(.eyebrow) { margin: 0; color: #59534e; font-size: .77rem; line-height: 1.6; }
+.libraryHeading > button {
+  flex: none;
+  min-height: 42px;
+  padding: 10px 13px;
+  color: var(--kalika);
+  border: 1px solid var(--kalika);
+  background: transparent;
+  cursor: pointer;
+  font: 600 .62rem/1.2 var(--ui);
+}
+
+.questionGrid { display: grid; gap: 18px; margin-top: 38px; }
+.questionCard {
+  position: relative;
+  padding: 26px 26px 24px;
+  overflow: hidden;
+  border: 1px solid #cabcb2;
+  background: var(--shweta);
+  box-shadow: 5px 6px 0 rgb(82 41 43 / 10%);
+  transition: border-color .2s ease, transform .2s ease;
+  animation: questionReveal .62s cubic-bezier(.2,.72,.25,1) both;
+}
+.questionCard:nth-child(2) { animation-delay: .05s; }
+.questionCard:nth-child(3) { animation-delay: .1s; }
+.questionCard:nth-child(4) { animation-delay: .15s; }
+.questionCard:nth-child(5) { animation-delay: .2s; }
+.questionCard:nth-child(6) { animation-delay: .25s; }
+.questionCard:nth-child(5n + 2) { border-top: 6px solid var(--connect); }
+.questionCard:nth-child(5n + 3) { border-top: 6px solid var(--rebalance); }
+.questionCard:nth-child(5n + 4) { border-top: 6px solid var(--restore); }
+.questionCard:nth-child(5n + 5) { border-top: 6px solid var(--move); }
+.questionCard:nth-child(5n + 1) { border-top: 6px solid var(--nourish); }
+.questionCard.carriedCard { border-color: var(--mrida); transform: translateY(-2px); box-shadow: 7px 8px 0 var(--pavitra); }
+.questionNumber { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.questionNumber span { color: var(--sindoor); font-size: .68rem; font-weight: 700; letter-spacing: .13em; }
+.questionNumber small { color: #77706b; font-size: .55rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.questionCard > p { max-width: 560px; margin: 28px 0 10px; color: #635d58; font-size: .68rem; line-height: 1.55; }
+.questionCard h3 { max-width: 610px; margin: 0; font-size: clamp(1.3rem, 4.2vw, 2rem); font-weight: 600; line-height: 1.15; letter-spacing: -.035em; }
+.followUpButton {
+  margin-top: 25px;
+  padding: 0;
+  color: var(--mrida);
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: 600 .64rem/1.3 var(--ui);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.questionCard .followUp { margin: 15px 0 0; padding: 16px; color: var(--mrida); border: 0; border-left: 4px solid var(--sindoor); background: #f8eee8; font-size: .78rem; font-weight: 500; line-height: 1.5; animation: reveal .18s ease both; }
+.questionCard .followUp span { display: block; margin-bottom: 5px; color: var(--sindoor); font-size: .53rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.carryButton {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 24px;
+  padding: 10px 14px;
+  color: var(--shweta);
+  border: 1px solid var(--mrida);
+  background: var(--mrida);
+  cursor: pointer;
+  font: 600 .64rem/1.2 var(--ui);
+}
+.carryButton[aria-pressed="true"] { color: var(--kalika); background: var(--marigold-light); }
+
+.carryPanel { position: relative; margin-top: 30px; padding: 34px 30px 30px; overflow: hidden; color: var(--shweta); background: var(--mrida); }
+.carryPanel h2 { max-width: 520px; margin: 9px 0 16px; font-size: 1.65rem; line-height: 1.1; }
+.carryPanel blockquote { max-width: 570px; margin: 0; color: var(--pavitra); font: 400 1.15rem/1.45 var(--ui); }
+.carryPanel > p:not(.eyebrow, .shareStatus) { max-width: 540px; margin: 20px 0 0; color: #f0deda; font-size: .68rem; line-height: 1.55; }
+.carryActions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 26px; }
+.shareStatus { min-height: 18px; margin: 13px 0 0; color: var(--marigold-light); font-size: .63rem; }
+.carryPanel > input { width: 100%; min-height: 40px; padding: 8px 10px; color: var(--kalika); border: 0; background: var(--shweta); font: .62rem/1.2 var(--ui); }
+.miniBurst { position: absolute; top: 22px; right: 24px; width: 54px; height: 54px; animation: burstIn .55s ease both; }
+.miniBurst span { position: absolute; top: 24px; left: 24px; width: 8px; height: 8px; border-radius: 50%; transform-origin: 4px 4px; }
+.miniBurst span:nth-child(1) { transform: translateY(-21px); background: var(--nourish); }
+.miniBurst span:nth-child(2) { transform: rotate(72deg) translateY(-21px); background: var(--restore); }
+.miniBurst span:nth-child(3) { transform: rotate(144deg) translateY(-21px); background: var(--move); }
+.miniBurst span:nth-child(4) { transform: rotate(216deg) translateY(-21px); background: var(--connect); }
+.miniBurst span:nth-child(5) { transform: rotate(288deg) translateY(-21px); background: var(--rebalance); }
+.showThemesButton:focus-visible,
+.libraryHeading button:focus-visible,
+.followUpButton:focus-visible,
+.carryButton:focus-visible { outline: 3px solid #1769e0; outline-offset: 3px; }
 .loading { width: max-content; margin: 30vh auto; color: #ccc; font-size: .75rem; }
 
 @keyframes cardIn {
@@ -576,6 +693,15 @@
 @keyframes reveal {
   from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }
+}
+@keyframes burstIn { from { opacity: 0; transform: scale(.2) rotate(-20deg); } to { opacity: 1; transform: none; } }
+@keyframes libraryReveal {
+  from { opacity: .55; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes questionReveal {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
 }
 
 @media (max-width: 620px) {
@@ -589,7 +715,7 @@
   .heroCopy h1 { max-width: 330px; font-size: clamp(3rem, 15vw, 4.4rem); }
   .collage { right: -28px; bottom: -20px; width: 390px; height: 300px; }
   .tornBand { padding: 34px 22px 24px; }
-  .startPanel, .modePanel, .completion { padding-inline: 22px; }
+  .startPanel, .modePanel, .completion, .questionLibrary { padding-inline: 22px; }
   .agreement { padding: 22px; }
   .agreement ul { grid-template-columns: 1fr; }
   .partnerPlate { max-width: calc(100% - 40px); margin-inline: auto; gap: 8px; }
@@ -599,6 +725,9 @@
   .promptCard { min-height: 490px; margin-inline: 12px; padding-inline: 24px; }
   .controls { grid-template-columns: 1fr 1fr; padding-inline: 12px; }
   .controls .textButton { grid-column: 1 / -1; grid-row: 2; min-height: 38px; }
+  .libraryHeading { display: block; }
+  .libraryHeading > button { width: 100%; margin-top: 18px; }
+  .questionCard { padding-inline: 20px; }
 }
 
 @media (max-width: 410px) {
@@ -613,6 +742,7 @@
   .modeGrid button small { grid-column: 2 / 3; }
   .promptCard { min-height: 465px; }
   .context { margin-top: 44px; }
+  .carryActions { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -620,5 +750,10 @@
   .followUp p { animation: none; }
   .progress span,
   .themeGrid button,
-  .modeGrid button { transition: none; }
+  .modeGrid button,
+  .questionCard { transition: none; }
+  .miniBurst,
+  .questionCard .followUp,
+  .questionLibrary,
+  .questionCard { animation: none; }
 }

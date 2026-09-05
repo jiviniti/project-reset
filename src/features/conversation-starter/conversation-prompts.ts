@@ -1,6 +1,5 @@
 export const CONVERSATION_CONTENT_VERSION = 2 as const;
 
-export type ConversationMode = "one" | "short" | "deep";
 export type ConversationThemeId = "burnout" | "body" | "food" | "pace" | "influence" | "land" | "access" | "climate" | "connection" | "agency";
 export type ConversationThemeChoice = ConversationThemeId | "across";
 export type PromptPhase = "open" | "reflect" | "deepen" | "forward";
@@ -13,12 +12,6 @@ export type ConversationPrompt = {
   context: string;
   question: string;
   followUp: string;
-};
-
-export const CONVERSATION_MODES: Record<ConversationMode, { label: string; description: string; count: number }> = {
-  one: { label: "One question", description: "A gentle place to begin", count: 1 },
-  short: { label: "A short conversation", description: "Three questions with room to talk", count: 3 },
-  deep: { label: "Go deeper", description: "Five questions that unfold gradually", count: 5 },
 };
 
 export const CONVERSATION_THEMES: Record<ConversationThemeId, { label: string; description: string; number: string }> = {
@@ -109,65 +102,10 @@ export const CONVERSATION_PROMPTS: readonly ConversationPrompt[] = [
   prompt("agency-gentle-nudge", "agency", "forward", "The film invites gentle nudges rather than a demand for instant perfection.", "What is one personal or shared nudge that feels possible without pretending it solves everything?", "Who could make it easier to sustain?"),
 ] as const;
 
-const MODE_PHASES: Record<Exclude<ConversationMode, "one">, readonly PromptPhase[]> = {
-  short: ["open", "deepen", "forward"],
-  deep: ["open", "open", "reflect", "deepen", "forward"],
-};
-
-function seededRandom(seed: number) {
-  let state = seed >>> 0 || 1;
-  return () => {
-    state ^= state << 13;
-    state ^= state >>> 17;
-    state ^= state << 5;
-    return (state >>> 0) / 4294967296;
-  };
-}
-
-function pick<T>(items: readonly T[], random: () => number) {
-  return items[Math.floor(random() * items.length)];
-}
-
 export function getPrompt(promptId: string) {
   return CONVERSATION_PROMPTS.find((candidate) => candidate.id === promptId);
 }
 
 export function getThemeLabel(choice: ConversationThemeChoice) {
   return choice === "across" ? "Across the film" : CONVERSATION_THEMES[choice].label;
-}
-
-export function buildConversationSession(choice: ConversationThemeChoice, mode: ConversationMode, seed: number) {
-  const random = seededRandom(seed);
-  const pool = choice === "across" ? CONVERSATION_PROMPTS : CONVERSATION_PROMPTS.filter((candidate) => candidate.theme === choice);
-
-  if (mode === "one") {
-    const gentleOpeners = pool.filter((candidate) => candidate.phase === "open" || candidate.phase === "reflect");
-    const selected = pick(gentleOpeners, random);
-    if (!selected) throw new Error(`No conversation prompt available for ${choice}`);
-    return [selected.id];
-  }
-
-  const used = new Set<string>();
-  const usedThemes = new Set<ConversationThemeId>();
-  return MODE_PHASES[mode].map((phase) => {
-    let candidates = pool.filter((candidate) => candidate.phase === phase && !used.has(candidate.id));
-    if (choice === "across") {
-      const newThemeCandidates = candidates.filter((candidate) => !usedThemes.has(candidate.theme));
-      if (newThemeCandidates.length) candidates = newThemeCandidates;
-    }
-    const selected = pick(candidates, random);
-    if (!selected) throw new Error(`No ${phase} prompt available for ${choice}`);
-    used.add(selected.id);
-    usedThemes.add(selected.theme);
-    return selected.id;
-  });
-}
-
-export function findReplacementPrompt(currentPromptId: string, usedPromptIds: readonly string[], passedPromptIds: readonly string[], seed: number) {
-  const current = getPrompt(currentPromptId);
-  if (!current) return undefined;
-  const unavailable = new Set([...usedPromptIds, ...passedPromptIds]);
-  const candidates = CONVERSATION_PROMPTS.filter((candidate) => candidate.theme === current.theme && !unavailable.has(candidate.id));
-  if (!candidates.length) return undefined;
-  return pick(candidates, seededRandom(seed));
 }

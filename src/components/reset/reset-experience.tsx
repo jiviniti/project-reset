@@ -5,7 +5,6 @@ import { FormEvent, useState } from "react";
 import { ResetBrand } from "@/components/brand/reset-brand";
 import { Chip } from "@/components/ui/chip";
 import { IllustrativeDashboard } from "@/features/learning-lab/illustrative-dashboard";
-import { ShareCard } from "@/features/share-card/share-card";
 import { submissionResultSchema } from "@/lib/validation/submission";
 import type { SubmissionResult } from "@/types/pathway";
 import type { ScreeningConfig } from "@/types/screening";
@@ -27,6 +26,7 @@ type FormState = {
   practices: string[];
   resetCustomTags: string[];
   ritual: string;
+  commitment: string;
 };
 
 const initialForm: FormState = {
@@ -44,6 +44,7 @@ const initialForm: FormState = {
   practices: [],
   resetCustomTags: [],
   ritual: "",
+  commitment: "",
 };
 
 const DONATION_URL = process.env.NEXT_PUBLIC_DONATE_URL ?? "https://thirddegreeburnout.com/donate";
@@ -134,15 +135,15 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
   const [submissionStatus, setSubmissionStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [submissionResult, setSubmissionResult] = useState<SubmissionResult | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [rewardCopyStatus, setRewardCopyStatus] = useState("");
   const [idempotencyKey, setIdempotencyKey] = useState(() => crypto.randomUUID());
 
   const question = (key: string) => screening.questions.find((item) => item.key === key)!;
   const emotionOptions = question("burnout_signs").options;
   const pathwayOptions = question("reset_pathways").options;
   const practiceOptions = question("reset_practices").options;
+  const hasCommitmentQuestion = screening.questions.some((item) => item.key === "today_commitment");
   const visibleEmotions = showMoreEmotions ? emotionOptions : emotionOptions.slice(0, 10);
-  const selectedPracticeOptions = practiceOptions.filter((option) => form.practices.includes(option.key));
-  const selectedPathwayOptions = pathwayOptions.filter((option) => form.pathways.includes(option.key));
 
   const practicesByPathway = Object.fromEntries(
     pathwayOptions.map((pathway) => [
@@ -214,6 +215,17 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
     void submit();
   }
 
+  async function copyPromoCode() {
+    const promoCode = submissionResult?.rewardAccess?.promoCode;
+    if (!promoCode) return;
+    try {
+      await navigator.clipboard.writeText(promoCode);
+      setRewardCopyStatus("Promo code copied.");
+    } catch {
+      setRewardCopyStatus("Select and copy the promo code below.");
+    }
+  }
+
   async function submit() {
     setSubmissionStatus("submitting");
     setErrorMessage("");
@@ -225,6 +237,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
       { questionKey: "reset_practices", optionKeys: form.practices },
       { questionKey: "reset_custom_tags", text: form.resetCustomTags.join("\n") },
       { questionKey: "reset_ritual", text: form.ritual },
+      ...(hasCommitmentQuestion ? [{ questionKey: "today_commitment", text: form.commitment }] : []),
     ];
 
     try {
@@ -263,6 +276,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
     setIdempotencyKey(crypto.randomUUID());
     setSubmissionStatus("idle");
     setSubmissionResult(null);
+    setRewardCopyStatus("");
     setErrorMessage("");
     setBurnoutTagInput("");
     setResetTagInput("");
@@ -304,7 +318,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <p className="pathway-notice">Film access for this event is not active yet. You can still contribute through the trailer pathway.</p>
               ) : null}
               <button type="button" className="button button--coral" onClick={start}>Contribute your RESET <span aria-hidden="true">→</span></button>
-              <p className="hero__meta">About 90 seconds · public results are de-identified · {screening.rewardType === "film_access" ? "film access by email" : "trailer access after check-in"}</p>
+              <p className="hero__meta">About 90 seconds · public results are de-identified · {screening.rewardType === "film_access" ? "film access after check-in" : "trailer access after check-in"}</p>
               <button type="button" className="text-button" onClick={() => setView("lab")}>Explore the Learning Lab <span aria-hidden="true">→</span></button>
             </div>
           </section>
@@ -347,7 +361,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
             {step === 3 && (
               <form className="step step--light" onSubmit={submitFinalStep}>
                 <p className="eyebrow eyebrow--orange">03 · Complete your check-in</p>
-                <h2>{screening.rewardType === "film_access" ? "Where should we send your film?" : "Complete your check-in"}</h2>
+                <h2>{screening.rewardType === "film_access" ? "Unlock your film access" : "Complete your check-in"}</h2>
                 <p>Complete your details to finish your check-in.</p>
                 <label>Name / initials (required)<input required autoComplete="given-name" maxLength={80} value={form.firstName} onChange={(event) => update("firstName", event.target.value)} /></label>
                 <label>Email (required)<input required type="email" autoComplete="email" maxLength={254} value={form.email} onChange={(event) => update("email", event.target.value)} /></label>
@@ -358,6 +372,13 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <label>City<input autoComplete="address-level2" maxLength={120} value={form.city} onChange={(event) => update("city", event.target.value)} /></label>
                 <fieldset><legend>Age range</legend><div className="chips">{["18–24", "25–34", "35–44", "45–54", "55+"].map((age) => <Chip key={age} selected={form.ageBand === age} onClick={() => update("ageBand", form.ageBand === age ? "" : age)}>{age}</Chip>)}</div></fieldset>
                 <label>Occupation<input autoComplete="organization-title" maxLength={120} value={form.occupation} onChange={(event) => update("occupation", event.target.value)} /></label>
+                {hasCommitmentQuestion ? <div className="commitment-field">
+                  <p className="field-group-label">Before you finish</p>
+                  <label id="commitment-heading">What is one small thing you could choose today that might support you? (optional)
+                    <textarea rows={3} maxLength={500} value={form.commitment} onChange={(event) => update("commitment", event.target.value)} />
+                  </label>
+                  <p>It could involve rest, nourishment, movement, connection, boundaries, or asking for help.</p>
+                </div> : null}
                 <label className="check-row"><input required type="checkbox" checked={form.consent} onChange={(event) => update("consent", event.target.checked)} /><span><strong>(Required)</strong> {screening.policyText}</span></label>
                 <label className="check-row"><input type="checkbox" checked={form.futureCommunications} onChange={(event) => update("futureCommunications", event.target.checked)} /><span><strong>(Optional)</strong> Virsa may contact me about future programs.</span></label>
                 <button className="button button--primary" type="submit" disabled={submissionStatus === "submitting"}>{submissionStatus === "submitting" ? "Saving your RESET…" : "Finish"}</button>
@@ -372,18 +393,34 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
           <section className="flow">
             <div className="success">
               <header className="success__confirmation">
+                <div className="success-burst" aria-hidden="true"><span /><span /><span /><span /><span /></div>
                 <p className="eyebrow">Your check-in is complete</p>
                 <h2>Thank you—your RESET has been added to the picture.</h2>
+                {form.commitment.trim() ? (
+                  <blockquote className="commitment-echo"><span>You chose to carry forward</span>{form.commitment.trim()}</blockquote>
+                ) : null}
               </header>
 
               <IllustrativeDashboard mode="post_submission" />
 
               <section className="success__reward" aria-labelledby="reset-access-heading">
                 <p className="eyebrow">Your access</p>
-                {(submissionResult?.rewardType ?? screening.rewardType) === "film_access" ? (
+                {submissionResult?.rewardAccess ? (
                   <div className="reward-card">
-                    <h3 id="reset-access-heading">Film access is being prepared.</h3>
-                    <p>We’ve recorded your access request. Film delivery will be enabled after the KINEMA process is confirmed.</p>
+                    <h3 id="reset-access-heading">Your film access is ready.</h3>
+                    <p>Create or sign in to your KINEMA account, open the private film page, and enter this code in the Promo Code field at checkout.</p>
+                    <div className="reward-code-row">
+                      <input aria-label="KINEMA promo code" readOnly value={submissionResult.rewardAccess.promoCode} onFocus={(event) => event.currentTarget.select()} />
+                      <button type="button" onClick={() => void copyPromoCode()}>Copy code</button>
+                    </div>
+                    <p className="reward-copy-status" aria-live="polite">{rewardCopyStatus}</p>
+                    <a className="button button--primary reward-card__action" href={submissionResult.rewardAccess.filmUrl} target="_blank" rel="noreferrer">Open the film on KINEMA <span aria-hidden="true">→</span></a>
+                    <p className="reward-terms">After completing the rental, you have {submissionResult.rewardAccess.startWithinDays} days to begin watching and {submissionResult.rewardAccess.finishWithinHours} hours to finish once you start. The rental is tied to your KINEMA account.</p>
+                  </div>
+                ) : (submissionResult?.rewardType ?? screening.rewardType) === "film_access" ? (
+                  <div className="reward-card">
+                    <h3 id="reset-access-heading">We couldn’t display your film access.</h3>
+                    <p>Your eligible check-in was saved. Please contact the event team for the private KINEMA link and promo code.</p>
                   </div>
                 ) : (
                   <div className="reward-card">
@@ -394,9 +431,12 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 )}
               </section>
 
-              <div className="success__card-target">
-                <ShareCard firstName={form.firstName.trim().split(/\s+/)[0]} pathways={selectedPathwayOptions.map(({ key, label }) => ({ key, label }))} practices={selectedPracticeOptions.map(({ label }) => label)} />
-              </div>
+              <section className="success__conversation" aria-labelledby="continue-conversation-heading">
+                <p className="eyebrow">Take it to the table</p>
+                <h3 id="continue-conversation-heading">Continue the conversation.</h3>
+                <p>Browse reflective questions for a meal, walk, call, classroom, or gathering. Begin with whatever feels relevant today.</p>
+                <a className="button button--primary" href="/take-it-to-the-table">Explore the questions <span aria-hidden="true">→</span></a>
+              </section>
             </div>
           </section>
         )}

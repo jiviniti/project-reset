@@ -1,227 +1,45 @@
-# Project RESET participant journey
+# Project RESET user journey
 
-Last updated: 30 August 2026
+Last updated: 5 September 2026
 
-Status: post-submission composition approved and implemented on 30 August 2026.
+## Entry and eligibility
 
-## Purpose
+| Entry | Effective pathway | Post-check-in reward |
+| --- | --- | --- |
+| Active approved event route | Event | Private KINEMA link and event promo code |
+| Event route before opening | Non-event fallback | Film trailer |
+| Event route at or after closing | Non-event fallback | Film trailer |
+| Website, social, media or general campaign route | Non-event | Film trailer |
 
-This document maps how participants currently move through Project RESET, where the experience loses continuity, and the recommended post-submission journey. It is the durable product reference for future interface decisions; architecture and privacy rules remain documented separately.
+The database determines pathway eligibility from private screening configuration and database time. The browser supplies only the screening slug. A KINEMA code is appended after a committed eligible response and is never present in screening configuration.
 
-## Participant goals
+## Check-in
 
-A participant should be able to:
+1. Participants select burnout signs and may add private free text or custom tags.
+2. They select RESET pathways and practices and may describe a private ritual.
+3. They may write one small commitment, then provide required identity and consent plus optional demographics and communications preference.
+4. One atomic request stores the response, frozen reward decision and allowlisted aggregate update.
 
-1. understand what Project RESET is and why the check-in matters;
-2. contribute without encountering identity fields before reflection;
-3. receive the reward appropriate to their entry pathway;
-4. see how their response contributes to the larger community picture;
-5. create, download or share their personalized card without losing it while exploring the Learning Lab.
+Questionnaire version 3 adds only the optional private commitment. It is limited to 500 characters and is not aggregated.
 
-## Entry contexts
+## Completion
 
-All entry contexts use the same questionnaire and aggregate visualization. The configured screening and database-time event window determine the reward; the browser cannot choose it.
-
-| Entry context | Effective pathway | Reward | Continued experience |
-| --- | --- | --- | --- |
-| Active event QR/link | Event | Time-limited film access intent | Visualization + share card |
-| Event QR/link before opening | Non-event fallback, attributed to the event | Trailer | Visualization + share card |
-| Event QR/link after expiry | Non-event fallback, attributed to the event | Trailer | Visualization + share card |
-| Website, social, media, influencer or share-card link | Non-event | Trailer | Visualization + share card |
-
-The share card must always link to the canonical non-event entry point. It must never reproduce or expose an event-specific URL.
-
-## Previous journey — verified before the 30 August fix
+The final page deliberately follows this hierarchy:
 
 ```text
-Screening/campaign link
-  └─ Hero
-      ├─ Explore the Learning Lab
-      │   └─ Standalone Lab
-      │       └─ Take the Check-In → questionnaire
-      └─ Contribute your RESET
-          └─ Step 1: burnout landscape
-              └─ Step 2: RESET map
-                  └─ Step 3: identity, optional demographics and consent
-                      └─ atomic submission
-                          └─ Step 4: persisted thank-you
-                              ├─ pathway-appropriate reward status
-                              ├─ Enter the Learning Lab → standalone Lab
-                              └─ personalized share card + download/share
-```
-
-The share-card canvas is derived from the completed form state in `ResetExperience`. It contains first name/initials, approved pathways and up to three approved practices. It excludes email, demographics, burnout answers, free text and custom tags.
-
-## Continuity problem — verified and resolved
-
-On the persisted thank-you screen, the participant can see both the “Enter the Learning Lab” action and their share card. Selecting the Lab action changes the React view from `success` to `lab`.
-
-Consequences:
-
-- the Lab offers no route back to “My RESET” or the share card;
-- browser Back does not restore the success view because the view change does not create a route/history entry;
-- the completed form remains in memory initially, but it is inaccessible from the Lab;
-- selecting “Take the Check-In” or “Contribute your RESET” inside the Lab calls `resetFlow`, which clears the completed form, submission result and share-card state;
-- refreshing the page also loses the session-only share-card state.
-
-This breaks the intended narrative: the Lab should make the participant’s card feel more meaningful, but the current navigation makes the two outcomes compete with each other.
-
-## Design options
-
-### Option A — One continuous post-submission story
-
-After the committed thank-you and reward status, place the Learning Lab directly in the final page and place the personalized share card after it.
-
-Suggested sequence:
-
-```text
-Thank you + reward status
-  → “See how your RESET fits the bigger picture”
-  → note: “Your personal card is waiting at the end”
-  → optional “Skip to my card” anchor
-  → embedded Learning Lab results
-  → transition: “This is the community picture. Here is your RESET.”
-  → personalized share card
-  → download/share actions
-```
-
-Advantages:
-
-- creates the strongest emotional and narrative connection between contribution, collective result and sharing;
-- the participant never leaves the page that owns the card state;
-- anchors work without introducing a new route or persistence model;
-- the card remains the natural conclusion rather than a competing action.
-
-Risks:
-
-- creates a long mobile page;
-- forcing every sharing-focused participant through the Lab could be frustrating;
-- the embedded Lab must suppress its pre-submission “Take the Check-In” actions and avoid duplicate navigation/footer content;
-- loading/error behavior for aggregates becomes part of the final page.
-
-Mitigation: provide a prominent “Skip to my card” link and a small sticky “My card ↓” action while scrolling through the Lab.
-
-### Option B — Keep the Lab separate, add “Back to my RESET”
-
-Retain the current views but give post-submission Lab visitors a persistent action that returns to the success/card view without clearing state.
-
-Advantages:
-
-- smallest and lowest-risk implementation;
-- preserves the existing Lab composition;
-- does not lengthen the success page.
-
-Risks:
-
-- the collective picture and personal card remain conceptually separated;
-- browser refresh still loses the card;
-- requires the Lab to distinguish pre-submission and post-submission visitors.
-
-### Option C — Persistent “My RESET” drawer or modal
-
-Show a persistent “My RESET” action in the Lab that opens the card in a bottom sheet/modal.
-
-Advantages:
-
-- card is accessible from anywhere in the Lab;
-- participant does not lose their reading position.
-
-Risks:
-
-- more interaction and accessibility complexity;
-- modal canvas/download/share behavior needs careful mobile testing;
-- still depends on session memory unless separate persistence is introduced.
-
-### Option D — Separate result route with recoverable state
-
-Create a dedicated result route and make the Lab a separate route so browser navigation works normally. Recovering a result after refresh would require either browser storage or a private server-side receipt model.
-
-Advantages:
-
-- robust browser history and clearer URLs;
-- creates a path to later result recovery.
-
-Risks:
-
-- materially larger architecture and privacy decision;
-- first name is PII even if stored only in session storage;
-- a server-side receipt requires authorization, retention and enumeration protections;
-- unnecessary for the immediate prototype-stage continuity problem.
-
-### Option E — Ask users to download first
-
-Keep the views separate but prompt the participant to download the card before entering the Lab.
-
-This is not recommended. It protects the implementation rather than improving the journey, interrupts the emotional payoff, and does not help users who want to share only after seeing the larger context.
-
-## Implemented decision
-
-Project RESET adopts **Option A**.
-
-After Nivi’s 31 August product review, the final journey is a deliberately condensed continuous story:
-
-1. confirm that the check-in was saved;
-2. immediately show the Burnout Landscape and Community RESET Map;
-3. present the appropriate film/trailer access action or truthful interim status;
-4. end with the personalized card and download/share actions.
-
-The existing standalone Lab remains the pre-submission experience reached from the hero. The aggregate component now supports two explicit modes:
-
-- `standalone`: show “Take the Check-In” navigation and the full campaign ending;
-- `post_submission`: show only the two approved aggregate word maps and suppress navigation, statistics, pathway blooms, donation prompts and every reset/restart control.
-
-This is a frontend-only composition change. It does not change submission persistence, aggregate queries, realtime invalidation, pathway resolution, public-data allowlisting or the share-card data boundary.
-
-### Implemented post-submission journey
-
-```text
-Committed thank-you
+saved confirmation + gentle celebration
   → Burnout Landscape
   → Community RESET Map
-  → film access status OR Watch the Trailer
-  → personalized share card + download/share
+  → KINEMA film access or trailer access
+  → Take It to the Table conversation questions
 ```
 
-The post-submission aggregate view is intentionally shorter than the standalone Learning Lab. The standalone pre-submission Lab retains its introduction, statistics, pathway blooms, “Take the Check-In,” “Contribute your RESET,” donation prompt and Foundation/partner footer.
+If a commitment was entered, it is echoed from local form state on the success page. It is never placed in a public visualization or URL.
 
-## Session persistence decision
+Eligible event participants receive a manually entered KINEMA code and private film link. They create or sign in to a KINEMA account, complete the free rental, have 30 days to start and 48 hours to finish after starting. KINEMA controls DRM, caps, reports, fees and manual code shutdown.
 
-For the immediate change, keep the card session-only and prevent navigation from making it inaccessible. Do not introduce browser or server persistence merely to solve the Lab transition.
+The share card is no longer part of this journey. Its concept route remains available for internal review only.
 
-If recovery after refresh becomes a requirement, treat it as a separate product/privacy decision:
+## Conversation companion
 
-- session storage is simpler but would store first name/initials on the device until the tab session ends;
-- server recovery requires an opaque receipt, access controls, expiry and retention rules;
-- a URL must never contain name, email, responses or card personalization data.
-
-## Implementation impact map
-
-| Surface | Expected impact |
-| --- | --- |
-| Product | Replace competing Lab/card actions with a continuous post-submission narrative |
-| UI state | Keep `success` as the owning state; do not switch to `lab` after submission |
-| Learning Lab component | Add explicit standalone/post-submission presentation modes |
-| Navigation | Remove competing post-submission navigation and restart actions |
-| Share card | No payload or canvas-content change |
-| API/database | No change |
-| Aggregate/realtime | Reuse the existing safe snapshot and invalidation flow |
-| Privacy | No new data exposure or persistence |
-| Accessibility | Verify anchor focus, sticky control, reduced motion and aggregate loading/error states |
-| Responsive QA | Test long-page flow at 390px, larger mobile, tablet and desktop |
-
-## Acceptance criteria for the recommended flow
-
-- A successful submission is still required before the personalized result appears.
-- The participant sees the two approved community visualizations immediately after the saved confirmation.
-- Film/trailer access follows the community picture and precedes the card.
-- The inline Lab contains no action that clears or starts over the completed response.
-- The card can be downloaded or shared after exploring the Lab.
-- Aggregate loading failure does not hide or block the share card.
-- Pre-submission visitors can still explore the standalone Lab and start the check-in.
-- Event and non-event reward states both use the same post-submission structure.
-- Refresh recovery remains explicitly out of scope for this iteration.
-
-## Future product decisions
-
-1. Decide later whether card recovery after page refresh is worth the added privacy and persistence complexity.
-2. Revisit the condensed/full Lab balance only after observing real event behavior.
+Take It to the Table initially offers four featured themes and can reveal all 10. Selecting a theme displays all six questions together; deeper prompts are optional. Participants may carry one question forward and share a deep link containing only stable theme and question identifiers. No answers, identities, analytics events or conversation state are submitted.

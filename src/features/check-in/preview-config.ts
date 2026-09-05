@@ -10,7 +10,7 @@ export const previewScreeningConfig: ScreeningConfig = {
   institution: "The Virsa Foundation",
   eventDate: null,
   questionnaireKey: "reset-v1",
-  questionnaireVersion: 2,
+  questionnaireVersion: 3,
   policyVersion: "reset_data_use_v1_us",
   policyText:
     "I understand that my responses will be stored for Project RESET research and may contribute to anonymized or aggregated findings.",
@@ -145,6 +145,14 @@ export const previewScreeningConfig: ScreeningConfig = {
       prompt: "Participant-created RESET tags",
       answerType: "text",
       position: 7,
+      required: false,
+      options: [],
+    },
+    {
+      key: "today_commitment",
+      prompt: "What is one small thing you could choose today that might support you?",
+      answerType: "text",
+      position: 8,
       required: false,
       options: [],
     },

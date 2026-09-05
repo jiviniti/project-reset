@@ -4,80 +4,40 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { ResetBrand } from "@/components/brand/reset-brand";
 import {
-  buildConversationSession,
-  CONVERSATION_CONTENT_VERSION,
-  CONVERSATION_MODES,
+  CONVERSATION_PROMPTS,
   CONVERSATION_THEMES,
-  findReplacementPrompt,
   getPrompt,
   getThemeLabel,
-  type ConversationMode,
+  type ConversationPrompt,
   type ConversationThemeChoice,
   type ConversationThemeId,
 } from "./conversation-prompts";
 import styles from "./conversation-starter.module.css";
 
-const STORAGE_KEY = "project-reset-take-it-to-the-table-v2";
-const LEGACY_STORAGE_KEY = "project-reset-take-it-to-the-table-v1";
 const THEME_IDS = Object.keys(CONVERSATION_THEMES) as ConversationThemeId[];
-const MODE_IDS = Object.keys(CONVERSATION_MODES) as ConversationMode[];
+const FEATURED_THEMES: readonly ConversationThemeId[] = ["burnout", "food", "access", "connection"];
+const ACROSS_PROMPT_IDS = [
+  "burnout-earned",
+  "food-culture-carry",
+  "pace-fastest",
+  "land-last-meal",
+  "access-assumed-resources",
+  "climate-believable-hope",
+] as const;
 
-type ConversationSession = {
-  version: typeof CONVERSATION_CONTENT_VERSION;
-  theme: ConversationThemeChoice;
-  mode: ConversationMode;
-  seed: number;
-  promptIds: string[];
-  passedPromptIds: string[];
-  currentIndex: number;
-  complete: boolean;
-};
-
-function isTheme(value: unknown): value is ConversationThemeChoice {
+function isTheme(value: string | null): value is ConversationThemeChoice {
   return value === "across" || THEME_IDS.includes(value as ConversationThemeId);
 }
 
-function isMode(value: unknown): value is ConversationMode {
-  return MODE_IDS.includes(value as ConversationMode);
-}
-
-function parseStoredSession(value: string | null): ConversationSession | null {
-  if (!value) return null;
-  try {
-    const candidate = JSON.parse(value) as Partial<ConversationSession>;
-    if (
-      candidate.version !== CONVERSATION_CONTENT_VERSION
-      || !isTheme(candidate.theme)
-      || !isMode(candidate.mode)
-      || typeof candidate.seed !== "number"
-      || !Array.isArray(candidate.promptIds)
-      || candidate.promptIds.length !== CONVERSATION_MODES[candidate.mode].count
-      || !candidate.promptIds.every((id) => typeof id === "string" && getPrompt(id))
-      || !Array.isArray(candidate.passedPromptIds)
-      || !candidate.passedPromptIds.every((id) => typeof id === "string")
-      || typeof candidate.currentIndex !== "number"
-      || candidate.currentIndex < 0
-      || candidate.currentIndex >= candidate.promptIds.length
-      || typeof candidate.complete !== "boolean"
-    ) return null;
-    return candidate as ConversationSession;
-  } catch {
-    return null;
+function promptsFor(theme: ConversationThemeChoice): ConversationPrompt[] {
+  if (theme === "across") {
+    return ACROSS_PROMPT_IDS.map((id) => getPrompt(id)).filter((prompt): prompt is ConversationPrompt => Boolean(prompt));
   }
-}
-
-function createSeed() {
-  const values = new Uint32Array(1);
-  crypto.getRandomValues(values);
-  return values[0] || 1;
+  return CONVERSATION_PROMPTS.filter((prompt) => prompt.theme === theme);
 }
 
 function PathwayBand() {
-  return (
-    <div className={styles.pathwayBand} aria-hidden="true">
-      <span /><span /><span /><span /><span />
-    </div>
-  );
+  return <div className={styles.pathwayBand} aria-hidden="true"><span /><span /><span /><span /><span /></div>;
 }
 
 function FilmLockup() {
@@ -89,284 +49,242 @@ function FilmLockup() {
   );
 }
 
-function PartnerFooter({ reminder }: { reminder?: string }) {
+function PartnerFooter() {
   return (
     <footer className={styles.footer}>
-      {reminder && <p>{reminder}</p>}
       <div className={styles.partnerPlate} aria-label="Brought to you by JIVINITI in partnership with Picture Motion">
         <span>Brought to you by</span>
         <Image src="/images/jiviniti-wordmark.png" width={1118} height={518} alt="JIVINITI by The Virsa Foundation" />
         <span>in partnership with</span>
         <Image src="/images/picture-motion.jpg" width={200} height={200} alt="Picture Motion" />
       </div>
-      <p className={styles.safety}>This is a conversation guide, not therapy or crisis support. Please pause if anyone feels overwhelmed.</p>
+      <p className={styles.safety}>This is a conversation guide, not therapy or crisis support. Pause if anyone feels overwhelmed.</p>
       <PathwayBand />
     </footer>
   );
 }
 
-function CompactHeader({ topic }: { topic?: string }) {
+function ThemeButton({ themeId, selected, onSelect }: {
+  themeId: ConversationThemeId;
+  selected: boolean;
+  onSelect: (theme: ConversationThemeId) => void;
+}) {
+  const theme = CONVERSATION_THEMES[themeId];
   return (
-    <>
-      <header className={styles.compactHeader}>
-        <ResetBrand light />
-        <FilmLockup />
-      </header>
-      {topic && <p className={styles.topicMarker}><span>Topic</span>{topic}</p>}
-    </>
+    <button type="button" aria-pressed={selected} onClick={() => onSelect(themeId)}>
+      <b>{theme.number}</b><span>{theme.label}</span><small>{theme.description}</small><i aria-hidden="true">→</i>
+    </button>
   );
 }
 
 export function ConversationStarter() {
-  const [session, setSession] = useState<ConversationSession | null>(null);
-  const [selectedTheme, setSelectedTheme] = useState<ConversationThemeChoice | null>(null);
   const [hydrated, setHydrated] = useState(false);
-  const [followUpOpen, setFollowUpOpen] = useState(false);
-  const [copyStatus, setCopyStatus] = useState("");
-  const [copyFallback, setCopyFallback] = useState("");
-  const focusRef = useRef<HTMLHeadingElement>(null);
-  const modeHeadingRef = useRef<HTMLHeadingElement>(null);
+  const [selectedTheme, setSelectedTheme] = useState<ConversationThemeChoice | null>(null);
+  const [showAllThemes, setShowAllThemes] = useState(false);
+  const [expandedPrompt, setExpandedPrompt] = useState<string | null>(null);
+  const [carriedPrompt, setCarriedPrompt] = useState<string | null>(null);
+  const [shareStatus, setShareStatus] = useState("");
+  const [shareFallback, setShareFallback] = useState("");
+  const themeHeadingRef = useRef<HTMLHeadingElement>(null);
+  const themeSelectorRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const restore = window.setTimeout(() => {
-      setSession(parseStoredSession(sessionStorage.getItem(STORAGE_KEY)));
-      sessionStorage.removeItem(LEGACY_STORAGE_KEY);
+      const params = new URLSearchParams(window.location.search);
+      const theme = params.get("theme");
+      const question = params.get("question");
+      if (isTheme(theme)) {
+        setSelectedTheme(theme);
+        if (theme !== "across" && !FEATURED_THEMES.includes(theme)) setShowAllThemes(true);
+        if (question && promptsFor(theme).some((prompt) => prompt.id === question)) {
+          setExpandedPrompt(question);
+          setCarriedPrompt(question);
+        }
+      }
       setHydrated(true);
     }, 0);
     return () => window.clearTimeout(restore);
   }, []);
 
   useEffect(() => {
-    if (!hydrated) return;
-    if (session) sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-    else sessionStorage.removeItem(STORAGE_KEY);
-  }, [hydrated, session]);
-
-  useEffect(() => {
-    if (!hydrated || !session) return;
-    const frame = requestAnimationFrame(() => focusRef.current?.focus());
-    return () => cancelAnimationFrame(frame);
-  }, [hydrated, session]);
-
-  useEffect(() => {
-    if (!hydrated || !selectedTheme || session) return;
-    const frame = requestAnimationFrame(() => modeHeadingRef.current?.focus());
-    return () => cancelAnimationFrame(frame);
-  }, [hydrated, selectedTheme, session]);
-
-  function start(mode: ConversationMode) {
-    if (!selectedTheme) return;
-    const seed = createSeed();
-    setFollowUpOpen(false);
-    setSession({
-      version: CONVERSATION_CONTENT_VERSION,
-      theme: selectedTheme,
-      mode,
-      seed,
-      promptIds: buildConversationSession(selectedTheme, mode, seed),
-      passedPromptIds: [],
-      currentIndex: 0,
-      complete: false,
+    if (!hydrated || !selectedTheme) return;
+    const frame = requestAnimationFrame(() => {
+      themeHeadingRef.current?.focus({ preventScroll: true });
+      themeHeadingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
+    return () => cancelAnimationFrame(frame);
+  }, [hydrated, selectedTheme]);
+
+  function updateUrl(theme: ConversationThemeChoice | null, question?: string | null) {
+    const url = new URL(window.location.href);
+    url.search = "";
+    if (theme) url.searchParams.set("theme", theme);
+    if (theme && question) url.searchParams.set("question", question);
+    window.history.replaceState({}, "", url);
   }
 
-  function advance() {
-    if (!session) return;
-    setFollowUpOpen(false);
-    if (session.currentIndex === session.promptIds.length - 1) {
-      setSession({ ...session, complete: true });
-      return;
-    }
-    setSession({ ...session, currentIndex: session.currentIndex + 1 });
+  function selectTheme(theme: ConversationThemeChoice) {
+    setSelectedTheme(theme);
+    setExpandedPrompt(null);
+    setCarriedPrompt(null);
+    setShareStatus("");
+    setShareFallback("");
+    updateUrl(theme);
   }
 
-  function goBack() {
-    if (!session) return;
-    setFollowUpOpen(false);
-    if (session.complete) {
-      setSession({ ...session, complete: false });
-      return;
-    }
-    if (session.currentIndex > 0) setSession({ ...session, currentIndex: session.currentIndex - 1 });
+  function chooseAnotherTheme() {
+    themeSelectorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const firstButton = themeSelectorRef.current?.querySelector<HTMLButtonElement>("button");
+    firstButton?.focus();
   }
 
-  function pass() {
-    if (!session) return;
-    setFollowUpOpen(false);
-    const currentId = session.promptIds[session.currentIndex];
-    const replacement = findReplacementPrompt(
-      currentId,
-      session.promptIds,
-      session.passedPromptIds,
-      session.seed + session.passedPromptIds.length + session.currentIndex + 1,
-    );
-    if (!replacement) {
-      advance();
-      return;
-    }
-    const promptIds = [...session.promptIds];
-    promptIds[session.currentIndex] = replacement.id;
-    setSession({ ...session, promptIds, passedPromptIds: [...session.passedPromptIds, currentId] });
+  function carryForward(promptId: string) {
+    if (!selectedTheme) return;
+    setCarriedPrompt(promptId);
+    setExpandedPrompt(promptId);
+    setShareStatus("");
+    updateUrl(selectedTheme, promptId);
   }
 
-  function restart() {
-    setCopyStatus("");
-    setCopyFallback("");
-    setSelectedTheme(null);
-    setSession(null);
+  function shareUrl() {
+    const url = new URL(`${window.location.origin}/take-it-to-the-table`);
+    if (selectedTheme) url.searchParams.set("theme", selectedTheme);
+    if (selectedTheme && carriedPrompt) url.searchParams.set("question", carriedPrompt);
+    return url.toString();
   }
 
-  async function copyLink() {
-    const url = `${window.location.origin}/take-it-to-the-table`;
+  async function shareConversation() {
+    const url = shareUrl();
+    const prompt = carriedPrompt ? getPrompt(carriedPrompt) : undefined;
+    const shareData = {
+      title: "Take It to the Table",
+      text: prompt ? `A question worth talking about: ${prompt.question}` : `Questions about ${selectedTheme ? getThemeLabel(selectedTheme) : "Third Degree Burnout"}.`,
+      url,
+    };
     try {
-      await navigator.clipboard.writeText(url);
-      setCopyStatus("Link copied. Paste it into a message to invite someone.");
-      setCopyFallback("");
-    } catch {
-      setCopyStatus("Copy this link and paste it into a message.");
-      setCopyFallback(url);
+      if (navigator.share) {
+        await navigator.share(shareData);
+        setShareStatus("Conversation shared.");
+      } else {
+        await navigator.clipboard.writeText(url);
+        setShareStatus("Link copied. Paste it into a message to invite someone.");
+      }
+      setShareFallback("");
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        setShareStatus("Sharing cancelled. Nothing was lost.");
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(url);
+        setShareStatus("Link copied. Paste it into a message to invite someone.");
+        setShareFallback("");
+      } catch {
+        setShareStatus("Copy this link and paste it into a message.");
+        setShareFallback(url);
+      }
     }
   }
 
-  if (!hydrated) return <main className={styles.page}><p className={styles.loading}>Preparing the conversation…</p></main>;
+  if (!hydrated) return <main className={styles.page}><p className={styles.loading}>Preparing the questions…</p></main>;
 
-  if (!session && !selectedTheme) {
-    return (
-      <main className={styles.page}>
-        <div className={styles.shell}>
-          <header className={styles.hero}>
-            <div className={styles.heroTop}><ResetBrand light /><FilmLockup /></div>
-            <div className={styles.heroBody}>
-              <div className={styles.heroCopy}>
-                <p className={styles.reviewFlag}>Draft for Foundation review</p>
-                <p className={styles.eyebrow}>A conversation worth making room for</p>
-                <h1>Take it to the table.</h1>
-                <p>Choose something that feels relevant today. You do not need to have seen the film.</p>
+  const visibleThemes = showAllThemes ? THEME_IDS : FEATURED_THEMES;
+  const prompts = selectedTheme ? promptsFor(selectedTheme) : [];
+  const carried = carriedPrompt ? getPrompt(carriedPrompt) : undefined;
+
+  return (
+    <main className={styles.page}>
+      <div className={styles.shell}>
+        <header className={styles.hero}>
+          <div className={styles.heroTop}><ResetBrand light /><FilmLockup /></div>
+          <div className={styles.heroBody}>
+            <div className={styles.heroCopy}>
+              <p className={styles.reviewFlag}>Draft for Foundation review</p>
+              <p className={styles.eyebrow}>A conversation worth making room for</p>
+              <h1>Take it to the table.</h1>
+              <p>Choose what feels relevant today. You do not need to have seen the film or know the perfect answer.</p>
+            </div>
+            <div className={styles.collage} aria-hidden="true" />
+          </div>
+          <div className={styles.tornBand}><p>Questions for meals, walks, calls, classrooms, and gatherings.</p></div>
+        </header>
+
+        <section ref={themeSelectorRef} className={styles.startPanel} aria-labelledby="choose-theme-title">
+          <div className={styles.stepLabel}><span>01</span><p>Choose a topic</p></div>
+          <h2 id="choose-theme-title">What feels worth talking about?</h2>
+          <p className={styles.introText}>Select a theme to see every question in it. You can change themes whenever you like.</p>
+
+          <div className={styles.themeGrid}>
+            <button className={styles.acrossTheme} aria-pressed={selectedTheme === "across"} type="button" onClick={() => selectTheme("across")}>
+              <b>Not sure where to begin?</b><span>Browse six questions drawn from across the film&apos;s themes.</span><i aria-hidden="true">→</i>
+            </button>
+            {visibleThemes.map((themeId) => <ThemeButton key={themeId} themeId={themeId} selected={selectedTheme === themeId} onSelect={selectTheme} />)}
+          </div>
+          <button className={styles.showThemesButton} type="button" aria-expanded={showAllThemes} onClick={() => setShowAllThemes((shown) => !shown)}>
+            {showAllThemes ? "Show the four featured themes" : "Show all 10 themes"}
+          </button>
+
+          <aside className={styles.agreement}>
+            <p className={styles.eyebrow}>A few things to hold gently</p>
+            <ul>
+              <li>Share only what feels comfortable.</li>
+              <li>Skip any question, pause, or stop.</li>
+              <li>Listen without needing to fix anything.</li>
+              <li>Keep personal stories private.</li>
+            </ul>
+          </aside>
+        </section>
+
+        {selectedTheme && (
+          <section key={selectedTheme} className={styles.questionLibrary} aria-labelledby="question-library-heading">
+            <div className={styles.libraryHeading}>
+              <div>
+                <p className={styles.eyebrow}>Browse at your own pace</p>
+                <h2 id="question-library-heading" ref={themeHeadingRef} tabIndex={-1}>Questions about {getThemeLabel(selectedTheme)}</h2>
+                <p>Choose any question that opens something useful. There is no required order and nothing to submit.</p>
               </div>
-              <div className={styles.collage} aria-hidden="true" />
+              <button type="button" onClick={chooseAnotherTheme}>Choose another theme</button>
             </div>
-            <div className={styles.tornBand}>
-              <p>Questions for meals, walks, calls, classrooms, and gatherings.</p>
-            </div>
-          </header>
 
-          <section className={styles.startPanel} aria-labelledby="choose-theme-title">
-            <div className={styles.stepLabel}><span>01</span><p>Choose a topic</p></div>
-            <h2 id="choose-theme-title">What feels worth talking about?</h2>
-            <p className={styles.introText}>Pick what is on your mind. Every question can be discussed whether or not you have watched <em>Third Degree Burnout</em>.</p>
-
-            <div className={styles.themeGrid}>
-              <button className={styles.acrossTheme} type="button" onClick={() => setSelectedTheme("across")}>
-                <b>Across the film</b><span>Move between several themes</span><i aria-hidden="true">→</i>
-              </button>
-              {THEME_IDS.map((themeId) => {
-                const theme = CONVERSATION_THEMES[themeId];
+            <div className={styles.questionGrid}>
+              {prompts.map((prompt, index) => {
+                const expanded = expandedPrompt === prompt.id;
+                const carriedForward = carriedPrompt === prompt.id;
                 return (
-                  <button type="button" onClick={() => setSelectedTheme(themeId)} key={themeId}>
-                    <b>{theme.number}</b><span>{theme.label}</span><small>{theme.description}</small><i aria-hidden="true">→</i>
-                  </button>
+                  <article className={`${styles.questionCard}${carriedForward ? ` ${styles.carriedCard}` : ""}`} key={prompt.id}>
+                    <div className={styles.questionNumber}><span>{String(index + 1).padStart(2, "0")}</span><small>{CONVERSATION_THEMES[prompt.theme].label}</small></div>
+                    <p>{prompt.context}</p>
+                    <h3>{prompt.question}</h3>
+                    <button className={styles.followUpButton} type="button" aria-expanded={expanded} onClick={() => setExpandedPrompt(expanded ? null : prompt.id)}>
+                      {expanded ? "Close the deeper prompt" : "Go a little deeper"}
+                    </button>
+                    {expanded && <div className={styles.followUp}><span>Consider this too</span>{prompt.followUp}</div>}
+                    <button className={styles.carryButton} type="button" aria-pressed={carriedForward} onClick={() => carryForward(prompt.id)}>
+                      {carriedForward ? "Carrying this question forward" : "Carry this question forward"}
+                    </button>
+                  </article>
                 );
               })}
             </div>
 
-            <aside className={styles.agreement}>
-              <p className={styles.eyebrow}>A few things to hold gently</p>
-              <ul>
-                <li>Share only what feels comfortable.</li>
-                <li>You can skip any question, pause, or stop.</li>
-                <li>Listen without feeling that you need to fix anything.</li>
-                <li>Keep personal stories private.</li>
-              </ul>
-            </aside>
+            {carried && (
+              <aside className={styles.carryPanel} aria-live="polite">
+                <div className={styles.miniBurst} aria-hidden="true"><span /><span /><span /><span /><span /></div>
+                <p className={styles.eyebrow}>Carry it forward</p>
+                <h2>You found a question worth keeping open.</h2>
+                <blockquote>{carried.question}</blockquote>
+                <p>Share a link that opens this question, or choose another theme. Your answer is never collected.</p>
+                <div className={styles.carryActions}>
+                  <button className={styles.primaryButton} type="button" onClick={() => void shareConversation()}>Share this conversation</button>
+                  <button className={styles.secondaryButton} type="button" onClick={chooseAnotherTheme}>Choose another theme</button>
+                </div>
+                <p className={styles.shareStatus} aria-live="polite">{shareStatus}</p>
+                {shareFallback && <input aria-label="Conversation link" readOnly value={shareFallback} onFocus={(event) => event.currentTarget.select()} />}
+              </aside>
+            )}
           </section>
-          <PartnerFooter />
-        </div>
-      </main>
-    );
-  }
-
-  if (!session && selectedTheme) {
-    return (
-      <main className={styles.page}>
-        <div className={`${styles.shell} ${styles.sessionShell}`}>
-          <CompactHeader />
-          <section className={styles.modePanel}>
-            <div className={styles.stepLabel}><span>02</span><p>Choose how far to go</p></div>
-            <p className={styles.selectedLabel}>You chose</p>
-            <h1 ref={modeHeadingRef} tabIndex={-1}>{getThemeLabel(selectedTheme)}</h1>
-            <button className={styles.changeTopic} type="button" onClick={() => setSelectedTheme(null)}>← Change topic</button>
-            <p className={styles.modeIntro}>Start small or make more room. There is no timer, and you can stop whenever you need to.</p>
-            <div className={styles.modeGrid}>
-              {MODE_IDS.map((mode) => (
-                <button type="button" onClick={() => start(mode)} key={mode}>
-                  <span>{CONVERSATION_MODES[mode].count.toString().padStart(2, "0")}</span>
-                  <strong>{CONVERSATION_MODES[mode].label}</strong>
-                  <small>{CONVERSATION_MODES[mode].description}</small>
-                  <i aria-hidden="true">→</i>
-                </button>
-              ))}
-            </div>
-          </section>
-          <PartnerFooter reminder="Share only what feels comfortable. You can skip any question, pause, or stop." />
-        </div>
-      </main>
-    );
-  }
-
-  if (!session) return null;
-
-  if (session.complete) {
-    return (
-      <main className={styles.page}>
-        <div className={`${styles.shell} ${styles.sessionShell}`}>
-          <CompactHeader topic={getThemeLabel(session.theme)} />
-          <section className={styles.completion}>
-            <p className={styles.reviewFlag}>Draft for Foundation review</p>
-            <p className={styles.eyebrow}>Carry it forward</p>
-            <h1 ref={focusRef} tabIndex={-1}>Which question would you like to keep thinking about?</h1>
-            <p>You do not need to settle on an answer. Sometimes noticing what deserves another conversation is enough.</p>
-            <div className={styles.completionActions}>
-              <button className={styles.primaryButton} type="button" onClick={restart}>Explore another topic</button>
-              <button className={styles.secondaryButton} type="button" onClick={() => void copyLink()}>Invite someone to a conversation</button>
-              <button className={styles.textButton} type="button" onClick={goBack}>Back to the last question</button>
-            </div>
-            <p className={styles.copyStatus} aria-live="polite">{copyStatus}</p>
-            {copyFallback && <input className={styles.copyFallback} aria-label="Conversation tool link" readOnly value={copyFallback} onFocus={(event) => event.currentTarget.select()} />}
-          </section>
-          <PartnerFooter />
-        </div>
-      </main>
-    );
-  }
-
-  const currentPrompt = getPrompt(session.promptIds[session.currentIndex]);
-  if (!currentPrompt) return null;
-  const theme = CONVERSATION_THEMES[currentPrompt.theme];
-  const remaining = session.promptIds.length - session.currentIndex - 1;
-  const progress = ((session.currentIndex + 1) / session.promptIds.length) * 100;
-
-  return (
-    <main className={styles.page}>
-      <div className={`${styles.shell} ${styles.sessionShell}`}>
-        <CompactHeader topic={getThemeLabel(session.theme)} />
-        <div className={styles.progress} aria-hidden="true"><span style={{ width: `${progress}%` }} /></div>
-        <p className={styles.progressText} aria-live="polite">Question {session.currentIndex + 1} of {session.promptIds.length}<span>{remaining ? `${remaining} remaining` : "Final question"}</span></p>
-        <article className={styles.promptCard} key={currentPrompt.id}>
-          <div className={styles.stageHeading}><p>{theme.label}</p><span>{theme.number}</span></div>
-          <p className={styles.context}>{currentPrompt.context}</p>
-          <h1 ref={focusRef} tabIndex={-1}>{currentPrompt.question}</h1>
-          <div className={styles.followUp}>
-            <button type="button" aria-expanded={followUpOpen} onClick={() => setFollowUpOpen((open) => !open)}>{followUpOpen ? "Hide the follow-up" : "Explore this a little further"}</button>
-            {followUpOpen && <p>{currentPrompt.followUp}</p>}
-          </div>
-          <PathwayBand />
-        </article>
-        <nav className={styles.controls} aria-label="Conversation questions">
-          <button className={styles.textButton} type="button" onClick={goBack} disabled={session.currentIndex === 0}>Back</button>
-          <button className={styles.secondaryButton} type="button" onClick={pass}>Try another question</button>
-          <button className={styles.primaryButton} type="button" onClick={advance}>{remaining ? "Continue" : "Finish conversation"}</button>
-        </nav>
-        <PartnerFooter reminder="Share only what feels comfortable. You can skip any question, pause, or stop." />
+        )}
+        <PartnerFooter />
       </div>
     </main>
   );

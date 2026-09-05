@@ -1,6 +1,6 @@
 # Data model
 
-Last verified: 31 August 2026
+Last verified: 5 September 2026
 
 ## Raw research model
 
@@ -22,22 +22,26 @@ One trim-and-lowercase normalized email is assumed to identify one participant a
 - `pathway_type`: `event` or `non_event`;
 - `check_in_opens_at`: optional inclusive event eligibility start;
 - `check_in_closes_at`: required exclusive event eligibility end for event pathways;
-- `film_access_ends_at`: required expiry attached to a qualifying film reward.
+- `film_access_ends_at`: legacy configured reward notice value; it must not be presented as KINEMA enforcement.
 
 `private.participations` stores the committed `entry_pathway`, `event_window_status` and `reward_type`. This is a historical decision snapshot, not a browser preference. Expired and not-yet-open event URLs store `non_event`/`trailer_access` while retaining their original `screening_id`.
 
-`private.reward_deliveries` stores `reward_type` and `access_expires_at`. Film rewards use an email channel with deferred status until KINEMA delivery is implemented. Trailer rewards use a web channel with available status. Marketing consent does not control either transactional reward.
+`private.reward_deliveries` stores the transactional reward decision. For the launch, the server appends KINEMA manual-redemption details after a committed eligible event response; promo codes themselves are held in server environment variables rather than database rows. Trailer rewards remain web rewards. Marketing consent does not control either reward.
 
 The model permits the same participant to complete multiple screenings and does not yet impose one entitlement per participant/event. That business rule is deferred pending KINEMA and Foundation confirmation.
 
 Rituals, explanatory answers and participant-created tags are private text answers. They are never read by the aggregate updater.
+
+### Questionnaire version 3
+
+Version 3 copies the complete version-2 questionnaire and adds optional text question `today_commitment`, limited to 500 characters. Preview screenings and any already-provisioned launch screening rows move to v3. Versions 1 and 2 and their responses remain unchanged. The commitment has no entry in `aggregate.metric_definitions`, so it is private and absent from public snapshots.
 
 ### Participant-created tag representation
 
 - `burnout_custom_tags` and `reset_custom_tags` remain questionnaire text questions in `private.questions`.
 - The frontend trims only leading/trailing whitespace, preserves internal spacing, spelling, punctuation and non-ASCII wording, deduplicates within the answer and allows at most six tags of 60 characters per question.
 - Tags are serialized as newline-delimited `text_value` in `private.response_answers`, so they retain their question association without creating public metric definitions.
-- They are not canonicalized, alias-matched, clustered, moderated, copied to `metric_definitions`, returned by the aggregate API, displayed in the Learning Lab or included in the share card.
+- They are not canonicalized, alias-matched, clustered, moderated, copied to `metric_definitions`, returned by the aggregate API, displayed in the Learning Lab or included in any active sharing experience.
 
 `private.policy_versions.reset_data_use_v1_us` contains the U.S.-English acknowledgement. The earlier `reset_data_use_v1` row remains intact so prior consent provenance is not rewritten.
 

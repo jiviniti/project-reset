@@ -11,6 +11,7 @@ import {
 import { submissionSchema } from "@/lib/validation/submission";
 import { getScreeningConfig } from "@/services/submissions/screenings";
 import { persistSubmission, SubmissionDatabaseError } from "@/services/submissions/submit";
+import { resolveKinemaRewardAccess } from "@/services/rewards/kinema-access";
 
 export const runtime = "nodejs";
 
@@ -45,7 +46,11 @@ export async function POST(request: Request) {
     }
 
     const result = await persistSubmission(input);
-    return NextResponse.json(result, { status: result.replayed ? 200 : 201 });
+    const rewardAccess = resolveKinemaRewardAccess(screening.slug, result, env);
+    return NextResponse.json(
+      rewardAccess ? { ...result, rewardAccess } : result,
+      { status: result.replayed ? 200 : 201 },
+    );
   } catch (error) {
     if (error instanceof RequestGuardError) {
       return errorResponse(error.status, error.code, correlationId);

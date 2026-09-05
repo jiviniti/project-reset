@@ -15,10 +15,20 @@ export type PathwayResolution = {
   accessEndsAt: string | null;
 };
 
+export type KinemaRewardAccess = {
+  provider: "kinema";
+  filmUrl: string;
+  promoCode: string;
+  accountRequired: true;
+  startWithinDays: 30;
+  finishWithinHours: 48;
+};
+
 export type SubmissionResult = PathwayResolution & {
   submissionId: string;
   participationId: string;
   rewardDeliveryId: string | null;
   status: "completed";
   replayed: boolean;
+  rewardAccess?: KinemaRewardAccess;
 };

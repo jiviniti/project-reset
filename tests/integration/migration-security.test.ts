@@ -23,6 +23,10 @@ const questionnaireV2Migration = readFileSync(
   resolve("supabase/migrations/202608310001_questionnaire_v2_brand_polish.sql"),
   "utf8",
 ).toLowerCase();
+const questionnaireV3Migration = readFileSync(
+  resolve("supabase/migrations/202609050001_questionnaire_v3_commitment.sql"),
+  "utf8",
+).toLowerCase();
 
 describe("database security migration", () => {
   it("uses only invoker functions", () => {
@@ -101,6 +105,14 @@ describe("database security migration", () => {
     expect(questionnaireV2Migration).toContain("security invoker");
     expect(questionnaireV2Migration).not.toContain("security definer");
     expect(questionnaireV2Migration).toContain("revoke execute on function api.get_screening_v1(text) from public, anon, authenticated");
+  });
+
+  it("publishes a private questionnaire v3 commitment without adding a public metric", () => {
+    expect(questionnaireV3Migration).toContain("values ('reset-v1', 3");
+    expect(questionnaireV3Migration).toContain("'today_commitment'");
+    expect(questionnaireV3Migration).toContain("'visibility', 'private'");
+    expect(questionnaireV3Migration).not.toContain("insert into aggregate.metric_definitions");
+    expect(questionnaireV3Migration).toContain("questionnaire_version_id = source_version.id");
   });
 
   it("derives cumulative observed values from screening scopes and seeded values from one baseline", () => {

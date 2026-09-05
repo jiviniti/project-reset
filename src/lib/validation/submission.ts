@@ -17,6 +17,16 @@ export const answerSchema = z
         message: "Each answer must contain either optionKeys or text.",
       });
     }
+    if (answer.questionKey === "today_commitment" && answer.text !== undefined && answer.text.length > 500) {
+      context.addIssue({
+        code: "too_big",
+        origin: "string",
+        maximum: 500,
+        inclusive: true,
+        path: ["text"],
+        message: "The commitment response must be 500 characters or fewer.",
+      });
+    }
   });
 
 export const submissionSchema = z.object({
@@ -55,6 +65,14 @@ export const submissionResultSchema = z.object({
     .optional()
     .default("active_event"),
   accessEndsAt: z.string().datetime({ offset: true }).nullable().optional().default(null),
+  rewardAccess: z.object({
+    provider: z.literal("kinema"),
+    filmUrl: z.string().url(),
+    promoCode: z.string().min(1),
+    accountRequired: z.literal(true),
+    startWithinDays: z.literal(30),
+    finishWithinHours: z.literal(48),
+  }).optional(),
 });
 
 export type SubmissionPayload = z.infer<typeof submissionSchema>;
