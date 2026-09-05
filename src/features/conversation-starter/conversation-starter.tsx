@@ -87,8 +87,7 @@ export function ConversationStarter() {
   const [shareFallback, setShareFallback] = useState("");
   const themeHeadingRef = useRef<HTMLHeadingElement>(null);
   const themeSelectorRef = useRef<HTMLElement>(null);
-  const carryHeadingRef = useRef<HTMLHeadingElement>(null);
-  const revealCarryRef = useRef(false);
+  const questionLibraryRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const restore = window.setTimeout(() => {
@@ -112,20 +111,10 @@ export function ConversationStarter() {
     if (!hydrated || !selectedTheme) return;
     const frame = requestAnimationFrame(() => {
       themeHeadingRef.current?.focus({ preventScroll: true });
-      themeHeadingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      questionLibraryRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
     return () => cancelAnimationFrame(frame);
   }, [hydrated, selectedTheme]);
-
-  useEffect(() => {
-    if (!carriedPrompt || !revealCarryRef.current) return;
-    revealCarryRef.current = false;
-    const frame = requestAnimationFrame(() => {
-      carryHeadingRef.current?.focus({ preventScroll: true });
-      carryHeadingRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [carriedPrompt]);
 
   function updateUrl(theme: ConversationThemeChoice | null, question?: string | null) {
     const url = new URL(window.location.href);
@@ -152,9 +141,7 @@ export function ConversationStarter() {
 
   function carryForward(promptId: string) {
     if (!selectedTheme) return;
-    revealCarryRef.current = true;
     setCarriedPrompt(promptId);
-    setExpandedPrompt(promptId);
     setShareStatus("");
     updateUrl(selectedTheme, promptId);
   }
@@ -249,7 +236,7 @@ export function ConversationStarter() {
         </section>
 
         {selectedTheme && (
-          <section key={selectedTheme} className={styles.questionLibrary} aria-labelledby="question-library-heading">
+          <section id="question-library" ref={questionLibraryRef} key={selectedTheme} className={styles.questionLibrary} aria-labelledby="question-library-heading">
             <div className={styles.libraryHeading}>
               <div>
                 <div className={`${styles.stepLabel} ${styles.stepLabelDark}`}>
@@ -275,8 +262,9 @@ export function ConversationStarter() {
                     </button>
                     {expanded && <div className={styles.followUp}><span>Consider this too</span>{prompt.followUp}</div>}
                     <button className={styles.carryButton} type="button" aria-pressed={carriedForward} onClick={() => carryForward(prompt.id)}>
-                      {carriedForward ? "Carrying this question forward" : "Carry this question forward"}
+                      {carriedForward ? <><span aria-hidden="true">✓</span> Added to carry forward</> : "Carry this question forward"}
                     </button>
+                    {carriedForward ? <p className={styles.carryConfirmation} role="status">Keep browsing. You&apos;ll find this question again at the end.</p> : null}
                   </article>
                 );
               })}
@@ -286,7 +274,7 @@ export function ConversationStarter() {
               <aside className={styles.carryPanel} aria-live="polite">
                 <div className={styles.miniBurst} aria-hidden="true"><span /><span /><span /><span /><span /></div>
                 <p className={styles.eyebrow}>Carry it forward</p>
-                <h2 ref={carryHeadingRef} tabIndex={-1}>You found a question worth keeping open.</h2>
+                <h2>You found a question worth keeping open.</h2>
                 <blockquote>{carried.question}</blockquote>
                 <p>Share a link that opens this question, or choose another theme. Your answer is never collected.</p>
                 <div className={styles.carryActions}>

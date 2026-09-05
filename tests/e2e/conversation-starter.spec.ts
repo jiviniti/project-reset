@@ -25,6 +25,9 @@ test("shows all six questions in a selected theme without collecting answers", a
 
   await page.getByRole("button", { name: /Burnout beyond work/i }).click();
   await expect(page.getByRole("heading", { name: "Questions about Burnout beyond work" })).toBeFocused();
+  const library = page.locator("#question-library");
+  await expect(library.getByText("Explore the questions", { exact: true })).toBeInViewport();
+  await expect(page.getByRole("heading", { name: "Questions about Burnout beyond work" })).toBeInViewport();
   await expect(page.locator("article")).toHaveCount(6);
   await expect(page.locator("input:not([readonly]), textarea")).toHaveCount(0);
   await expect(page.getByText(/Question 1 of/)).toHaveCount(0);
@@ -49,9 +52,12 @@ test("carries and shares an exact question using only stable URL identifiers", a
   await page.getByRole("button", { name: /Food, memory, and care/i }).click();
   const firstCard = page.locator("article").first();
   await firstCard.getByRole("button", { name: "Carry this question forward" }).click();
+  await expect(firstCard.getByRole("button", { name: "Added to carry forward" })).toBeVisible();
+  await expect(firstCard.getByText("Keep browsing. You'll find this question again at the end.")).toBeVisible();
   const carryHeading = page.getByRole("heading", { name: "You found a question worth keeping open." });
   await expect(carryHeading).toBeVisible();
-  await expect(carryHeading).toBeFocused();
+  await expect(carryHeading).not.toBeInViewport();
+  await carryHeading.scrollIntoViewIfNeeded();
   await page.getByRole("button", { name: "Share this conversation" }).click();
   await expect(page.getByText("Link copied. Paste it into a message to invite someone.")).toBeVisible();
 

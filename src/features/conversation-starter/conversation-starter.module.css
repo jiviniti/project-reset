@@ -695,12 +695,14 @@
 }
 .carryButton:hover { color: var(--sindoor); border-color: var(--sindoor); }
 .carryButton[aria-pressed="true"] { color: var(--mrida); border-color: var(--mrida); }
+.carryButton[aria-pressed="true"] span { display: inline-grid; width: 20px; height: 20px; margin-right: 7px; color: var(--shweta); border-radius: 50%; background: var(--nourish); place-items: center; }
+.carryConfirmation { margin: 10px 0 0 !important; color: var(--nourish) !important; font-size: .62rem !important; font-weight: 600; line-height: 1.45 !important; }
 
-.carryPanel { position: relative; margin-top: 30px; padding: 40px 30px 32px; overflow: hidden; color: var(--kalika); background: var(--sindoor); }
+.carryPanel { position: relative; margin-top: 30px; padding: 32px 30px; overflow: hidden; color: var(--kalika); border-top: 8px solid var(--sindoor); background: var(--shweta); }
 .carryPanel h2 { max-width: 520px; margin: 9px 0 16px; font-size: 1.65rem; line-height: 1.1; }
-.carryPanel .eyebrow { color: var(--kalika); }
+.carryPanel .eyebrow { color: var(--sindoor); }
 .carryPanel blockquote { max-width: 570px; margin: 0; color: var(--kalika); font: 600 1.15rem/1.45 var(--ui); }
-.carryPanel > p:not(.eyebrow, .shareStatus) { max-width: 540px; margin: 20px 0 0; color: #492d2e; font-size: .68rem; line-height: 1.55; }
+.carryPanel > p:not(.eyebrow, .shareStatus) { max-width: 540px; margin: 20px 0 0; color: #555; font-size: .68rem; line-height: 1.55; }
 .carryActions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 26px; }
 .carryPanel .primaryButton { color: var(--shweta); border-color: var(--kalika); background: var(--kalika); }
 .carryPanel .secondaryButton { color: var(--kalika); border-color: var(--kalika); }
@@ -708,13 +710,13 @@
 .carryPanel .secondaryButton:hover { color: var(--shweta); background: var(--kalika); }
 .shareStatus { min-height: 18px; margin: 13px 0 0; color: var(--kalika); font-size: .63rem; }
 .carryPanel > input { width: 100%; min-height: 40px; padding: 8px 10px; color: var(--kalika); border: 0; background: var(--shweta); font: .62rem/1.2 var(--ui); }
-.miniBurst { position: absolute; top: 22px; right: 24px; width: 54px; height: 54px; animation: burstIn .55s ease both; }
-.miniBurst span { position: absolute; top: 24px; left: 24px; width: 8px; height: 8px; border-radius: 50%; transform-origin: 4px 4px; }
-.miniBurst span:nth-child(1) { transform: translateY(-21px); background: var(--nourish); }
-.miniBurst span:nth-child(2) { transform: rotate(72deg) translateY(-21px); background: var(--restore); }
-.miniBurst span:nth-child(3) { transform: rotate(144deg) translateY(-21px); background: var(--move); }
-.miniBurst span:nth-child(4) { transform: rotate(216deg) translateY(-21px); background: var(--connect); }
-.miniBurst span:nth-child(5) { transform: rotate(288deg) translateY(-21px); background: var(--rebalance); }
+.miniBurst { position: relative; width: 126px; height: 18px; margin: 0 0 22px auto; animation: burstIn .55s ease both; }
+.miniBurst span { position: absolute; top: 4px; width: 9px; height: 9px; border-radius: 50%; }
+.miniBurst span:nth-child(1) { left: 0; background: var(--nourish); }
+.miniBurst span:nth-child(2) { left: 28px; background: var(--restore); }
+.miniBurst span:nth-child(3) { left: 56px; background: var(--move); }
+.miniBurst span:nth-child(4) { left: 84px; background: var(--connect); }
+.miniBurst span:nth-child(5) { left: 112px; background: var(--rebalance); }
 .showThemesButton:focus-visible,
 .libraryHeading button:focus-visible,
 .followUpButton:focus-visible,
@@ -765,6 +767,8 @@
   .libraryHeading > button { width: 100%; margin-top: 18px; }
   .questionGrid { grid-template-columns: 1fr; }
   .questionCard { padding-inline: 20px; }
+  .carryPanel { padding: 28px 22px 30px; }
+  .carryActions { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 410px) {
