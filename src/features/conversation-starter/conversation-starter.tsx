@@ -72,7 +72,7 @@ function ThemeButton({ themeId, selected, onSelect }: {
   const theme = CONVERSATION_THEMES[themeId];
   return (
     <button type="button" aria-pressed={selected} onClick={() => onSelect(themeId)}>
-      <b>{theme.number}</b><span>{theme.label}</span><small>{theme.description}</small><i aria-hidden="true">→</i>
+      <b>{theme.number}</b><span>{theme.label}</span><small>{theme.description}</small><i aria-hidden="true">{selected ? "✓" : "→"}</i>
     </button>
   );
 }
@@ -87,6 +87,8 @@ export function ConversationStarter() {
   const [shareFallback, setShareFallback] = useState("");
   const themeHeadingRef = useRef<HTMLHeadingElement>(null);
   const themeSelectorRef = useRef<HTMLElement>(null);
+  const carryHeadingRef = useRef<HTMLHeadingElement>(null);
+  const revealCarryRef = useRef(false);
 
   useEffect(() => {
     const restore = window.setTimeout(() => {
@@ -115,6 +117,16 @@ export function ConversationStarter() {
     return () => cancelAnimationFrame(frame);
   }, [hydrated, selectedTheme]);
 
+  useEffect(() => {
+    if (!carriedPrompt || !revealCarryRef.current) return;
+    revealCarryRef.current = false;
+    const frame = requestAnimationFrame(() => {
+      carryHeadingRef.current?.focus({ preventScroll: true });
+      carryHeadingRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [carriedPrompt]);
+
   function updateUrl(theme: ConversationThemeChoice | null, question?: string | null) {
     const url = new URL(window.location.href);
     url.search = "";
@@ -140,6 +152,7 @@ export function ConversationStarter() {
 
   function carryForward(promptId: string) {
     if (!selectedTheme) return;
+    revealCarryRef.current = true;
     setCarriedPrompt(promptId);
     setExpandedPrompt(promptId);
     setShareStatus("");
@@ -216,7 +229,7 @@ export function ConversationStarter() {
 
           <div className={styles.themeGrid}>
             <button className={styles.acrossTheme} aria-pressed={selectedTheme === "across"} type="button" onClick={() => selectTheme("across")}>
-              <b>Not sure where to begin?</b><span>Browse six questions drawn from across the film&apos;s themes.</span><i aria-hidden="true">→</i>
+              <b>Not sure where to begin?</b><span>Browse six questions drawn from across the film&apos;s themes.</span><i aria-hidden="true">{selectedTheme === "across" ? "✓" : "→"}</i>
             </button>
             {visibleThemes.map((themeId) => <ThemeButton key={themeId} themeId={themeId} selected={selectedTheme === themeId} onSelect={selectTheme} />)}
           </div>
@@ -239,7 +252,9 @@ export function ConversationStarter() {
           <section key={selectedTheme} className={styles.questionLibrary} aria-labelledby="question-library-heading">
             <div className={styles.libraryHeading}>
               <div>
-                <p className={styles.eyebrow}>Browse at your own pace</p>
+                <div className={`${styles.stepLabel} ${styles.stepLabelDark}`}>
+                  <span>02</span><p>Explore the questions</p>
+                </div>
                 <h2 id="question-library-heading" ref={themeHeadingRef} tabIndex={-1}>Questions about {getThemeLabel(selectedTheme)}</h2>
                 <p>Choose any question that opens something useful. There is no required order and nothing to submit.</p>
               </div>
@@ -271,7 +286,7 @@ export function ConversationStarter() {
               <aside className={styles.carryPanel} aria-live="polite">
                 <div className={styles.miniBurst} aria-hidden="true"><span /><span /><span /><span /><span /></div>
                 <p className={styles.eyebrow}>Carry it forward</p>
-                <h2>You found a question worth keeping open.</h2>
+                <h2 ref={carryHeadingRef} tabIndex={-1}>You found a question worth keeping open.</h2>
                 <blockquote>{carried.question}</blockquote>
                 <p>Share a link that opens this question, or choose another theme. Your answer is never collected.</p>
                 <div className={styles.carryActions}>

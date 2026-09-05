@@ -232,7 +232,7 @@
 
 .themeGrid button[aria-pressed="true"] {
   color: var(--kalika);
-  background: var(--marigold-light);
+  background: var(--sindoor);
   box-shadow: inset 0 0 0 3px var(--kalika);
 }
 
@@ -293,14 +293,14 @@
   background: var(--kalika);
 }
 
-.themeGrid .acrossTheme b { color: var(--connect); }
+.themeGrid .acrossTheme b { color: var(--sindoor); }
 .themeGrid .acrossTheme span { margin-top: 5px; font-size: .68rem; font-weight: 400; }
 .themeGrid .acrossTheme:hover,
 .themeGrid .acrossTheme:focus-visible { background: var(--sindoor); }
 .themeGrid .acrossTheme:hover b,
 .themeGrid .acrossTheme:focus-visible b { color: var(--kalika); }
 
-.themeGrid .acrossTheme[aria-pressed="true"] { color: var(--kalika); background: var(--connect); }
+.themeGrid .acrossTheme[aria-pressed="true"] { color: var(--kalika); background: var(--sindoor); }
 .themeGrid .acrossTheme[aria-pressed="true"] b { color: var(--kalika); }
 
 .showThemesButton {
@@ -319,7 +319,9 @@
   margin-top: 38px;
   padding: 26px 28px;
   border-left: 5px solid var(--sindoor);
-  background: #f4f4f1;
+  border-top: 1px solid var(--kalika);
+  border-bottom: 1px solid var(--kalika);
+  background: var(--shweta);
 }
 
 .agreement ul {
@@ -589,38 +591,63 @@
 .copyFallback { width: 100%; min-height: 42px; padding: 8px 10px; color: var(--kalika); border: 1px solid var(--kalika); border-radius: 0; background: var(--shweta); font: inherit; font-size: .68rem; }
 
 .questionLibrary {
-  padding: 54px 42px 64px;
-  color: var(--kalika);
-  background: #f4eee7;
-  border-top: 9px solid var(--nourish);
+  position: relative;
+  padding: 78px 42px 64px;
+  color: var(--shweta);
+  background: var(--kalika);
   scroll-margin-top: 20px;
   animation: libraryReveal .7s cubic-bezier(.2,.72,.25,1) both;
+}
+.questionLibrary::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 24px;
+  background: var(--sindoor);
+  clip-path: polygon(0 0, 100% 0, 100% 62%, 95% 84%, 90% 58%, 84% 88%, 78% 61%, 72% 82%, 66% 59%, 60% 87%, 54% 60%, 48% 83%, 42% 58%, 36% 86%, 30% 61%, 24% 82%, 18% 57%, 12% 86%, 6% 60%, 0 82%);
+  content: "";
 }
 
 .libraryHeading { display: flex; align-items: flex-start; justify-content: space-between; gap: 28px; }
 .libraryHeading > div { max-width: 520px; }
-.libraryHeading h2 { margin: 10px 0 12px; font-size: clamp(2rem, 6vw, 3.2rem); line-height: 1.02; letter-spacing: -.05em; outline: none; }
-.libraryHeading p:not(.eyebrow) { margin: 0; color: #59534e; font-size: .77rem; line-height: 1.6; }
+.stepLabelDark { margin-bottom: 18px; }
+.stepLabelDark span { color: var(--sindoor); }
+.stepLabelDark p { color: var(--shweta); }
+.libraryHeading h2 { margin: 0 0 14px; color: var(--shweta); font-size: clamp(2rem, 6vw, 3.2rem); line-height: 1.02; letter-spacing: -.05em; outline: none; }
+.libraryHeading > div > p { margin: 0; color: #cfcfcb; font-size: .77rem; line-height: 1.6; }
 .libraryHeading > button {
   flex: none;
   min-height: 42px;
   padding: 10px 13px;
-  color: var(--kalika);
-  border: 1px solid var(--kalika);
+  color: var(--shweta);
+  border: 1px solid var(--shweta);
   background: transparent;
   cursor: pointer;
   font: 600 .62rem/1.2 var(--ui);
 }
+.libraryHeading > button:hover { color: var(--kalika); background: var(--shweta); }
 
-.questionGrid { display: grid; gap: 18px; margin-top: 38px; }
+.questionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 42px;
+  border-top: 1px solid rgb(255 255 255 / 58%);
+  border-left: 1px solid rgb(255 255 255 / 58%);
+}
 .questionCard {
   position: relative;
-  padding: 26px 26px 24px;
+  display: flex;
+  min-height: 380px;
+  padding: 28px 26px 26px;
   overflow: hidden;
-  border: 1px solid #cabcb2;
-  background: var(--shweta);
-  box-shadow: 5px 6px 0 rgb(82 41 43 / 10%);
-  transition: border-color .2s ease, transform .2s ease;
+  color: var(--shweta);
+  border: 0;
+  border-right: 1px solid rgb(255 255 255 / 58%);
+  border-bottom: 1px solid rgb(255 255 255 / 58%);
+  background: transparent;
+  flex-direction: column;
+  transition: color .25s ease, background-color .25s ease;
   animation: questionReveal .62s cubic-bezier(.2,.72,.25,1) both;
 }
 .questionCard:nth-child(2) { animation-delay: .05s; }
@@ -628,21 +655,20 @@
 .questionCard:nth-child(4) { animation-delay: .15s; }
 .questionCard:nth-child(5) { animation-delay: .2s; }
 .questionCard:nth-child(6) { animation-delay: .25s; }
-.questionCard:nth-child(5n + 2) { border-top: 6px solid var(--connect); }
-.questionCard:nth-child(5n + 3) { border-top: 6px solid var(--rebalance); }
-.questionCard:nth-child(5n + 4) { border-top: 6px solid var(--restore); }
-.questionCard:nth-child(5n + 5) { border-top: 6px solid var(--move); }
-.questionCard:nth-child(5n + 1) { border-top: 6px solid var(--nourish); }
-.questionCard.carriedCard { border-color: var(--mrida); transform: translateY(-2px); box-shadow: 7px 8px 0 var(--pavitra); }
+.questionCard:hover { background: #292929; }
+.questionCard.carriedCard { color: var(--kalika); background: var(--pavitra); box-shadow: inset 0 0 0 4px var(--sindoor); }
 .questionNumber { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
-.questionNumber span { color: var(--sindoor); font-size: .68rem; font-weight: 700; letter-spacing: .13em; }
-.questionNumber small { color: #77706b; font-size: .55rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
-.questionCard > p { max-width: 560px; margin: 28px 0 10px; color: #635d58; font-size: .68rem; line-height: 1.55; }
+.questionNumber span { color: var(--pavitra); font-size: .68rem; font-weight: 700; letter-spacing: .13em; }
+.questionNumber small { color: #aaa; font-size: .55rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.questionCard.carriedCard .questionNumber span,
+.questionCard.carriedCard .questionNumber small { color: var(--mrida); }
+.questionCard > p { max-width: 560px; margin: 42px 0 10px; color: #bbb; font-size: .68rem; line-height: 1.55; }
+.questionCard.carriedCard > p { color: #664d4e; }
 .questionCard h3 { max-width: 610px; margin: 0; font-size: clamp(1.3rem, 4.2vw, 2rem); font-weight: 600; line-height: 1.15; letter-spacing: -.035em; }
 .followUpButton {
   margin-top: 25px;
   padding: 0;
-  color: var(--mrida);
+  color: var(--pavitra);
   border: 0;
   background: transparent;
   cursor: pointer;
@@ -650,27 +676,36 @@
   text-decoration: underline;
   text-underline-offset: 4px;
 }
-.questionCard .followUp { margin: 15px 0 0; padding: 16px; color: var(--mrida); border: 0; border-left: 4px solid var(--sindoor); background: #f8eee8; font-size: .78rem; font-weight: 500; line-height: 1.5; animation: reveal .18s ease both; }
+.questionCard.carriedCard .followUpButton { color: var(--mrida); }
+.questionCard .followUp { margin: 15px 0 0; padding: 16px; color: var(--kalika); border: 0; border-left: 5px solid var(--sindoor); background: var(--shweta); font-size: .78rem; font-weight: 500; line-height: 1.5; animation: reveal .18s ease both; }
 .questionCard .followUp span { display: block; margin-bottom: 5px; color: var(--sindoor); font-size: .53rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .carryButton {
   width: 100%;
   min-height: 46px;
-  margin-top: 24px;
-  padding: 10px 14px;
-  color: var(--shweta);
-  border: 1px solid var(--mrida);
-  background: var(--mrida);
+  margin-top: auto;
+  padding: 16px 14px 10px;
+  color: var(--pavitra);
+  text-align: left;
+  border: 0;
+  border-top: 1px solid var(--pavitra);
+  background: transparent;
   cursor: pointer;
   font: 600 .64rem/1.2 var(--ui);
 }
-.carryButton[aria-pressed="true"] { color: var(--kalika); background: var(--marigold-light); }
+.carryButton:hover { color: var(--shweta); border-color: var(--shweta); }
+.carryButton[aria-pressed="true"] { color: var(--mrida); border-color: var(--mrida); }
 
-.carryPanel { position: relative; margin-top: 30px; padding: 34px 30px 30px; overflow: hidden; color: var(--shweta); background: var(--mrida); }
+.carryPanel { position: relative; margin-top: 30px; padding: 40px 30px 32px; overflow: hidden; color: var(--kalika); background: var(--sindoor); }
 .carryPanel h2 { max-width: 520px; margin: 9px 0 16px; font-size: 1.65rem; line-height: 1.1; }
-.carryPanel blockquote { max-width: 570px; margin: 0; color: var(--pavitra); font: 400 1.15rem/1.45 var(--ui); }
-.carryPanel > p:not(.eyebrow, .shareStatus) { max-width: 540px; margin: 20px 0 0; color: #f0deda; font-size: .68rem; line-height: 1.55; }
+.carryPanel .eyebrow { color: var(--kalika); }
+.carryPanel blockquote { max-width: 570px; margin: 0; color: var(--kalika); font: 600 1.15rem/1.45 var(--ui); }
+.carryPanel > p:not(.eyebrow, .shareStatus) { max-width: 540px; margin: 20px 0 0; color: #492d2e; font-size: .68rem; line-height: 1.55; }
 .carryActions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 26px; }
-.shareStatus { min-height: 18px; margin: 13px 0 0; color: var(--marigold-light); font-size: .63rem; }
+.carryPanel .primaryButton { color: var(--shweta); border-color: var(--kalika); background: var(--kalika); }
+.carryPanel .secondaryButton { color: var(--kalika); border-color: var(--kalika); }
+.carryPanel .primaryButton:hover { color: var(--kalika); background: var(--shweta); }
+.carryPanel .secondaryButton:hover { color: var(--shweta); background: var(--kalika); }
+.shareStatus { min-height: 18px; margin: 13px 0 0; color: var(--kalika); font-size: .63rem; }
 .carryPanel > input { width: 100%; min-height: 40px; padding: 8px 10px; color: var(--kalika); border: 0; background: var(--shweta); font: .62rem/1.2 var(--ui); }
 .miniBurst { position: absolute; top: 22px; right: 24px; width: 54px; height: 54px; animation: burstIn .55s ease both; }
 .miniBurst span { position: absolute; top: 24px; left: 24px; width: 8px; height: 8px; border-radius: 50%; transform-origin: 4px 4px; }
@@ -727,6 +762,7 @@
   .controls .textButton { grid-column: 1 / -1; grid-row: 2; min-height: 38px; }
   .libraryHeading { display: block; }
   .libraryHeading > button { width: 100%; margin-top: 18px; }
+  .questionGrid { grid-template-columns: 1fr; }
   .questionCard { padding-inline: 20px; }
 }
 

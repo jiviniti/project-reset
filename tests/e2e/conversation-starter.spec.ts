@@ -49,7 +49,9 @@ test("carries and shares an exact question using only stable URL identifiers", a
   await page.getByRole("button", { name: /Food, memory, and care/i }).click();
   const firstCard = page.locator("article").first();
   await firstCard.getByRole("button", { name: "Carry this question forward" }).click();
-  await expect(page.getByRole("heading", { name: "You found a question worth keeping open." })).toBeVisible();
+  const carryHeading = page.getByRole("heading", { name: "You found a question worth keeping open." });
+  await expect(carryHeading).toBeVisible();
+  await expect(carryHeading).toBeFocused();
   await page.getByRole("button", { name: "Share this conversation" }).click();
   await expect(page.getByText("Link copied. Paste it into a message to invite someone.")).toBeVisible();
 

@@ -24,17 +24,16 @@ function normalizeScreeningConfig(data: ScreeningConfig): ScreeningConfig {
 }
 
 export async function getScreeningConfig(slug: string): Promise<ScreeningConfig | null> {
-  if (process.env.E2E_USE_PREVIEW_FIXTURE === "true") {
-    return {
-      [PREVIEW_SCREENING_SLUG]: previewScreeningConfig,
-      [PREVIEW_EVENT_SCREENING_SLUG]: previewEventScreeningConfig,
-      [PREVIEW_EXPIRED_EVENT_SCREENING_SLUG]: previewExpiredEventScreeningConfig,
-    }[slug] ?? null;
+  const previewFixture = {
+    [PREVIEW_SCREENING_SLUG]: previewScreeningConfig,
+    [PREVIEW_EVENT_SCREENING_SLUG]: previewEventScreeningConfig,
+    [PREVIEW_EXPIRED_EVENT_SCREENING_SLUG]: previewExpiredEventScreeningConfig,
+  }[slug];
+  if (previewFixture && (process.env.E2E_USE_PREVIEW_FIXTURE === "true" || process.env.NODE_ENV !== "production")) {
+    return previewFixture;
   }
   if (!hasServerDatabaseConfig()) {
-    return process.env.NODE_ENV !== "production" && slug === PREVIEW_SCREENING_SLUG
-      ? previewScreeningConfig
-      : null;
+    return null;
   }
 
   const supabase = createServerSupabaseClient();
