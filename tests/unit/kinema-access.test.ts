@@ -33,6 +33,18 @@ describe("KINEMA manual reward access", () => {
     expect(resolveKinemaRewardAccess("columbia-climate-school-2026", activeEvent, env)?.promoCode).toBe("COLUMBIA_CODE");
   });
 
+  it("returns harmless placeholder access for the active preview event", () => {
+    expect(resolveKinemaRewardAccess("preview-event", activeEvent, env)).toEqual({
+      provider: "kinema",
+      filmUrl: "https://kinema.com/",
+      promoCode: "DEMO_CODE_NOT_VALID",
+      accountRequired: true,
+      startWithinDays: 30,
+      finishWithinHours: 48,
+    });
+    expect(resolveKinemaRewardAccess("preview-event", activeEvent, { ...env, DATASET_ENV: "production" })).toBeUndefined();
+  });
+
   it("does not expose access for trailer pathways or disabled delivery", () => {
     expect(resolveKinemaRewardAccess("climate-week-nyc-2026", { ...activeEvent, entryPathway: "non_event", rewardType: "trailer_access", eventWindowStatus: "event_expired" }, env)).toBeUndefined();
     expect(resolveKinemaRewardAccess("climate-week-nyc-2026", activeEvent, { ...env, REWARD_PROVIDER: "disabled" })).toBeUndefined();

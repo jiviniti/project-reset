@@ -2,7 +2,7 @@
 
 ## Preview
 
-Milestone 1 was verified on 24 August 2026, Milestone 2 and the pre-Milestone-3 product/visual reconciliation on 25 August 2026 at [project-reset-psi.vercel.app](https://project-reset-psi.vercel.app/). Questionnaire version 2 was transactionally rolled out and verified there on 2 September 2026 with 32 observed preview responses at aggregate revision 32.
+Milestone 1 was verified on 24 August 2026, Milestone 2 and the pre-Milestone-3 product/visual reconciliation on 25 August 2026 at [project-reset-psi.vercel.app](https://project-reset-psi.vercel.app/). Questionnaire version 3 was rolled out and verified there on 5 September 2026.
 
 1. Apply the committed files in `supabase/migrations/` in filename order, including `202609050001_questionnaire_v3_commitment.sql`, then apply preview seeds only when preparing a fresh preview project. `supabase/seed.sql` is a psql entry point and its `\ir` command is not accepted by the Dashboard SQL Editor.
 2. In Supabase **Data API → Settings**, add `api` to the exposed schemas and leave `private` and `aggregate` excluded. Do not use dashboard exposure toggles for server-only functions. The migration explicitly grants execution to `service_role`.
@@ -10,6 +10,14 @@ Milestone 1 was verified on 24 August 2026, Milestone 2 and the pre-Milestone-3 
 4. Deploy from the private GitHub repository.
 5. Configure the `reset-submissions` Vercel WAF instrument for 1,000 requests/IP/60 seconds and 429 action.
 6. Complete `/s/preview-screening`, verify the record graph and cumulative snapshot, and run the two-window realtime check in `docs/handover.md`.
+
+### Participant-path preview routes
+
+- `/s/preview-event` simulates an active event and returns `DEMO_CODE_NOT_VALID` with a generic KINEMA link. It never exposes a real promo code or the private film URL.
+- `/s/preview-expired-event` simulates an event whose access window has ended and shows the trailer pathway.
+- `/s/preview-screening` is the ordinary non-event pathway and shows trailer access after check-in.
+
+These routes are demonstrations, not launch QR destinations. The active-event placeholder is available only while `DATASET_ENV=preview`.
 
 ## KINEMA manual reward activation
 

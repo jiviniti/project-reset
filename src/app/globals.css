@@ -224,6 +224,17 @@ legend, .field-group-label { margin: 9px 0 7px; color: #756d68; font-family: var
 @media (max-width: 480px) {
   .experience { padding: 0; }
   .phone-shell { width: 100%; min-height: 100vh; border-radius: 0; box-shadow: none; }
+  .success__confirmation { display: flex; flex-direction: column; }
+  .success__confirmation .eyebrow { order: 1; }
+  .success__confirmation h2 { order: 2; max-width: none; }
+  .success-burst { position: relative; order: 3; top: auto; right: auto; align-self: flex-end; width: 126px; height: 18px; margin-top: 20px; }
+  .success-burst span { top: 4px; left: auto; width: 9px; height: 9px; transform: none; }
+  .success-burst span:nth-child(1) { left: 0; transform: none; }
+  .success-burst span:nth-child(2) { left: 28px; transform: none; }
+  .success-burst span:nth-child(3) { left: 56px; transform: none; }
+  .success-burst span:nth-child(4) { left: 84px; transform: none; }
+  .success-burst span:nth-child(5) { left: 112px; transform: none; }
+  .commitment-echo { order: 4; }
 }
 
 @media (prefers-reduced-motion: reduce) {
