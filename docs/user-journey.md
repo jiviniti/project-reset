@@ -9,7 +9,7 @@ Project RESET is a participatory educational product rather than a single survey
 1. The check-in creates a brief moment of personal reflection and contributes an anonymous response to the shared picture.
 2. The Burnout Landscape and Community RESET Map turn individual selections into collective meaning.
 3. Film or trailer access carries participants into the documentary's deeper narrative.
-4. Take It to the Table helps that reflection travel into conversations with friends, families, classmates, colleagues and communities.
+4. Continue the Conversation helps that reflection travel into conversations with friends, families, classmates, colleagues and communities.
 5. Event screenings create identifiable cohorts, while repeated use can support cumulative and longitudinal learning without exposing participant identities in public results.
 
 This sequence is the current launch model. It is intentionally participatory: reflection, visualization, story and conversation reinforce one another.
@@ -47,7 +47,7 @@ saved confirmation + gentle celebration
   → Burnout Landscape
   → Community RESET Map
   → KINEMA film access or trailer access
-  → Take It to the Table conversation questions
+  → Continue the Conversation questions
 ```
 
 If a commitment was entered, it is echoed from local form state on the success page. It is never placed in a public visualization or URL.
@@ -58,4 +58,4 @@ The share card is no longer part of this journey. Its concept route remains avai
 
 ## Conversation companion
 
-Take It to the Table initially offers four featured themes and can reveal all 10. Selecting a theme displays all six questions together; deeper prompts are optional. Participants may carry one question forward and share a deep link containing only stable theme and question identifiers. No answers, identities, analytics events or conversation state are submitted.
+Continue the Conversation initially offers four featured themes and can reveal all 10. Selecting a theme displays all six questions together; deeper prompts are optional. Participants may save multiple questions across themes on their current browser and device, then copy or download a plain-text list. Existing theme and question deep links remain compatible. No answers, identities, analytics events or saved selections are submitted.

@@ -143,7 +143,7 @@ Digital motion and state changes should support comprehension.
 - Keep questions browseable. Do not impose artificial progress, timers, or completion gates.
 - Keep safety, privacy, and optionality language plain and visible without making it visually dominant.
 
-### Take It to the Table
+### Continue the Conversation
 
 The conversation tool should feel like the hero and topic selector belong to the same editorial object.
 

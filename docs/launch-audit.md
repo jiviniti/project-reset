@@ -2,11 +2,11 @@
 
 Audit date: 5 September 2026
 
-Scope: participant check-in, questionnaire v3, KINEMA manual rewards, Take It to the Table, security boundaries, build quality, responsive behavior, and visual alignment with the RESET brand system.
+Scope: participant check-in, questionnaire v3, KINEMA manual rewards, Continue the Conversation, security boundaries, build quality, responsive behavior, and visual alignment with the RESET brand system.
 
 ## Current assessment
 
-The implementation is deployed and the review experience is suitable for stakeholder testing. Questionnaire v3 is active and the server-only KINEMA production settings are configured. The two live event routes must remain disabled until their exact event windows are approved and controlled redemption tests can be performed.
+The implementation is suitable for stakeholder testing. Questionnaire v3 is active, the server-only KINEMA production settings are configured, and the two approved event windows are defined in a migration. A controlled redemption test and KINEMA activation coordination remain required before QR distribution.
 
 ## Launch blockers
 
@@ -16,7 +16,7 @@ The implementation is deployed and the review experience is suitable for stakeho
 
 ### 1. Live event records need approved windows
 
-The Climate Week and Columbia screening records must not be created or activated until their exact opening timestamp, closing timestamp, and time zone are approved. The implementation already reserves these slugs:
+The Climate Week and Columbia screening records use the approved midnight New York boundaries. The implementation reserves these slugs:
 
 - `climate-week-nyc-2026`
 - `columbia-climate-school-2026`
@@ -34,7 +34,7 @@ The provider is enabled in Production, but no launch event route exists yet. Aft
 
 ### 2. Editorial approval remains outstanding
 
-The 60-question conversation bank and participant-facing copy remain draft content for Foundation review. The tool is correctly marked `noindex, nofollow` during this stage.
+The 60-question conversation bank and participant-facing copy remain draft content for Foundation review. The tool is correctly marked `noindex, nofollow` during this stage. Multiple saved questions remain local to the participant's browser and can be copied or downloaded as plain text.
 
 ## Operational checks before launch
 
@@ -60,7 +60,7 @@ The 60-question conversation bank and participant-facing copy remain draft conte
 ### Intentional exceptions
 
 - Learning Lab word clouds retain their varied EB Garamond typography, italics, sizes, colors, and animation.
-- The Take It to the Table questions are shown in full because team feedback favored browsing over an artificial sequence.
+- Continue the Conversation questions are shown in full because team feedback favored browsing over an artificial sequence.
 
 ### Remaining polish
 

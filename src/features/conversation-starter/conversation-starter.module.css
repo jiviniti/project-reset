@@ -655,14 +655,14 @@
 .questionCard:nth-child(5) { animation-delay: .2s; }
 .questionCard:nth-child(6) { animation-delay: .25s; }
 .questionCard:hover { background: rgb(237 186 166 / 14%); }
-.questionCard.carriedCard { color: var(--kalika); background: var(--pavitra); box-shadow: inset 0 0 0 4px var(--sindoor); }
+.questionCard.savedCard { color: var(--kalika); background: var(--pavitra); box-shadow: inset 0 0 0 4px var(--sindoor); }
 .questionNumber { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
 .questionNumber span { color: var(--sindoor); font-size: .68rem; font-weight: 700; letter-spacing: .13em; }
 .questionNumber small { color: #686868; font-size: .55rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
-.questionCard.carriedCard .questionNumber span,
-.questionCard.carriedCard .questionNumber small { color: var(--mrida); }
+.questionCard.savedCard .questionNumber span,
+.questionCard.savedCard .questionNumber small { color: var(--mrida); }
 .questionCard > p { max-width: 560px; margin: 28px 0 10px; color: #555; font-size: .68rem; line-height: 1.55; }
-.questionCard.carriedCard > p { color: #664d4e; }
+.questionCard.savedCard > p { color: #664d4e; }
 .questionCard h3 { max-width: 610px; margin: 0; font-size: clamp(1.3rem, 4.2vw, 2rem); font-weight: 600; line-height: 1.15; letter-spacing: -.035em; }
 .followUpButton {
   width: max-content;
@@ -677,10 +677,10 @@
   text-decoration: underline;
   text-underline-offset: 4px;
 }
-.questionCard.carriedCard .followUpButton { color: var(--mrida); }
+.questionCard.savedCard .followUpButton { color: var(--mrida); }
 .questionCard .followUp { margin: 15px 0 0; padding: 16px; color: var(--kalika); border: 0; border-left: 5px solid var(--sindoor); background: var(--shweta); font-size: .78rem; font-weight: 500; line-height: 1.5; animation: reveal .18s ease both; }
 .questionCard .followUp span { display: block; margin-bottom: 5px; color: var(--sindoor); font-size: .53rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-.carryButton {
+.saveButton {
   width: 100%;
   min-height: 46px;
   margin-top: 24px;
@@ -693,9 +693,9 @@
   cursor: pointer;
   font: 600 .7rem/1.2 var(--ui);
 }
-.carryButton:hover { color: var(--sindoor); border-color: var(--sindoor); }
-.carryButton[aria-pressed="true"] { color: var(--mrida); border-color: var(--mrida); }
-.carryButton[aria-pressed="true"] span { display: inline-grid; width: 20px; height: 20px; margin-right: 7px; color: var(--shweta); border-radius: 50%; background: var(--nourish); place-items: center; }
+.saveButton:hover { color: var(--sindoor); border-color: var(--sindoor); }
+.saveButton[aria-pressed="true"] { color: var(--mrida); border-color: var(--mrida); }
+.saveButton[aria-pressed="true"] span { display: inline-grid; width: 20px; height: 20px; margin-right: 7px; color: var(--shweta); border-radius: 50%; background: var(--nourish); place-items: center; }
 .carryConfirmation { margin: 10px 0 0 !important; color: var(--nourish) !important; font-size: .62rem !important; font-weight: 600; line-height: 1.45 !important; }
 
 .carryPanel { position: relative; margin-top: 30px; padding: 32px 30px; overflow: hidden; color: var(--kalika); border-top: 8px solid var(--sindoor); background: var(--shweta); }
@@ -720,8 +720,50 @@
 .showThemesButton:focus-visible,
 .libraryHeading button:focus-visible,
 .followUpButton:focus-visible,
-.carryButton:focus-visible { outline: 3px solid #1769e0; outline-offset: 3px; }
+.saveButton:focus-visible { outline: 3px solid #1769e0; outline-offset: 3px; }
 .loading { width: max-content; margin: 30vh auto; color: #ccc; font-size: .75rem; }
+
+.savedIndicator {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 20;
+  min-height: 46px;
+  padding: 11px 16px;
+  color: var(--shweta);
+  border: 2px solid var(--shweta);
+  border-radius: 999px;
+  background: var(--nourish);
+  box-shadow: 0 7px 24px rgb(0 0 0 / 24%);
+  cursor: pointer;
+  font: 700 .68rem/1.2 var(--ui);
+}
+
+.savedIndicator:focus-visible { outline: 3px solid #1769e0; outline-offset: 3px; }
+
+.savedPanel {
+  padding: 62px 42px 58px;
+  color: var(--shweta);
+  background: var(--mrida);
+  scroll-margin-top: 18px;
+}
+
+.savedPanel > .eyebrow { color: var(--connect); }
+.savedPanel > h2 { max-width: 620px; margin: 10px 0 12px; color: var(--shweta); font-size: clamp(2rem, 6vw, 3.2rem); line-height: 1; letter-spacing: -.05em; outline: none; }
+.savedPanel > p:not(.eyebrow) { max-width: 580px; margin: 0; color: #eadbd5; font-size: .72rem; line-height: 1.6; }
+.savedPanel ol { display: grid; gap: 0; margin: 34px 0 0; padding: 0; border-top: 1px solid rgb(255 255 255 / 45%); list-style: none; }
+.savedPanel li { position: relative; padding: 22px 92px 22px 0; border-bottom: 1px solid rgb(255 255 255 / 45%); }
+.savedPanel li small { color: var(--connect); font-size: .54rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.savedPanel li p { margin: 7px 0 0; color: var(--shweta); font-size: 1rem; font-weight: 600; line-height: 1.4; }
+.savedPanel li button { position: absolute; top: 22px; right: 0; padding: 5px 0; color: var(--shweta); border: 0; background: transparent; cursor: pointer; font: 600 .61rem/1.2 var(--ui); text-decoration: underline; text-underline-offset: 4px; }
+.savedActions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 28px; }
+.savedPanel .secondaryButton { color: var(--shweta); border-color: var(--shweta); }
+.clearButton { margin-top: 20px; padding: 6px 0; color: #eadbd5; border: 0; background: transparent; cursor: pointer; font: 600 .62rem/1.2 var(--ui); text-decoration: underline; text-underline-offset: 4px; }
+.clearConfirmation { display: flex; align-items: center; gap: 12px; margin-top: 20px; padding: 16px; border: 1px solid rgb(255 255 255 / 45%); }
+.clearConfirmation p { margin: 0 auto 0 0; font-size: .68rem; }
+.clearConfirmation button { min-height: 38px; padding: 8px 12px; color: var(--shweta); border: 1px solid var(--shweta); background: transparent; cursor: pointer; font: 600 .61rem/1.2 var(--ui); }
+.saveStatus { min-height: 0; margin: 0; padding: 0 28px; color: var(--shweta); background: var(--kalika); font-size: .64rem; line-height: 1.5; text-align: center; }
+.saveStatus:not(:empty) { padding-block: 14px; }
 
 @keyframes cardIn {
   from { opacity: 0; transform: translateY(8px); }
@@ -757,9 +799,9 @@
   .agreement { padding: 22px; }
   .agreement ul { grid-template-columns: 1fr; }
   .partnerPlate { max-width: calc(100% - 40px); margin-inline: auto; gap: 8px; }
-  .partnerPlate img:first-of-type { height: 22px; }
-  .partnerPlate img:last-of-type { width: 22px; height: 22px; }
-  .partnerPlate span { font-size: .42rem; }
+  .partnerPlate img:first-of-type { height: 30px; }
+  .partnerPlate img:last-of-type { width: 30px; height: 30px; }
+  .partnerPlate span { font-size: .49rem; }
   .promptCard { min-height: 490px; margin-inline: 12px; padding-inline: 24px; }
   .controls { grid-template-columns: 1fr 1fr; padding-inline: 12px; }
   .controls .textButton { grid-column: 1 / -1; grid-row: 2; min-height: 38px; }
@@ -769,6 +811,10 @@
   .questionCard { padding-inline: 20px; }
   .carryPanel { padding: 28px 22px 30px; }
   .carryActions { grid-template-columns: 1fr; }
+  .savedPanel { padding: 48px 22px; }
+  .savedActions { grid-template-columns: 1fr; }
+  .clearConfirmation { align-items: stretch; flex-direction: column; }
+  .clearConfirmation p { margin: 0 0 4px; }
 }
 
 @media (max-width: 410px) {

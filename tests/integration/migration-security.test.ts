@@ -27,6 +27,10 @@ const questionnaireV3Migration = readFileSync(
   resolve("supabase/migrations/202609050001_questionnaire_v3_commitment.sql"),
   "utf8",
 ).toLowerCase();
+const launchEventMigration = readFileSync(
+  resolve("supabase/migrations/202609060001_launch_event_windows.sql"),
+  "utf8",
+).toLowerCase();
 
 describe("database security migration", () => {
   it("uses only invoker functions", () => {
@@ -113,6 +117,16 @@ describe("database security migration", () => {
     expect(questionnaireV3Migration).toContain("'visibility', 'private'");
     expect(questionnaireV3Migration).not.toContain("insert into aggregate.metric_definitions");
     expect(questionnaireV3Migration).toContain("questionnaire_version_id = source_version.id");
+  });
+
+  it("provisions version 3 launch events with exact exclusive New York boundaries", () => {
+    expect(launchEventMigration).toContain("'climate-week-nyc-2026'");
+    expect(launchEventMigration).toContain("'columbia-climate-school-2026'");
+    expect(launchEventMigration).toContain("'2026-09-22 04:00:00+00'");
+    expect(launchEventMigration).toContain("'2026-10-07 04:00:00+00'");
+    expect(launchEventMigration).toContain("'2026-10-22 04:00:00+00'");
+    expect(launchEventMigration).toContain("version = 3");
+    expect(launchEventMigration).not.toContain("promo code");
   });
 
   it("derives cumulative observed values from screening scopes and seeded values from one baseline", () => {

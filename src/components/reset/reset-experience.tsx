@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { FormEvent, useState } from "react";
-import { ResetBrand } from "@/components/brand/reset-brand";
+import { BrandedReset, ResetBrand } from "@/components/brand/reset-brand";
 import { Chip } from "@/components/ui/chip";
 import { IllustrativeDashboard } from "@/features/learning-lab/illustrative-dashboard";
 import { submissionResultSchema } from "@/lib/validation/submission";
@@ -45,7 +45,6 @@ const initialForm: FormState = {
   commitment: "",
 };
 
-const DONATION_URL = process.env.NEXT_PUBLIC_DONATE_URL ?? "https://thirddegreeburnout.com/donate";
 const TRAILER_URL = process.env.NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL?.trim() || "https://www.thirddegreeburnout.com/";
 
 const pathwayPresentation: Record<string, { blurb: string; color: string }> = {
@@ -87,17 +86,15 @@ function CustomTagField({
   onRemove: (value: string) => void;
   dark?: boolean;
 }) {
-  const [expanded, setExpanded] = useState(side !== "burnout");
+  const [expanded, setExpanded] = useState(false);
   const trimmed = input.trim().slice(0, 60);
   const label = side === "burnout" ? "burnout" : "RESET";
   const composerId = `${side}-custom-response`;
   return (
     <div className={`custom-tags${dark ? " custom-tags--dark" : ""}`}>
-      {side === "burnout" ? (
-        <button className="custom-tags__toggle" type="button" aria-expanded={expanded} aria-controls={composerId} onClick={() => setExpanded((current) => !current)}>
-          <span>Something else?</span><strong>{expanded ? "Close" : "Add your own →"}</strong>
-        </button>
-      ) : <p className="field-group-label">Can’t find the right option? Add your own response</p>}
+      <button className="custom-tags__toggle" type="button" aria-expanded={expanded} aria-controls={composerId} onClick={() => setExpanded((current) => !current)}>
+        <span>Something else?</span><strong>{expanded ? "Close" : "Add your own →"}</strong>
+      </button>
       {tags.length > 0 && <div className="chips" aria-label={`Your private ${label} tags`}>{tags.map((tag) => (
         <button type="button" className="chip chip--selected custom-tag" key={tag} onClick={() => onRemove(tag)} aria-label={`Remove ${tag}`}>
           {tag}<span aria-hidden="true"> ×</span>
@@ -232,6 +229,24 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
     }
   }
 
+  async function copyAccessDetails() {
+    const access = submissionResult?.rewardAccess;
+    if (!access) return;
+    const details = [
+      "Project RESET film access",
+      `Film link: ${access.filmUrl}`,
+      `Promo code: ${access.promoCode}`,
+      "Sign in or create a KINEMA account, then enter the promo code manually at checkout for free film access.",
+      `You have ${access.startWithinDays} days to begin watching and ${access.finishWithinHours} hours to finish once you start.`,
+    ].join("\n");
+    try {
+      await navigator.clipboard.writeText(details);
+      setRewardCopyStatus("Access details copied.");
+    } catch {
+      setRewardCopyStatus("Copy the code and film link separately, or take a screenshot before leaving.");
+    }
+  }
+
   async function submit() {
     setSubmissionStatus("submitting");
     setErrorMessage("");
@@ -297,9 +312,8 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
       <div className="phone-shell">
         {view === "hero" && (
           <section className="hero">
-            <nav className="nav" aria-label="Project RESET">
+            <nav className="nav nav--logo-only" aria-label="Project RESET">
               <Image src="/images/jiviniti-wordmark.png" alt="JIVINITI" width={108} height={50} className="nav__logo" />
-              <a className="nav__action" href={DONATION_URL} target="_blank" rel="noreferrer">Support the project</a>
             </nav>
             <div className="hero__content">
               <div className="hero__identity">
@@ -310,19 +324,19 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 </div>
               </div>
               <p className="eyebrow eyebrow--orange">The Learning Lab</p>
-              <h1>How do you <span className="hero-title__reset"><span>re</span>set</span>?</h1>
-              <p className="hero__lede">The film asks big questions. Project RESET invites you into them, before and beyond the screen.</p>
-              <p>Created by JIVINITI in partnership with Picture Motion, this living Learning Lab explores what burnout feels like and what helps us reset.</p>
+              <h1>How do you <BrandedReset />?</h1>
+              <p className="hero__lede">The film asks big questions. Project <BrandedReset uppercase /> invites you into them, before and beyond the screen.</p>
+              <p>Created by JIVINITI in partnership with Picture Motion, this living Learning Lab explores what burnout feels like and what helps us <BrandedReset />.</p>
               <div className="hero__image-frame">
                 <Image src="/images/reset-collage.avif" alt="A collage of everyday movement, nourishment, rest, nature, and community" width={900} height={500} priority className="hero__image" />
               </div>
               {screening.eventWindowStatus === "event_expired" ? (
-                <p className="pathway-notice">This event’s film-access window has ended. You can still start your RESET and watch the trailer.</p>
+                <p className="pathway-notice">This event’s film-access window has ended. You can still start your <BrandedReset uppercase /> and watch the trailer.</p>
               ) : null}
               {screening.eventWindowStatus === "event_not_started" ? (
-                <p className="pathway-notice">Film access for this event is not active yet. You can still complete your RESET through the trailer pathway.</p>
+                <p className="pathway-notice">Film access for this event is not active yet. You can still complete your <BrandedReset uppercase /> through the trailer pathway.</p>
               ) : null}
-              <button type="button" className="button button--coral" onClick={start}>Start your RESET <span aria-hidden="true">→</span></button>
+              <button type="button" className="button button--coral" onClick={start}>Start your <BrandedReset uppercase /> <span aria-hidden="true">→</span></button>
               <p className="hero__meta">About 90 seconds · Public results are anonymous · {screening.rewardType === "film_access" ? "Film access follows" : "Trailer access follows"}</p>
               <button type="button" className="text-button" onClick={() => setView("lab")}>Explore the Learning Lab <span aria-hidden="true">→</span></button>
             </div>
@@ -347,9 +361,9 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
 
             {step === 2 && (
               <section className="step step--peach">
-                <p className="eyebrow">02 · Your RESET map</p>
-                <h2>What helps you reset?</h2>
-                <p>Choose 1–2 areas that help you reset.</p>
+                <p className="eyebrow">02 · Your <BrandedReset uppercase /> map</p>
+                <h2>What helps you <BrandedReset />?</h2>
+                <p>Choose 1–2 areas that help you <BrandedReset />.</p>
                 <div className="pathway-grid">{pathwayOptions.map((option) => {
                   const selected = form.pathways.includes(option.key);
                   const presentation = pathwayPresentation[option.key];
@@ -357,16 +371,16 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 })}</div>
                 {form.pathways.map((pathwayKey) => <fieldset className="practice-group" key={pathwayKey}><legend>{pathwayOptions.find((option) => option.key === pathwayKey)?.label}: what helps?</legend><div className="chips">{practicesByPathway[pathwayKey].map((option) => <Chip key={option.key} selected={form.practices.includes(option.key)} onClick={() => toggleList("practices", option.key)}>{option.label}</Chip>)}</div></fieldset>)}
                 <CustomTagField side="reset" input={resetTagInput} tags={form.resetCustomTags} onInput={setResetTagInput} onAdd={() => addCustomTag("reset")} onRemove={(tag) => removeCustomTag("reset", tag)} />
-                <label>Tell us about your RESET ritual (optional)<textarea rows={3} maxLength={1500} value={form.ritual} onChange={(event) => update("ritual", event.target.value)} /></label>
+                <label>Tell us about your <BrandedReset uppercase /> ritual (optional)<textarea rows={3} maxLength={1500} value={form.ritual} onChange={(event) => update("ritual", event.target.value)} /></label>
                 <button className="button button--primary" type="button" onClick={() => goToStep(3)}>Continue · {form.practices.length + form.resetCustomTags.length} selected</button>
               </section>
             )}
 
             {step === 3 && (
               <form className="step step--light" onSubmit={submitFinalStep}>
-                <p className="eyebrow eyebrow--orange">03 · Complete your check-in</p>
+                <p className="eyebrow eyebrow--orange">03 · Your details</p>
                 <h2>Complete your check-in</h2>
-                <p>Add your details to finish your RESET and receive {screening.rewardType === "film_access" ? "film" : "trailer"} access.</p>
+                <p>Add your details to finish your <BrandedReset uppercase /> and receive {screening.rewardType === "film_access" ? "film" : "trailer"} access.</p>
                 <label>Name or initials<input required autoComplete="given-name" maxLength={80} value={form.firstName} onChange={(event) => update("firstName", event.target.value)} /></label>
                 <label>Email (required)<input required type="email" autoComplete="email" maxLength={254} value={form.email} onChange={(event) => update("email", event.target.value)} /></label>
                 <div className="optional-fields-intro">
@@ -378,16 +392,15 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <label>Occupation<input autoComplete="organization-title" maxLength={120} value={form.occupation} onChange={(event) => update("occupation", event.target.value)} /></label>
                 {hasCommitmentQuestion ? <div className="commitment-field">
                   <p className="field-group-label">Before you finish</p>
-                  <label id="commitment-heading">What is one small thing you could choose today that might support you? (optional)
+                  <label id="commitment-heading">What is one thing you will do today to support your <BrandedReset />? (optional)
                     <textarea rows={3} maxLength={500} value={form.commitment} onChange={(event) => update("commitment", event.target.value)} />
                   </label>
                   <p>It could involve rest, nourishment, movement, connection, boundaries, or asking for help.</p>
                 </div> : null}
                 <label className="check-row"><input required type="checkbox" checked={form.consent} onChange={(event) => update("consent", event.target.checked)} /><span><strong>(Required)</strong> {screening.policyText}</span></label>
-                <label className="check-row"><input type="checkbox" checked={form.futureCommunications} onChange={(event) => update("futureCommunications", event.target.checked)} /><span><strong>Optional:</strong> Keep me updated about Project RESET and future Virsa programs.</span></label>
-                <button className="button button--primary" type="submit" disabled={submissionStatus === "submitting"}>{submissionStatus === "submitting" ? "Saving your RESET…" : "Finish"}</button>
+                <label className="check-row"><input type="checkbox" checked={form.futureCommunications} onChange={(event) => update("futureCommunications", event.target.checked)} /><span><strong>Optional:</strong> Keep me updated about Project <BrandedReset uppercase /> and future Virsa programs.</span></label>
+                <button className="button button--primary" type="submit" disabled={submissionStatus === "submitting"}>{submissionStatus === "submitting" ? <>Saving your <BrandedReset uppercase />…</> : "Finish"}</button>
                 <p className="error-message" role="alert">{errorMessage}</p>
-                <a className="donation-link" href={DONATION_URL} target="_blank" rel="noreferrer">Support the project</a>
               </form>
             )}
           </section>
@@ -399,7 +412,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
               <header className="success__confirmation">
                 <div className="success-burst" aria-hidden="true"><span /><span /><span /><span /><span /></div>
                 <p className="eyebrow">Your check-in is complete</p>
-                <h2>Thank you. Your RESET has been added to the picture.</h2>
+                <h2>Thank you. Your <BrandedReset uppercase /> has been added to the picture.</h2>
                 {form.commitment.trim() ? (
                   <blockquote className="commitment-echo"><span>You chose to carry forward</span>{form.commitment.trim()}</blockquote>
                 ) : null}
@@ -408,22 +421,24 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
               <IllustrativeDashboard mode="post_submission" />
 
               <section className="success__reward" aria-labelledby="reset-access-heading">
-                <p className="eyebrow">Your access</p>
                 {submissionResult?.rewardAccess ? (
                   <div className="reward-card">
-                    <h3 id="reset-access-heading">Your film is ready.</h3>
+                    <h3 id="reset-access-heading">Ready to watch the film?</h3>
+                    <p>Your promo code gives you free film access. Enter it manually in the Promo Code field at KINEMA checkout.</p>
                     <ol className="reward-steps">
-                      <li>Copy your access code</li>
+                      <li>Copy or screenshot your access code</li>
                       <li>Open the film on KINEMA</li>
-                      <li>Sign in and enter the code at checkout</li>
+                      <li>Sign in or create an account, then enter the code at checkout</li>
                     </ol>
                     <div className="reward-code-row">
-                      <input aria-label="KINEMA promo code" readOnly value={submissionResult.rewardAccess.promoCode} onFocus={(event) => event.currentTarget.select()} />
+                      <code aria-label="KINEMA promo code">{submissionResult.rewardAccess.promoCode}</code>
                       <button type="button" onClick={() => void copyPromoCode()}>Copy code</button>
                     </div>
+                    <p className="reward-warning">This code is not sent by email. Copy it or take a screenshot before leaving this page.</p>
                     <p className="reward-copy-status" aria-live="polite">{rewardCopyStatus}</p>
                     <a className="button button--primary reward-card__action" href={submissionResult.rewardAccess.filmUrl} target="_blank" rel="noreferrer">Open the film on KINEMA <span aria-hidden="true">→</span></a>
-                    <p className="reward-terms">After completing the rental, you have {submissionResult.rewardAccess.startWithinDays} days to begin watching and {submissionResult.rewardAccess.finishWithinHours} hours to finish once you start. The rental is tied to your KINEMA account.</p>
+                    <button className="button button--secondary reward-card__action" type="button" onClick={() => void copyAccessDetails()}>Copy access details</button>
+                    <p className="reward-terms">After signing into KINEMA, you have {submissionResult.rewardAccess.startWithinDays} days to begin watching and {submissionResult.rewardAccess.finishWithinHours} hours to finish once you start. The film access is tied to your KINEMA account.</p>
                   </div>
                 ) : (submissionResult?.rewardType ?? screening.rewardType) === "film_access" ? (
                   <div className="reward-card">
@@ -440,7 +455,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
               </section>
 
               <section className="success__conversation" aria-labelledby="continue-conversation-heading">
-                <p className="eyebrow">Take it to the table</p>
+                <p className="eyebrow">Project <BrandedReset uppercase /></p>
                 <h3 id="continue-conversation-heading">Continue the conversation.</h3>
                 <p>Browse reflective questions for a meal, walk, call, classroom, or gathering. Begin with whatever feels relevant today.</p>
                 <a className="button button--primary" href="/take-it-to-the-table">Explore the questions <span aria-hidden="true">→</span></a>

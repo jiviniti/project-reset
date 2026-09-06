@@ -277,9 +277,16 @@ Questionnaire-v2 hosted rollout on 2 September 2026:
 ## Questionnaire v3, KINEMA handoff and conversation-library update — 5 September 2026
 
 - Apply `supabase/migrations/202609050001_questionnaire_v3_commitment.sql` before testing new submissions. It preserves v1/v2 and moves preview and any existing launch screening rows to v3.
-- The active success journey is now confirmation, two Learning Lab visualizations, film/trailer access, then Take It to the Table. The share-card concept gallery remains available separately.
+- The active success journey is now confirmation, two Learning Lab visualizations, film/trailer access, then Continue the Conversation. The share-card concept gallery remains available separately.
 - Manual KINEMA delivery uses server-only `KINEMA_FILM_URL`, `KINEMA_CLIMATE_WEEK_NYC_2026_CODE`, and `KINEMA_COLUMBIA_CLIMATE_SCHOOL_2026_CODE` with `REWARD_PROVIDER=kinema_manual`.
 - Do not activate the launch screenings until exact check-in windows are approved. The application cannot revoke a KINEMA rental or schedule promo-code shutdown.
-- The conversation tool is a browseable 60-question library with four featured themes, all-theme reveal, stable deep links, native sharing/clipboard fallback and no answer collection.
+- The conversation tool is a browseable 60-question library with four featured themes, all-theme reveal, stable deep-link compatibility and no answer collection.
+
+## Stakeholder launch-readiness update — 6 September 2026
+
+- Apply `supabase/migrations/202609060001_launch_event_windows.sql` after its database tests pass. It provisions the Climate Week and Columbia version-3 routes with exclusive 15-day New York-time windows.
+- KINEMA must disable both codes before launch, enable each for its event, and disable it at the matching application close. The application cannot invalidate a previously copied code.
+- Continue the Conversation retains the legacy route but now saves multiple prompt IDs locally, supports removal across themes, and offers plain-text copy and download instead of social sharing.
+- Required consent remains unchanged. A new policy version and an unlisted `/privacy` route remain blocked on Legal-approved text. The support CTA remains hidden until an approved working destination is supplied.
 
 Production cutover and custom-domain work remain deferred. Automated KINEMA API or email delivery is not part of this launch implementation.

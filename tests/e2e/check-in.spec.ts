@@ -52,7 +52,7 @@ test("completes the preview check-in and reaches the persisted success state", a
   await page.goto("/s/preview-event");
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.getByRole("heading", { name: "How do you reset?" })).toBeVisible();
-  await expect(page.locator(".hero-title__reset > span")).toHaveCSS("color", "rgb(220, 87, 67)");
+  await expect(page.locator("h1 .branded-reset b")).toHaveCSS("color", "rgb(220, 87, 67)");
   await expect(page.getByText("About 90 seconds · Public results are anonymous · Film access follows")).toBeVisible();
   await page.getByRole("button", { name: "Start your RESET" }).click();
   await page.getByRole("button", { name: "Exhausted" }).click();
@@ -64,23 +64,26 @@ test("completes the preview check-in and reaches the persisted success state", a
   await page.getByRole("button", { name: /Restore/ }).click();
   await expect(page.getByRole("button", { name: "Less social media", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Sleeping", exact: true }).click();
+  await expect(page.getByLabel("Add a RESET tag")).toHaveCount(0);
+  await page.getByRole("button", { name: /Something else.*Add your own/ }).click();
   await page.getByLabel("Add a RESET tag").fill("Making ceramics");
   await page.getByRole("button", { name: /Add “Making ceramics”/ }).click();
   await page.getByRole("button", { name: /Continue · 2 selected/ }).click();
   await page.getByLabel("Name or initials").fill("María-José-Alexandria");
   await page.getByLabel("Email (required)").fill("nivi@example.org");
-  await page.getByLabel(/What is one small thing/).fill("Call a friend after dinner");
+  await page.getByLabel(/What is one thing you will do today/).fill("Call a friend after dinner");
   await expect(page.getByText("(Required)", { exact: true })).toBeVisible();
   await expect(page.getByText("Optional:", { exact: true })).toBeVisible();
   await page.getByLabel(/I understand that my responses/).check();
   await page.getByRole("button", { name: "Finish", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Thank you. Your RESET has been added to the picture." })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Your film is ready." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ready to watch the film?" })).toBeVisible();
   await expect(page.locator(".reward-steps li")).toHaveText([
-    "Copy your access code",
+    "Copy or screenshot your access code",
     "Open the film on KINEMA",
-    "Sign in and enter the code at checkout",
+    "Sign in or create an account, then enter the code at checkout",
   ]);
+  await expect(page.getByText(/This code is not sent by email/)).toBeVisible();
   await expect(page.getByText("Call a friend after dinner")).toBeVisible();
   await expect(page.getByText("The burnout landscape", { exact: true })).toBeVisible();
   await expect(page.getByText("The community RESET map", { exact: true })).toBeVisible();
@@ -99,6 +102,8 @@ test("completes the preview check-in and reaches the persisted success state", a
   ]);
   await page.getByRole("button", { name: "Copy code" }).click();
   await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).toBe("EVENT_CODE");
+  await page.getByRole("button", { name: "Copy access details" }).click();
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).toContain("Film link: https://kinema.com/films/private-film");
   await expect(page.getByRole("link", { name: /Open the film on KINEMA/ })).toHaveAttribute("href", "https://kinema.com/films/private-film");
   await expect(page.getByRole("link", { name: /Explore the questions/ })).toHaveAttribute("href", "/take-it-to-the-table");
   const mobileWidths = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
