@@ -287,6 +287,6 @@ Questionnaire-v2 hosted rollout on 2 September 2026:
 - Apply `supabase/migrations/202609060001_launch_event_windows.sql` after its database tests pass. It provisions the Climate Week and Columbia version-3 routes with exclusive 15-day New York-time windows.
 - KINEMA must disable both codes before launch, enable each for its event, and disable it at the matching application close. The application cannot invalidate a previously copied code.
 - Continue the Conversation retains the legacy route but now saves multiple prompt IDs locally, supports removal across themes, and offers plain-text copy and download instead of social sharing.
-- Required consent remains unchanged. A new policy version and an unlisted `/privacy` route remain blocked on Legal-approved text. The support CTA remains hidden until an approved working destination is supplied.
+- Required consent remains unchanged. A new policy version and an unlisted `/privacy` route remain blocked on Legal-approved text. The support CTA links to the approved Fuel the Impact page and remains configurable through `NEXT_PUBLIC_DONATE_URL`.
 
 Production cutover and custom-domain work remain deferred. Automated KINEMA API or email delivery is not part of this launch implementation.

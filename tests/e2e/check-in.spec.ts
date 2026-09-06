@@ -52,6 +52,7 @@ test("completes the preview check-in and reaches the persisted success state", a
   await page.goto("/s/preview-event");
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.getByRole("heading", { name: "How do you reset?" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Support the project" })).toHaveAttribute("href", "https://thirddegreeburnout.com/fueltheimpact");
   await expect(page.locator("h1 .branded-reset b")).toHaveCSS("color", "rgb(220, 87, 67)");
   await expect(page.getByRole("button", { name: "Start your RESET" }).locator(".branded-reset b")).toHaveCSS("color", "rgb(255, 255, 255)");
   await expect(page.getByText("About 90 seconds · Public results are anonymous · Film access follows")).toBeVisible();
@@ -75,6 +76,7 @@ test("completes the preview check-in and reaches the persisted success state", a
   await page.getByLabel(/What is one thing you will do today/).fill("Call a friend after dinner");
   await expect(page.getByText("(Required)", { exact: true })).toBeVisible();
   await expect(page.getByText("Optional:", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Support the project" })).toHaveAttribute("href", "https://thirddegreeburnout.com/fueltheimpact");
   await page.getByLabel(/I understand that my responses/).check();
   await page.getByRole("button", { name: "Finish", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Thank you. Your RESET has been added to the picture." })).toBeVisible();

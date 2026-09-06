@@ -45,6 +45,7 @@ const initialForm: FormState = {
   commitment: "",
 };
 
+const DONATION_URL = process.env.NEXT_PUBLIC_DONATE_URL?.trim() || "https://thirddegreeburnout.com/fueltheimpact";
 const TRAILER_URL = process.env.NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL?.trim() || "https://www.thirddegreeburnout.com/";
 
 const pathwayPresentation: Record<string, { blurb: string; color: string }> = {
@@ -312,8 +313,9 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
       <div className="phone-shell">
         {view === "hero" && (
           <section className="hero">
-            <nav className="nav nav--logo-only" aria-label="Project RESET">
+            <nav className="nav" aria-label="Project RESET">
               <Image src="/images/jiviniti-wordmark.png" alt="JIVINITI" width={108} height={50} className="nav__logo" />
+              <a className="nav__action" href={DONATION_URL} target="_blank" rel="noreferrer">Support the project</a>
             </nav>
             <div className="hero__content">
               <div className="hero__identity">
@@ -401,6 +403,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <label className="check-row"><input type="checkbox" checked={form.futureCommunications} onChange={(event) => update("futureCommunications", event.target.checked)} /><span><strong>Optional:</strong> Keep me updated about Project <BrandedReset uppercase /> and future Virsa programs.</span></label>
                 <button className="button button--primary" type="submit" disabled={submissionStatus === "submitting"}>{submissionStatus === "submitting" ? <span>Saving your <BrandedReset uppercase />…</span> : "Finish"}</button>
                 <p className="error-message" role="alert">{errorMessage}</p>
+                <a className="donation-link" href={DONATION_URL} target="_blank" rel="noreferrer">Support the project</a>
               </form>
             )}
           </section>
