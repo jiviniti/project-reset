@@ -336,7 +336,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
               {screening.eventWindowStatus === "event_not_started" ? (
                 <p className="pathway-notice">Film access for this event is not active yet. You can still complete your <BrandedReset uppercase /> through the trailer pathway.</p>
               ) : null}
-              <button type="button" className="button button--coral" onClick={start}>Start your <BrandedReset uppercase className="branded-reset--single-color" /> <span aria-hidden="true">→</span></button>
+              <button type="button" className="button button--coral" onClick={start}><span>Start your <BrandedReset uppercase className="branded-reset--single-color" /></span><span aria-hidden="true">→</span></button>
               <p className="hero__meta">About 90 seconds · Public results are anonymous · {screening.rewardType === "film_access" ? "Film access follows" : "Trailer access follows"}</p>
               <button type="button" className="text-button" onClick={() => setView("lab")}>Explore the Learning Lab <span aria-hidden="true">→</span></button>
             </div>
@@ -399,7 +399,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 </div> : null}
                 <label className="check-row"><input required type="checkbox" checked={form.consent} onChange={(event) => update("consent", event.target.checked)} /><span><strong>(Required)</strong> {screening.policyText}</span></label>
                 <label className="check-row"><input type="checkbox" checked={form.futureCommunications} onChange={(event) => update("futureCommunications", event.target.checked)} /><span><strong>Optional:</strong> Keep me updated about Project <BrandedReset uppercase /> and future Virsa programs.</span></label>
-                <button className="button button--primary" type="submit" disabled={submissionStatus === "submitting"}>{submissionStatus === "submitting" ? <>Saving your <BrandedReset uppercase />…</> : "Finish"}</button>
+                <button className="button button--primary" type="submit" disabled={submissionStatus === "submitting"}>{submissionStatus === "submitting" ? <span>Saving your <BrandedReset uppercase />…</span> : "Finish"}</button>
                 <p className="error-message" role="alert">{errorMessage}</p>
               </form>
             )}

@@ -4,10 +4,11 @@ export type SavedQuestionCardItem = {
 };
 
 const CARD_WIDTH = 900;
-const SIDE = 72;
-const TEXT_WIDTH = CARD_WIDTH - SIDE * 2;
-const QUESTION_FONT = "600 36px Poppins, Arial, sans-serif";
-const QUESTION_LINE_HEIGHT = 48;
+const FRAME = 34;
+const SIDE = 58;
+const CONTENT_WIDTH = CARD_WIDTH - SIDE * 2;
+const QUESTION_FONT = "600 38px Poppins, Arial, sans-serif";
+const QUESTION_LINE_HEIGHT = 47;
 
 function wrapText(context: CanvasRenderingContext2D, text: string, maxWidth: number) {
   const words = text.split(/\s+/);
@@ -27,18 +28,20 @@ function wrapText(context: CanvasRenderingContext2D, text: string, maxWidth: num
   return lines;
 }
 
-function roundedRect(context: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) {
-  context.beginPath();
-  context.moveTo(x + radius, y);
-  context.lineTo(x + width - radius, y);
-  context.quadraticCurveTo(x + width, y, x + width, y + radius);
-  context.lineTo(x + width, y + height - radius);
-  context.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-  context.lineTo(x + radius, y + height);
-  context.quadraticCurveTo(x, y + height, x, y + height - radius);
-  context.lineTo(x, y + radius);
-  context.quadraticCurveTo(x, y, x + radius, y);
-  context.closePath();
+function loadImage(source: string) {
+  return new Promise<HTMLImageElement | null>((resolve) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => resolve(null);
+    image.src = source;
+  });
+}
+
+function fitImage(context: CanvasRenderingContext2D, image: HTMLImageElement, x: number, y: number, maxWidth: number, maxHeight: number) {
+  const scale = Math.min(maxWidth / image.naturalWidth, maxHeight / image.naturalHeight);
+  const width = image.naturalWidth * scale;
+  const height = image.naturalHeight * scale;
+  context.drawImage(image, x + maxWidth - width, y + maxHeight - height, width, height);
 }
 
 export async function downloadSavedQuestionsCard(items: SavedQuestionCardItem[]) {
@@ -49,78 +52,94 @@ export async function downloadSavedQuestionsCard(items: SavedQuestionCardItem[])
   measuringContext.font = QUESTION_FONT;
 
   const layouts = items.map((item) => {
-    const lines = wrapText(measuringContext, item.question, TEXT_WIDTH - 72);
-    return { ...item, lines, height: 116 + lines.length * QUESTION_LINE_HEIGHT };
+    const lines = wrapText(measuringContext, item.question, CONTENT_WIDTH);
+    return { ...item, lines, height: 120 + lines.length * QUESTION_LINE_HEIGHT };
   });
-  const questionsHeight = layouts.reduce((total, item) => total + item.height + 22, 0);
-  const cardHeight = 430 + questionsHeight;
+  const questionsHeight = layouts.reduce((total, item) => total + item.height, 0);
+  const footerHeight = 300;
+  const cardHeight = 290 + questionsHeight + footerHeight;
   const canvas = document.createElement("canvas");
   canvas.width = CARD_WIDTH;
   canvas.height = cardHeight;
   const context = canvas.getContext("2d");
   if (!context) throw new Error("canvas_unavailable");
 
-  context.fillStyle = "#fbf1e8";
+  context.fillStyle = "#ffffff";
   context.fillRect(0, 0, CARD_WIDTH, cardHeight);
-  context.fillStyle = "#52292b";
-  context.fillRect(0, 0, 24, cardHeight);
+  context.strokeStyle = "#1d1d1d";
+  context.lineWidth = 2;
+  context.strokeRect(FRAME, FRAME, CARD_WIDTH - FRAME * 2, cardHeight - FRAME * 2);
 
   context.fillStyle = "#1d1d1d";
-  context.font = "700 19px Poppins, Arial, sans-serif";
-  context.letterSpacing = "5px";
-  context.fillText("PROJECT", SIDE, 66);
+  context.font = "700 15px Poppins, Arial, sans-serif";
+  context.letterSpacing = "4px";
+  context.fillText("PROJECT", SIDE, 78);
   context.letterSpacing = "0px";
-  context.font = "600 66px Poppins, Arial, sans-serif";
+  context.font = "600 48px Poppins, Arial, sans-serif";
   context.fillStyle = "#de5240";
-  context.fillText("re", SIDE, 127);
+  context.fillText("re", SIDE, 125);
   const reWidth = context.measureText("re").width;
   context.fillStyle = "#1d1d1d";
-  context.fillText("set.", SIDE + reWidth - 2, 127);
+  context.fillText("set.", SIDE + reWidth - 1, 125);
 
   context.fillStyle = "#de5240";
-  context.font = "700 20px Poppins, Arial, sans-serif";
-  context.letterSpacing = "4px";
-  context.fillText("CONTINUE THE CONVERSATION", SIDE, 200);
+  context.font = "700 17px Poppins, Arial, sans-serif";
+  context.letterSpacing = "3px";
+  context.fillText("CONTINUE THE CONVERSATION", SIDE, 183);
   context.letterSpacing = "0px";
-  context.fillStyle = "#52292b";
+  context.fillStyle = "#1d1d1d";
   context.font = "600 48px Poppins, Arial, sans-serif";
-  context.fillText("Questions I want to keep open", SIDE, 260);
-  context.fillStyle = "#6f6660";
-  context.font = "500 22px Poppins, Arial, sans-serif";
-  context.fillText(`${items.length} ${items.length === 1 ? "question" : "questions"} saved`, SIDE, 306);
+  context.fillText("Questions I saved", SIDE, 242);
 
-  let y = 350;
+  let y = 290;
   layouts.forEach((item, index) => {
-    context.save();
-    context.shadowColor = "rgba(82, 41, 43, 0.12)";
-    context.shadowBlur = 14;
-    context.shadowOffsetY = 5;
-    roundedRect(context, SIDE, y, TEXT_WIDTH, item.height, 8);
-    context.fillStyle = index % 2 === 0 ? "#ffffff" : "#f8dfd0";
-    context.fill();
-    context.restore();
-
     context.fillStyle = "#de5240";
-    context.font = "700 20px Poppins, Arial, sans-serif";
-    context.fillText(String(index + 1).padStart(2, "0"), SIDE + 30, y + 42);
-    context.fillStyle = "#52292b";
-    context.font = "700 16px Poppins, Arial, sans-serif";
-    context.letterSpacing = "2px";
-    context.fillText(item.theme.toUpperCase(), SIDE + 94, y + 41);
+    context.font = "700 18px Poppins, Arial, sans-serif";
+    context.fillText(String(index + 1).padStart(2, "0"), SIDE, y + 22);
+
+    context.fillStyle = "#656565";
+    context.font = "600 14px Poppins, Arial, sans-serif";
+    context.letterSpacing = "1.6px";
+    const theme = item.theme.toUpperCase();
+    context.fillText(theme, CARD_WIDTH - SIDE - context.measureText(theme).width, y + 21);
     context.letterSpacing = "0px";
+
     context.fillStyle = "#1d1d1d";
     context.font = QUESTION_FONT;
     item.lines.forEach((line, lineIndex) => {
-      context.fillText(line, SIDE + 30, y + 96 + lineIndex * QUESTION_LINE_HEIGHT);
+      context.fillText(line, SIDE, y + 82 + lineIndex * QUESTION_LINE_HEIGHT);
     });
-    y += item.height + 22;
+
+    const ruleY = y + item.height - 26;
+    context.strokeStyle = "#edbaa6";
+    context.lineWidth = 2;
+    context.beginPath();
+    context.moveTo(SIDE, ruleY);
+    context.lineTo(CARD_WIDTH - SIDE, ruleY);
+    context.stroke();
+    y += item.height;
   });
 
-  context.fillStyle = "#286b72";
-  context.fillRect(24, cardHeight - 58, CARD_WIDTH - 24, 58);
-  context.fillStyle = "#ffffff";
-  context.font = "600 18px Poppins, Arial, sans-serif";
-  context.fillText("Continue the conversation. Your answers stay with you.", SIDE, cardHeight - 23);
+  const collage = await loadImage("/images/share-card-film-collage.png");
+  const footerTop = cardHeight - footerHeight;
+  context.fillStyle = "#52292b";
+  context.font = "700 17px Poppins, Arial, sans-serif";
+  context.letterSpacing = "2.5px";
+  context.fillText("THIRD DEGREE BURNOUT", SIDE, footerTop + 82);
+  context.letterSpacing = "0px";
+  context.font = "500 21px Poppins, Arial, sans-serif";
+  context.fillText("A Survivor's Guide", SIDE, footerTop + 116);
+  context.fillStyle = "#555555";
+  context.font = "500 17px Poppins, Arial, sans-serif";
+  context.fillText("A question worth keeping open.", SIDE, footerTop + 170);
+  context.fillText("thirddegreeburnout.com", SIDE, footerTop + 203);
+  if (collage) fitImage(context, collage, CARD_WIDTH - SIDE - 235, footerTop + 28, 235, 220);
+
+  const bandWidth = (CARD_WIDTH - FRAME * 2) / 5;
+  ["#458284", "#82bcc8", "#de5240", "#fa8757", "#d4953b"].forEach((color, index) => {
+    context.fillStyle = color;
+    context.fillRect(FRAME + bandWidth * index, cardHeight - FRAME - 12, bandWidth, 12);
+  });
 
   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
   if (!blob) throw new Error("image_export_failed");

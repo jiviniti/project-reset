@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/take-it-to-the-table");
@@ -55,7 +56,14 @@ test("copies, downloads and clears the saved list", async ({ page }) => {
   expect(copied).toContain("What is the first meal you can remember");
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Download a share card" }).click();
-  expect((await downloadPromise).suggestedFilename()).toBe("project-reset-saved-questions.png");
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toBe("project-reset-saved-questions.png");
+  const downloadPath = await download.path();
+  expect(downloadPath).not.toBeNull();
+  const png = await readFile(downloadPath!);
+  expect(png.subarray(1, 4).toString()).toBe("PNG");
+  expect(png.readUInt32BE(16)).toBe(900);
+  expect(png.readUInt32BE(20)).toBeGreaterThan(700);
   await page.getByRole("button", { name: "Clear saved questions" }).click();
   await page.getByRole("button", { name: "Yes, clear all" }).click();
   await expect(page.getByRole("button", { name: /question saved/ })).toHaveCount(0);

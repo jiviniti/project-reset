@@ -743,27 +743,32 @@
 .savedIndicator:focus-visible { outline: 3px solid #1769e0; outline-offset: 3px; }
 
 .savedPanel {
+  position: relative;
   padding: 62px 42px 58px;
-  color: var(--shweta);
-  background: var(--mrida);
+  color: var(--kalika);
+  border-top: 8px solid var(--sindoor);
+  background: var(--shweta);
   scroll-margin-top: 18px;
 }
 
-.savedPanel > .eyebrow { color: var(--connect); }
-.savedPanel > h2 { max-width: 620px; margin: 10px 0 12px; color: var(--shweta); font-size: clamp(2rem, 6vw, 3.2rem); line-height: 1; letter-spacing: -.05em; outline: none; }
-.savedPanel > p:not(.eyebrow) { max-width: 580px; margin: 0; color: #eadbd5; font-size: .72rem; line-height: 1.6; }
-.savedPanel ol { display: grid; gap: 0; margin: 34px 0 0; padding: 0; border-top: 1px solid rgb(255 255 255 / 45%); list-style: none; }
-.savedPanel li { position: relative; padding: 22px 92px 22px 0; border-bottom: 1px solid rgb(255 255 255 / 45%); }
-.savedPanel li small { color: var(--connect); font-size: .54rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-.savedPanel li p { margin: 7px 0 0; color: var(--shweta); font-size: 1rem; font-weight: 600; line-height: 1.4; }
-.savedPanel li button { position: absolute; top: 22px; right: 0; padding: 5px 0; color: var(--shweta); border: 0; background: transparent; cursor: pointer; font: 600 .61rem/1.2 var(--ui); text-decoration: underline; text-underline-offset: 4px; }
+.savedPanel > .eyebrow { color: var(--sindoor); }
+.savedPanel > h2 { max-width: 620px; margin: 10px 0 12px; color: var(--kalika); font-size: clamp(2rem, 6vw, 3.2rem); line-height: 1; letter-spacing: -.05em; outline: none; }
+.savedPanel > p:not(.eyebrow) { max-width: 580px; margin: 0; color: #555; font-size: .72rem; line-height: 1.6; }
+.savedPanel ol { display: grid; gap: 0; margin: 34px 0 0; padding: 0; border-top: 1px solid var(--kalika); counter-reset: saved-question; list-style: none; }
+.savedPanel li { position: relative; min-height: 132px; padding: 25px 76px 25px 52px; border-bottom: 1px solid var(--pavitra); counter-increment: saved-question; }
+.savedPanel li::before { position: absolute; top: 25px; left: 0; color: var(--sindoor); content: counter(saved-question, decimal-leading-zero); font-size: .66rem; font-weight: 700; letter-spacing: .1em; }
+.savedPanel li small { color: #656565; font-size: .54rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.savedPanel li p { max-width: 520px; margin: 15px 0 0; color: var(--kalika); font-size: 1rem; font-weight: 600; line-height: 1.4; }
+.savedPanel li button { position: absolute; top: 20px; right: 0; padding: 5px 0; color: var(--mrida); border: 0; background: transparent; cursor: pointer; font: 600 .61rem/1.2 var(--ui); text-decoration: underline; text-underline-offset: 4px; }
 .savedActions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 28px; }
-.savedPanel .secondaryButton { color: var(--shweta); border-color: var(--shweta); }
-.clearButton { margin-top: 20px; padding: 6px 0; color: #eadbd5; border: 0; background: transparent; cursor: pointer; font: 600 .62rem/1.2 var(--ui); text-decoration: underline; text-underline-offset: 4px; }
-.clearConfirmation { display: flex; align-items: center; gap: 12px; margin-top: 20px; padding: 16px; border: 1px solid rgb(255 255 255 / 45%); }
+.savedPanel .primaryButton { color: var(--kalika); border-color: var(--sindoor); background: var(--sindoor); }
+.savedPanel .secondaryButton { color: var(--kalika); border-color: var(--kalika); }
+.savedPanel .secondaryButton:hover { color: var(--shweta); background: var(--kalika); }
+.clearButton { margin-top: 20px; padding: 6px 0; color: var(--mrida); border: 0; background: transparent; cursor: pointer; font: 600 .62rem/1.2 var(--ui); text-decoration: underline; text-underline-offset: 4px; }
+.clearConfirmation { display: flex; align-items: center; gap: 12px; margin-top: 20px; padding: 16px; border: 1px solid var(--kalika); }
 .clearConfirmation p { margin: 0 auto 0 0; font-size: .68rem; }
-.clearConfirmation button { min-height: 38px; padding: 8px 12px; color: var(--shweta); border: 1px solid var(--shweta); background: transparent; cursor: pointer; font: 600 .61rem/1.2 var(--ui); }
-.saveStatus { min-height: 0; margin: 0; padding: 0 28px; color: var(--shweta); background: var(--kalika); font-size: .64rem; line-height: 1.5; text-align: center; }
+.clearConfirmation button { min-height: 38px; padding: 8px 12px; color: var(--kalika); border: 1px solid var(--kalika); background: transparent; cursor: pointer; font: 600 .61rem/1.2 var(--ui); }
+.saveStatus { min-height: 0; margin: 0; padding: 0 28px; color: var(--mrida); background: var(--shweta); font-size: .64rem; line-height: 1.5; text-align: center; }
 .saveStatus:not(:empty) { padding-block: 14px; }
 
 @keyframes cardIn {

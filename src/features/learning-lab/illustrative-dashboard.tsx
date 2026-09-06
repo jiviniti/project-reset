@@ -141,7 +141,7 @@ export function IllustrativeDashboard({
 
       <section className="dashboard__section dashboard__section--coral dashboard__cta">
         <p className="script-line script-line--white">Your answer belongs here.</p><h2>Add your <BrandedReset uppercase />.</h2><p>The picture grows because people choose to share.</p>
-        <button type="button" className="button button--light" onClick={onContribute}>Start your <BrandedReset uppercase /> <span aria-hidden="true">→</span></button>
+        <button type="button" className="button button--light" onClick={onContribute}><span>Start your <BrandedReset uppercase /></span><span aria-hidden="true">→</span></button>
       </section>
 
       <footer className="dashboard__footer">

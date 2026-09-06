@@ -91,9 +91,11 @@ export function ConversationStarter() {
   const [savedPromptIds, setSavedPromptIds] = useState<string[]>([]);
   const [saveStatus, setSaveStatus] = useState("");
   const [confirmClear, setConfirmClear] = useState(false);
+  const [savedPanelVisible, setSavedPanelVisible] = useState(false);
   const themeHeadingRef = useRef<HTMLHeadingElement>(null);
   const themeSelectorRef = useRef<HTMLElement>(null);
   const questionLibraryRef = useRef<HTMLElement>(null);
+  const savedPanelRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const restore = window.setTimeout(() => {
@@ -122,6 +124,17 @@ export function ConversationStarter() {
       try { window.localStorage.setItem(SAVED_QUESTIONS_STORAGE_KEY, JSON.stringify(savedPromptIds)); } catch { /* Keep the in-memory session usable. */ }
     }
   }, [hydrated, savedPromptIds]);
+
+  useEffect(() => {
+    const panel = savedPanelRef.current;
+    if (!panel) {
+      setSavedPanelVisible(false);
+      return;
+    }
+    const observer = new IntersectionObserver(([entry]) => setSavedPanelVisible(entry.isIntersecting), { threshold: 0.08 });
+    observer.observe(panel);
+    return () => observer.disconnect();
+  }, [savedPromptIds.length]);
 
   useEffect(() => {
     if (!hydrated || !selectedTheme) return;
@@ -191,7 +204,7 @@ export function ConversationStarter() {
 
   return (
     <main className={styles.page}>
-      {savedPromptIds.length > 0 ? <button type="button" className={styles.savedIndicator} onClick={viewSavedQuestions}>{savedPromptIds.length} {savedPromptIds.length === 1 ? "question" : "questions"} saved</button> : null}
+      {savedPromptIds.length > 0 && !savedPanelVisible ? <button type="button" className={styles.savedIndicator} onClick={viewSavedQuestions}>{savedPromptIds.length} {savedPromptIds.length === 1 ? "question" : "questions"} saved</button> : null}
       <div className={styles.shell}>
         <header className={styles.hero}>
           <div className={styles.heroTop}><ResetBrand light /><FilmLockup /></div>
@@ -228,7 +241,7 @@ export function ConversationStarter() {
         ) : null}
 
         {savedPrompts.length > 0 ? (
-          <section id="saved-questions" className={styles.savedPanel} aria-labelledby="saved-questions-heading">
+          <section id="saved-questions" ref={savedPanelRef} className={styles.savedPanel} aria-labelledby="saved-questions-heading">
             <p className={styles.eyebrow}>Keep what stayed with you</p>
             <h2 id="saved-questions-heading" tabIndex={-1}>My saved questions</h2>
             <p>Saved on this browser and device only. Your choices are not sent to Project <BrandedReset uppercase />.</p>
