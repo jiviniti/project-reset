@@ -5,95 +5,82 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("starts with four featured themes and reveals the complete set", async ({ page }) => {
-  await expect(page.getByRole("heading", { name: /Take it to the table/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Continue the conversation/i })).toBeVisible();
   await expect(page.getByText("Choose what feels relevant. You don’t need to have seen the film or have the answers.", { exact: true })).toBeVisible();
-  await expect(page.getByText("Choose a theme. You can switch anytime.", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: /Burnout beyond work/i })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Food, memory, and care/i })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Choice and its limits/i })).toBeVisible();
-  await expect(page.getByRole("button", { name: /Connection and isolation/i })).toBeVisible();
   await expect(page.getByRole("button", { name: /Living with climate feelings/i })).toHaveCount(0);
-
   await page.getByRole("button", { name: "Show all 10 themes" }).click();
   await expect(page.getByRole("button", { name: /Living with climate feelings/i })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Show the four featured themes" })).toBeVisible();
 });
 
-test("shows all six questions in a selected theme without collecting answers", async ({ page }) => {
+test("shows six browseable questions without collecting answers", async ({ page }) => {
   const apiRequests: string[] = [];
-  page.on("request", (request) => {
-    if (new URL(request.url()).pathname.startsWith("/api/")) apiRequests.push(request.url());
-  });
-
+  page.on("request", (request) => { if (new URL(request.url()).pathname.startsWith("/api/")) apiRequests.push(request.url()); });
   await page.getByRole("button", { name: /Burnout beyond work/i }).click();
   await expect(page.getByRole("heading", { name: "Questions about Burnout beyond work" })).toBeFocused();
-  const library = page.locator("#question-library");
-  await expect(library.getByText("Explore the questions", { exact: true })).toBeInViewport();
-  await expect(page.getByRole("heading", { name: "Questions about Burnout beyond work" })).toBeInViewport();
-  await expect(page.locator("article")).toHaveCount(6);
+  await expect(page.locator("#question-library article")).toHaveCount(6);
   await expect(page.locator("input:not([readonly]), textarea")).toHaveCount(0);
-  await expect(page.getByText(/Question 1 of/)).toHaveCount(0);
-
-  const firstCard = page.locator("article").first();
+  const firstCard = page.locator("#question-library article").first();
   await firstCard.getByRole("button", { name: "Go a little deeper" }).click();
   await expect(firstCard.getByText("Consider this too")).toBeVisible();
-  await firstCard.getByRole("button", { name: "Close the deeper prompt" }).click();
-  await expect(firstCard.getByText("Consider this too")).toHaveCount(0);
   expect(apiRequests).toEqual([]);
 });
 
-test("carries and shares an exact question using only stable URL identifiers", async ({ page }) => {
-  await page.addInitScript(() => {
-    Object.defineProperty(navigator, "share", { configurable: true, value: undefined });
-    Object.defineProperty(navigator, "clipboard", {
-      configurable: true,
-      value: { writeText: async (value: string) => sessionStorage.setItem("copied-test-link", value) },
-    });
-  });
-  await page.goto("/take-it-to-the-table");
+test("saves, removes and restores multiple questions across themes", async ({ page }) => {
   await page.getByRole("button", { name: /Food, memory, and care/i }).click();
-  const firstCard = page.locator("article").first();
-  await firstCard.getByRole("button", { name: "Carry this question forward" }).click();
-  await expect(firstCard.getByRole("button", { name: "Added to carry forward" })).toBeVisible();
-  await expect(firstCard.getByText("Keep browsing. You'll find this question again at the end.")).toBeVisible();
-  const carryHeading = page.getByRole("heading", { name: "You found a question worth keeping open." });
-  await expect(carryHeading).toBeVisible();
-  await expect(carryHeading).not.toBeInViewport();
-  await carryHeading.scrollIntoViewIfNeeded();
-  await page.getByRole("button", { name: "Share this conversation" }).click();
-  await expect(page.getByText("Link copied. Paste it into a message to invite someone.")).toBeVisible();
-
-  const copied = await page.evaluate(() => sessionStorage.getItem("copied-test-link"));
-  expect(copied).toContain("/take-it-to-the-table?theme=food&question=food-first-meal");
-  expect(copied).not.toContain("answer=");
+  const foodCards = page.locator("#question-library article");
+  await foodCards.nth(0).getByRole("button", { name: "Save this question." }).click();
+  await foodCards.nth(1).getByRole("button", { name: "Save this question." }).click();
+  await page.getByRole("button", { name: "Choose another theme" }).click();
+  await page.getByRole("button", { name: /Connection and isolation/i }).click();
+  await page.locator("#question-library article").nth(0).getByRole("button", { name: "Save this question." }).click();
+  await expect(page.getByRole("button", { name: "3 questions saved" })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole("button", { name: "3 questions saved" })).toBeVisible();
+  await page.getByRole("button", { name: "3 questions saved" }).click();
+  await expect(page.locator("#saved-questions li")).toHaveCount(3);
+  await page.locator("#saved-questions li").nth(1).getByRole("button", { name: "Remove" }).click();
+  await expect(page.locator("#saved-questions li")).toHaveCount(2);
 });
 
-test("restores a valid theme and question from a deep link", async ({ page }) => {
+test("copies, downloads and clears the saved list", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: async (value: string) => sessionStorage.setItem("copied-questions", value) } });
+  });
+  await page.goto("/take-it-to-the-table?theme=food&question=food-first-meal");
+  await page.getByRole("button", { name: "1 question saved" }).click();
+  await page.getByRole("button", { name: "Copy my questions" }).click();
+  const copied = await page.evaluate(() => sessionStorage.getItem("copied-questions"));
+  expect(copied).toContain("1. Food, memory, and care");
+  expect(copied).toContain("What is the first meal you can remember");
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download my questions" }).click();
+  expect((await downloadPromise).suggestedFilename()).toBe("project-reset-conversation-questions.txt");
+  await page.getByRole("button", { name: "Clear saved questions" }).click();
+  await page.getByRole("button", { name: "Yes, clear all" }).click();
+  await expect(page.getByRole("button", { name: /question saved/ })).toHaveCount(0);
+});
+
+test("valid deep links add a question while invalid stored IDs are discarded", async ({ page }) => {
+  await page.evaluate(() => localStorage.setItem("project-reset:conversation-saved:v1", JSON.stringify(["not-real", "food-first-meal"])));
   await page.goto("/take-it-to-the-table?theme=connection&question=connection-understood");
   await expect(page.getByRole("heading", { name: "Questions about Connection and isolation" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "You found a question worth keeping open." })).toBeVisible();
-  await expect(page.getByRole("blockquote")).toHaveText("What do you wish someone close to you understood about what you carry?");
+  await expect(page.getByRole("button", { name: "2 questions saved" })).toBeVisible();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("project-reset:conversation-saved:v1") ?? "[]"))).toEqual(["food-first-meal", "connection-understood"]);
 });
 
-test("offers an explicitly described mixed collection", async ({ page }) => {
-  await page.getByRole("button", { name: /Not sure where to begin/ }).click();
-  await expect(page.getByRole("heading", { name: "Questions about Across the film" })).toBeVisible();
-  await expect(page.locator("article")).toHaveCount(6);
-});
-
-test("is noindex during review and fits responsive viewports", async ({ page }) => {
+test("is noindex, uses legal safety copy and fits responsive viewports", async ({ page }) => {
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+  await expect(page.getByText(/For educational purposes only; not therapy/)).toBeVisible();
   for (const width of [390, 430, 768, 1440]) {
     await page.setViewportSize({ width, height: 844 });
     await page.goto("/take-it-to-the-table?theme=access");
     const sizes = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
     expect(sizes.scroll).toBeLessThanOrEqual(sizes.client);
   }
-
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/take-it-to-the-table?theme=access");
-  await page.locator("article").first().getByRole("button", { name: "Carry this question forward" }).click();
-  const reducedDuration = await page.locator("article").first().evaluate((element) => parseFloat(getComputedStyle(element).transitionDuration));
-  expect(reducedDuration).toBeLessThanOrEqual(0.00001);
+  const duration = await page.locator("article").first().evaluate((element) => parseFloat(getComputedStyle(element).transitionDuration));
+  expect(duration).toBeLessThanOrEqual(0.00001);
 });

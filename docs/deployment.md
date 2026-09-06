@@ -6,7 +6,7 @@ Milestone 1 was verified on 24 August 2026, Milestone 2 and the pre-Milestone-3 
 
 1. Apply the committed files in `supabase/migrations/` in filename order, including `202609050001_questionnaire_v3_commitment.sql`, then apply preview seeds only when preparing a fresh preview project. `supabase/seed.sql` is a psql entry point and its `\ir` command is not accepted by the Dashboard SQL Editor.
 2. In Supabase **Data API → Settings**, add `api` to the exposed schemas and leave `private` and `aggregate` excluded. Do not use dashboard exposure toggles for server-only functions. The migration explicitly grants execution to `service_role`.
-3. Set the Vercel variables listed in `.env.example`. Only the Supabase URL, current publishable key and browser-visible campaign URLs may use `NEXT_PUBLIC_`; the secret key must remain server-only. `NEXT_PUBLIC_DONATE_URL` defaults to the approved `https://thirddegreeburnout.com/donate`, and `NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL` defaults to the approved film homepage `https://www.thirddegreeburnout.com/`.
+3. Set the Vercel variables listed in `.env.example`. Only the Supabase URL, current publishable key and browser-visible campaign URLs may use `NEXT_PUBLIC_`; the secret key must remain server-only. `NEXT_PUBLIC_DONATE_URL` is retained for a future approved support destination, but support links are currently hidden. `NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL` defaults to the approved film homepage `https://www.thirddegreeburnout.com/`.
 4. Deploy from the private GitHub repository.
 5. Configure the `reset-submissions` Vercel WAF instrument for 1,000 requests/IP/60 seconds and 429 action.
 6. Complete `/s/preview-screening`, verify the record graph and cumulative snapshot, and run the two-window realtime check in `docs/handover.md`.
@@ -27,6 +27,13 @@ These routes are demonstrations, not launch QR destinations. The active-event pl
 4. Confirm expired and not-yet-open routes return trailer access and never include `rewardAccess`.
 5. Monitor redemption counts in KINEMA Reports. KINEMA charges $1 per redemption; the current combined cap is 350.
 6. Email KINEMA to disable or change a code. There is no scheduled shutdown or app-side revocation after redemption. Rentals allow 30 days to start and 48 hours to finish once started.
+
+The launch windows are configured by `202609060001_launch_event_windows.sql`:
+
+- Climate Week NYC: September 22 through October 7, 2026, closing at midnight New York time on October 7.
+- Columbia Climate School: October 7 through October 22, 2026, closing at midnight New York time on October 22.
+
+Closing timestamps are exclusive. At each closing time the application returns to trailer access, but a code copied earlier remains redeemable until KINEMA disables it. Ask KINEMA to keep both codes disabled before their opening dates and to disable each code at its matching closing time. Never reuse either code for another event.
 
 The preview WAF threshold is intentionally provisional and must be reviewed against expected audience size, venue networking and submission bursts before production.
 
