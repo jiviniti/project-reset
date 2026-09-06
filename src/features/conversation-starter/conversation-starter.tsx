@@ -12,6 +12,7 @@ import {
   type ConversationThemeChoice,
   type ConversationThemeId,
 } from "./conversation-prompts";
+import { downloadSavedQuestionsCard } from "./question-card-export";
 import styles from "./conversation-starter.module.css";
 
 const THEME_IDS = Object.keys(CONVERSATION_THEMES) as ConversationThemeId[];
@@ -170,21 +171,17 @@ export function ConversationStarter() {
       await copyText(savedQuestionsText(savedPromptIds));
       setSaveStatus("Your saved questions were copied.");
     } catch {
-      setSaveStatus("Copying did not work on this device. Download the text file instead.");
+      setSaveStatus("Copying did not work on this device. You can still download the share card.");
     }
   }
 
-  function downloadSavedQuestions() {
-    const blob = new Blob([savedQuestionsText(savedPromptIds)], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "project-reset-conversation-questions.txt";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
-    setSaveStatus("Your saved questions were downloaded.");
+  async function downloadSavedQuestions() {
+    try {
+      await downloadSavedQuestionsCard(savedPrompts.map((prompt) => ({ theme: CONVERSATION_THEMES[prompt.theme].label, question: prompt.question })));
+      setSaveStatus("Your saved-question card was downloaded.");
+    } catch {
+      setSaveStatus("The image could not be created on this device. You can still copy your questions.");
+    }
   }
 
   if (!hydrated) return <main className={styles.page}><p className={styles.loading}>Preparing the questions…</p></main>;
@@ -236,7 +233,7 @@ export function ConversationStarter() {
             <h2 id="saved-questions-heading" tabIndex={-1}>My saved questions</h2>
             <p>Saved on this browser and device only. Your choices are not sent to Project <BrandedReset uppercase />.</p>
             <ol>{savedPrompts.map((prompt) => <li key={prompt.id}><small>{CONVERSATION_THEMES[prompt.theme].label}</small><p>{prompt.question}</p><button type="button" onClick={() => toggleSaved(prompt.id)}>Remove</button></li>)}</ol>
-            <div className={styles.savedActions}><button className={styles.primaryButton} type="button" onClick={() => void copySavedQuestions()}>Copy my questions</button><button className={styles.secondaryButton} type="button" onClick={downloadSavedQuestions}>Download my questions</button></div>
+            <div className={styles.savedActions}><button className={styles.primaryButton} type="button" onClick={() => void copySavedQuestions()}>Copy my questions</button><button className={styles.secondaryButton} type="button" onClick={() => void downloadSavedQuestions()}>Download a share card</button></div>
             {!confirmClear ? <button className={styles.clearButton} type="button" onClick={() => setConfirmClear(true)}>Clear saved questions</button> : <div className={styles.clearConfirmation} role="group" aria-label="Confirm clearing saved questions"><p>Remove all saved questions from this device?</p><button type="button" onClick={() => { setSavedPromptIds([]); setConfirmClear(false); setSaveStatus("All saved questions were cleared."); }}>Yes, clear all</button><button type="button" onClick={() => setConfirmClear(false)}>Keep my questions</button></div>}
           </section>
         ) : null}

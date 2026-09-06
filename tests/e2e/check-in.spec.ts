@@ -53,6 +53,7 @@ test("completes the preview check-in and reaches the persisted success state", a
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.getByRole("heading", { name: "How do you reset?" })).toBeVisible();
   await expect(page.locator("h1 .branded-reset b")).toHaveCSS("color", "rgb(220, 87, 67)");
+  await expect(page.getByRole("button", { name: "Start your RESET" }).locator(".branded-reset b")).toHaveCSS("color", "rgb(255, 255, 255)");
   await expect(page.getByText("About 90 seconds · Public results are anonymous · Film access follows")).toBeVisible();
   await page.getByRole("button", { name: "Start your RESET" }).click();
   await page.getByRole("button", { name: "Exhausted" }).click();

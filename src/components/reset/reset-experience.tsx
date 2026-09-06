@@ -336,7 +336,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
               {screening.eventWindowStatus === "event_not_started" ? (
                 <p className="pathway-notice">Film access for this event is not active yet. You can still complete your <BrandedReset uppercase /> through the trailer pathway.</p>
               ) : null}
-              <button type="button" className="button button--coral" onClick={start}>Start your <BrandedReset uppercase /> <span aria-hidden="true">→</span></button>
+              <button type="button" className="button button--coral" onClick={start}>Start your <BrandedReset uppercase className="branded-reset--single-color" /> <span aria-hidden="true">→</span></button>
               <p className="hero__meta">About 90 seconds · Public results are anonymous · {screening.rewardType === "film_access" ? "Film access follows" : "Trailer access follows"}</p>
               <button type="button" className="text-button" onClick={() => setView("lab")}>Explore the Learning Lab <span aria-hidden="true">→</span></button>
             </div>
@@ -371,7 +371,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 })}</div>
                 {form.pathways.map((pathwayKey) => <fieldset className="practice-group" key={pathwayKey}><legend>{pathwayOptions.find((option) => option.key === pathwayKey)?.label}: what helps?</legend><div className="chips">{practicesByPathway[pathwayKey].map((option) => <Chip key={option.key} selected={form.practices.includes(option.key)} onClick={() => toggleList("practices", option.key)}>{option.label}</Chip>)}</div></fieldset>)}
                 <CustomTagField side="reset" input={resetTagInput} tags={form.resetCustomTags} onInput={setResetTagInput} onAdd={() => addCustomTag("reset")} onRemove={(tag) => removeCustomTag("reset", tag)} />
-                <label>Tell us about your <BrandedReset uppercase /> ritual (optional)<textarea rows={3} maxLength={1500} value={form.ritual} onChange={(event) => update("ritual", event.target.value)} /></label>
+                <label><span className="label-copy">Tell us about your <BrandedReset uppercase /> ritual (optional)</span><textarea rows={3} maxLength={1500} value={form.ritual} onChange={(event) => update("ritual", event.target.value)} /></label>
                 <button className="button button--primary" type="button" onClick={() => goToStep(3)}>Continue · {form.practices.length + form.resetCustomTags.length} selected</button>
               </section>
             )}
@@ -392,7 +392,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <label>Occupation<input autoComplete="organization-title" maxLength={120} value={form.occupation} onChange={(event) => update("occupation", event.target.value)} /></label>
                 {hasCommitmentQuestion ? <div className="commitment-field">
                   <p className="field-group-label">Before you finish</p>
-                  <label id="commitment-heading">What is one thing you will do today to support your <BrandedReset />? (optional)
+                  <label id="commitment-heading"><span className="label-copy">What is one thing you will do today to support your <BrandedReset />? (optional)</span>
                     <textarea rows={3} maxLength={500} value={form.commitment} onChange={(event) => update("commitment", event.target.value)} />
                   </label>
                   <p>It could involve rest, nourishment, movement, connection, boundaries, or asking for help.</p>

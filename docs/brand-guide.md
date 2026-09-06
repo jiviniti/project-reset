@@ -70,6 +70,15 @@ Pathway colors identify actual pathways. Do not assign them decoratively to unre
 - Use the full `PROJECT / reset. / Choose Better. Together.` lockup at first encounters when space allows.
 - When the constructed mark cannot be rendered, write `RESET`. Use lowercase `reset` only when it is grammatically a verb.
 
+### Identity mark versus reading copy
+
+The two-color treatment is an identity device, not a requirement for every written occurrence of the word. Repeating it inside instructions, field labels, sentences, and compact controls can interrupt reading and create fragile line breaks on mobile.
+
+- Use the two-color treatment for the primary lockup, prominent display moments, and approved campaign artwork.
+- Prefer ordinary `RESET` or grammatical `reset` in body copy, labels, legal text, and compact controls.
+- When a control background cannot provide contrast for both wordmark colors, use a one-color treatment. The current Sindoor primary CTA uses Shweta throughout.
+- The wider use of the two-color treatment in the current review build remains an editorial decision for Foundation approval.
+
 The documentary title is always bold Poppins capitals and larger than its qualifier:
 
 `THIRD DEGREE BURNOUT: A SURVIVOR'S GUIDE`

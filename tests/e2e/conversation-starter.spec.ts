@@ -54,8 +54,8 @@ test("copies, downloads and clears the saved list", async ({ page }) => {
   expect(copied).toContain("1. Food, memory, and care");
   expect(copied).toContain("What is the first meal you can remember");
   const downloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Download my questions" }).click();
-  expect((await downloadPromise).suggestedFilename()).toBe("project-reset-conversation-questions.txt");
+  await page.getByRole("button", { name: "Download a share card" }).click();
+  expect((await downloadPromise).suggestedFilename()).toBe("project-reset-saved-questions.png");
   await page.getByRole("button", { name: "Clear saved questions" }).click();
   await page.getByRole("button", { name: "Yes, clear all" }).click();
   await expect(page.getByRole("button", { name: /question saved/ })).toHaveCount(0);

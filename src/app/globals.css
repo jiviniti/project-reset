@@ -19,6 +19,7 @@
 
 .branded-reset { color: inherit; font: inherit; letter-spacing: inherit; white-space: nowrap; }
 .branded-reset b { color: var(--coral); font: inherit; }
+.branded-reset--single-color b { color: inherit; }
 
 * { box-sizing: border-box; }
 html { color-scheme: light; background: #0f0e0e; }
@@ -94,6 +95,7 @@ h1, h2, h3, p { text-wrap: pretty; }
 .step--peach { background: var(--peach); }
 .step--light { background: var(--cream); }
 label { display: flex; flex-direction: column; gap: 7px; color: inherit; font-family: var(--ui); font-size: .69rem; font-weight: 700; }
+.label-copy { display: inline; }
 input, textarea { width: 100%; padding: 14px 15px; color: var(--ink); border: 1px solid var(--line); border-radius: 12px; background: white; font-size: .88rem; font-weight: 500; }
 .step--dark textarea { color: white; border-color: #4b3938; background: #211e1d; }
 textarea { resize: vertical; }
