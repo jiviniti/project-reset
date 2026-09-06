@@ -108,7 +108,7 @@ test("completes the preview check-in and reaches the persisted success state", a
   await page.getByRole("button", { name: "Copy access details" }).click();
   await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).toContain("Film link: https://kinema.com/films/private-film");
   await expect(page.getByRole("link", { name: /Open the film on KINEMA/ })).toHaveAttribute("href", "https://kinema.com/films/private-film");
-  await expect(page.getByRole("link", { name: /Explore the questions/ })).toHaveAttribute("href", "/take-it-to-the-table");
+  await expect(page.getByRole("link", { name: /Start a conversation/ })).toHaveAttribute("href", "/start-a-conversation");
   const mobileWidths = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
   expect(mobileWidths.scroll).toBeLessThanOrEqual(mobileWidths.client);
   await page.setViewportSize({ width: 430, height: 932 });

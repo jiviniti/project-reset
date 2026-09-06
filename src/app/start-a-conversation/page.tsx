@@ -7,6 +7,6 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function ContinueTheConversationPage() {
+export default function StartAConversationPage() {
   return <ConversationStarter />;
 }

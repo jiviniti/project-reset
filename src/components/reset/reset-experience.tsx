@@ -461,7 +461,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <p className="eyebrow">Project <BrandedReset uppercase /></p>
                 <h3 id="continue-conversation-heading">Continue the conversation.</h3>
                 <p>Browse reflective questions for a meal, walk, call, classroom, or gathering. Begin with whatever feels relevant today.</p>
-                <a className="button button--primary" href="/take-it-to-the-table">Explore the questions <span aria-hidden="true">→</span></a>
+                <a className="button button--primary" href="/start-a-conversation">Start a conversation <span aria-hidden="true">→</span></a>
               </section>
             </div>
           </section>
