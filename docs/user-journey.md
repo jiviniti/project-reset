@@ -1,6 +1,18 @@
 # Project RESET user journey
 
-Last updated: 5 September 2026
+Last updated: 6 September 2026
+
+## Current product model
+
+Project RESET is a participatory educational product rather than a single survey or content page. Its current journey moves through five connected modes:
+
+1. The check-in creates a brief moment of personal reflection and contributes an anonymous response to the shared picture.
+2. The Burnout Landscape and Community RESET Map turn individual selections into collective meaning.
+3. Film or trailer access carries participants into the documentary's deeper narrative.
+4. Take It to the Table helps that reflection travel into conversations with friends, families, classmates, colleagues and communities.
+5. Event screenings create identifiable cohorts, while repeated use can support cumulative and longitudinal learning without exposing participant identities in public results.
+
+This sequence is the current launch model. It is intentionally participatory: reflection, visualization, story and conversation reinforce one another.
 
 ## Entry and eligibility
 
@@ -15,12 +27,16 @@ The database determines pathway eligibility from private screening configuration
 
 ## Check-in
 
-1. Participants select burnout signs and may add private free text or custom tags.
+1. Participants select burnout signs and may reveal a private custom-tag field when the listed choices do not fit.
 2. They select RESET pathways and practices and may describe a private ritual.
 3. They may write one small commitment, then provide required identity and consent plus optional demographics and communications preference.
 4. One atomic request stores the response, frozen reward decision and allowlisted aggregate update.
 
 Questionnaire version 3 adds only the optional private commitment. It is limited to 500 characters and is not aggregated.
+
+The earlier optional `burnout_note` answer remains accepted by the server for historical responses and forms that were already loaded, but the current questionnaire does not display or submit that field.
+
+The required consent statement remains unchanged for launch. Its final wording and the destination for a future Privacy & Data Use link are pending editorial approval from the Foundation. No privacy link should be added until both are approved.
 
 ## Completion
 

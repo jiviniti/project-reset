@@ -88,7 +88,7 @@ export function IllustrativeDashboard({
           <p className="section-number">01</p>
           <p className="eyebrow eyebrow--orange">The burnout landscape</p>
           <h2>This is what it feels like.</h2>
-          <p>The larger the word, the more often it appears in the cumulative picture.</p>
+          <p>Larger words are shared more often.</p>
           <WordCloud metrics={snapshot.metrics.emotions} category="emotions" />
         </section>
 
@@ -96,7 +96,7 @@ export function IllustrativeDashboard({
           <p className="section-number">02</p>
           <p className="eyebrow">The community RESET map</p>
           <h2>What brings us back.</h2>
-          <p>Shared practices become a collective map of recovery and reconnection.</p>
+          <p>Together, our choices create a map of what helps.</p>
           <WordCloud metrics={snapshot.metrics.practices} category="practices" />
         </section>
       </div>
@@ -117,12 +117,12 @@ export function IllustrativeDashboard({
       </section>
 
       <section className="dashboard__section dashboard__section--dark">
-        <p className="section-number">01</p><p className="eyebrow eyebrow--orange">The burnout landscape</p><h2>This is what it feels like.</h2><p>The larger the word, the more often it appears in the cumulative picture.</p>
+        <p className="section-number">01</p><p className="eyebrow eyebrow--orange">The burnout landscape</p><h2>This is what it feels like.</h2><p>Larger words are shared more often.</p>
         <WordCloud metrics={snapshot.metrics.emotions} category="emotions" />
       </section>
 
       <section className="dashboard__section dashboard__section--cream">
-        <p className="section-number">02</p><p className="eyebrow">The community RESET map</p><h2>What brings us back.</h2><p>Shared practices become a collective map of recovery and reconnection.</p>
+        <p className="section-number">02</p><p className="eyebrow">The community RESET map</p><h2>What brings us back.</h2><p>Together, our choices create a map of what helps.</p>
         <WordCloud metrics={snapshot.metrics.practices} category="practices" />
       </section>
 
@@ -142,7 +142,7 @@ export function IllustrativeDashboard({
 
       <section className="dashboard__section dashboard__section--coral dashboard__cta">
         <p className="script-line script-line--white">Your answer belongs here.</p><h2>Add your RESET.</h2><p>The picture grows because people choose to share.</p>
-        <button type="button" className="button button--light" onClick={onContribute}>Contribute your RESET <span aria-hidden="true">→</span></button>
+        <button type="button" className="button button--light" onClick={onContribute}>Start your RESET <span aria-hidden="true">→</span></button>
         <a href={DONATION_URL} target="_blank" rel="noreferrer">Support the project</a>
       </section>
 

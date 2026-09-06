@@ -202,7 +202,7 @@ export function ConversationStarter() {
               <p className={styles.reviewFlag}>Draft for Foundation review</p>
               <p className={styles.eyebrow}>A conversation worth making room for</p>
               <h1>Take it to the table.</h1>
-              <p>Choose what feels relevant today. You do not need to have seen the film or know the perfect answer.</p>
+              <p>Choose what feels relevant. You don’t need to have seen the film - or have the answers.</p>
             </div>
             <div className={styles.collage} aria-hidden="true" />
           </div>
@@ -212,7 +212,7 @@ export function ConversationStarter() {
         <section ref={themeSelectorRef} className={styles.startPanel} aria-labelledby="choose-theme-title">
           <div className={styles.stepLabel}><span>01</span><p>Choose a topic</p></div>
           <h2 id="choose-theme-title">What feels worth talking about?</h2>
-          <p className={styles.introText}>Select a theme to see every question in it. You can change themes whenever you like.</p>
+          <p className={styles.introText}>Choose a theme. You can switch anytime.</p>
 
           <div className={styles.themeGrid}>
             <button className={styles.acrossTheme} aria-pressed={selectedTheme === "across"} type="button" onClick={() => selectTheme("across")}>

@@ -21,7 +21,6 @@ type FormState = {
   futureCommunications: boolean;
   emotions: string[];
   burnoutCustomTags: string[];
-  burnoutNote: string;
   pathways: string[];
   practices: string[];
   resetCustomTags: string[];
@@ -39,7 +38,6 @@ const initialForm: FormState = {
   futureCommunications: false,
   emotions: [],
   burnoutCustomTags: [],
-  burnoutNote: "",
   pathways: [],
   practices: [],
   resetCustomTags: [],
@@ -51,7 +49,7 @@ const DONATION_URL = process.env.NEXT_PUBLIC_DONATE_URL ?? "https://thirddegreeb
 const TRAILER_URL = process.env.NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL?.trim() || "https://www.thirddegreeburnout.com/";
 
 const pathwayPresentation: Record<string, { blurb: string; color: string }> = {
-  nourish: { blurb: "plants, water, earth", color: "#458284" },
+  nourish: { blurb: "food, water, nature.", color: "#458284" },
   restore: { blurb: "sleep, stillness", color: "#82bcc8" },
   move: { blurb: "body in motion", color: "#de5240" },
   connect: { blurb: "people, animals", color: "#fa8757" },
@@ -89,38 +87,46 @@ function CustomTagField({
   onRemove: (value: string) => void;
   dark?: boolean;
 }) {
+  const [expanded, setExpanded] = useState(side !== "burnout");
   const trimmed = input.trim().slice(0, 60);
   const label = side === "burnout" ? "burnout" : "RESET";
+  const composerId = `${side}-custom-response`;
   return (
     <div className={`custom-tags${dark ? " custom-tags--dark" : ""}`}>
-      <p className="field-group-label">Can’t find the right option? Add your own response</p>
+      {side === "burnout" ? (
+        <button className="custom-tags__toggle" type="button" aria-expanded={expanded} aria-controls={composerId} onClick={() => setExpanded((current) => !current)}>
+          <span>Something else?</span><strong>{expanded ? "Close" : "Add your own →"}</strong>
+        </button>
+      ) : <p className="field-group-label">Can’t find the right option? Add your own response</p>}
       {tags.length > 0 && <div className="chips" aria-label={`Your private ${label} tags`}>{tags.map((tag) => (
         <button type="button" className="chip chip--selected custom-tag" key={tag} onClick={() => onRemove(tag)} aria-label={`Remove ${tag}`}>
           {tag}<span aria-hidden="true"> ×</span>
         </button>
       ))}</div>}
-      <div className="tag-composer">
-        <input
-          aria-label={`Add a ${label} tag`}
-          maxLength={60}
-          placeholder={side === "burnout" ? "Start typing, e.g. doomscrolling" : "Start typing, e.g. painting"}
-          value={input}
-          onChange={(event) => onInput(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              event.preventDefault();
-              onAdd();
-            }
-          }}
-        />
-        {trimmed && tags.length < 6 ? (
-          <button className="tag-suggestion" type="button" onClick={onAdd}>
-            <span aria-hidden="true">＋</span>
-            <span>Add “{trimmed}”<small>Saved in your own words</small></span>
-          </button>
-        ) : null}
-      </div>
-      {tags.length > 0 ? <small>{tags.length} of 6 added. Your responses are saved with your check-in and won’t appear in the live visualization yet.</small> : <small>Optional. Your response is saved with your check-in and won’t appear in the live visualization yet.</small>}
+      {expanded ? <div className="custom-tags__details" id={composerId}>
+        <div className="tag-composer">
+          <input
+            aria-label={`Add a ${label} tag`}
+            maxLength={60}
+            placeholder={side === "burnout" ? "Start typing, e.g. doomscrolling" : "Start typing, e.g. painting"}
+            value={input}
+            onChange={(event) => onInput(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                onAdd();
+              }
+            }}
+          />
+          {trimmed && tags.length < 6 ? (
+            <button className="tag-suggestion" type="button" onClick={onAdd}>
+              <span aria-hidden="true">＋</span>
+              <span>Add “{trimmed}”<small>Saved in your own words</small></span>
+            </button>
+          ) : null}
+        </div>
+        {tags.length > 0 ? <small>{tags.length} of 6 added. Your responses are saved with your check-in and won’t appear in the live visualization yet.</small> : <small>Optional. Your response is saved with your check-in and won’t appear in the live visualization yet.</small>}
+      </div> : null}
     </div>
   );
 }
@@ -232,7 +238,6 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
     const answers = [
       { questionKey: "burnout_signs", optionKeys: form.emotions },
       { questionKey: "burnout_custom_tags", text: form.burnoutCustomTags.join("\n") },
-      { questionKey: "burnout_note", text: form.burnoutNote },
       { questionKey: "reset_pathways", optionKeys: form.pathways },
       { questionKey: "reset_practices", optionKeys: form.practices },
       { questionKey: "reset_custom_tags", text: form.resetCustomTags.join("\n") },
@@ -306,19 +311,19 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
               </div>
               <p className="eyebrow eyebrow--orange">The Learning Lab</p>
               <h1>How do you reset?</h1>
-              <p className="hero__lede">The film asks the questions. Project RESET is where you answer them—carrying the conversation beyond the screen.</p>
-              <p>Created by JIVINITI in partnership with Picture Motion, this living Learning Lab gathers what burnout feels like and what helps us come back to ourselves.</p>
+              <p className="hero__lede">The film asks big questions. Project RESET invites you into them - before and beyond the screen.</p>
+              <p>Created by JIVINITI in partnership with Picture Motion, this living Learning Lab explores what burnout feels like - and what helps us reset.</p>
               <div className="hero__image-frame">
                 <Image src="/images/reset-collage.avif" alt="A collage of everyday movement, nourishment, rest, nature, and community" width={900} height={500} priority className="hero__image" />
               </div>
               {screening.eventWindowStatus === "event_expired" ? (
-                <p className="pathway-notice">This event’s film-access window has ended. You can still contribute your RESET and watch the trailer.</p>
+                <p className="pathway-notice">This event’s film-access window has ended. You can still start your RESET and watch the trailer.</p>
               ) : null}
               {screening.eventWindowStatus === "event_not_started" ? (
-                <p className="pathway-notice">Film access for this event is not active yet. You can still contribute through the trailer pathway.</p>
+                <p className="pathway-notice">Film access for this event is not active yet. You can still complete your RESET through the trailer pathway.</p>
               ) : null}
-              <button type="button" className="button button--coral" onClick={start}>Contribute your RESET <span aria-hidden="true">→</span></button>
-              <p className="hero__meta">About 90 seconds · public results are de-identified · {screening.rewardType === "film_access" ? "film access after check-in" : "trailer access after check-in"}</p>
+              <button type="button" className="button button--coral" onClick={start}>Start your RESET <span aria-hidden="true">→</span></button>
+              <p className="hero__meta">About 90 seconds · Public results are anonymous · {screening.rewardType === "film_access" ? "Film access follows" : "Trailer access follows"}</p>
               <button type="button" className="text-button" onClick={() => setView("lab")}>Explore the Learning Lab <span aria-hidden="true">→</span></button>
             </div>
           </section>
@@ -334,9 +339,8 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <h2>How does burnout show up for you?</h2>
                 <p>Choose as many as feel true.</p>
                 <div className="chips">{visibleEmotions.map((option) => <Chip tone="dark" key={option.key} selected={form.emotions.includes(option.key)} onClick={() => toggleList("emotions", option.key)}>{option.label}</Chip>)}</div>
-                <button type="button" className="text-button text-button--peach" onClick={() => setShowMoreEmotions((current) => !current)}>{showMoreEmotions ? "Show fewer" : "+ more ways it shows up"}</button>
+                <button type="button" className="text-button text-button--peach" onClick={() => setShowMoreEmotions((current) => !current)}>{showMoreEmotions ? "Show fewer options" : "Show more options"}</button>
                 <CustomTagField side="burnout" input={burnoutTagInput} tags={form.burnoutCustomTags} onInput={setBurnoutTagInput} onAdd={() => addCustomTag("burnout")} onRemove={(tag) => removeCustomTag("burnout", tag)} dark />
-                <label>Tell us more (optional)<textarea rows={3} maxLength={1500} value={form.burnoutNote} onChange={(event) => update("burnoutNote", event.target.value)} /></label>
                 <button className="button button--coral" type="button" onClick={() => goToStep(2)}>Continue · {form.emotions.length + form.burnoutCustomTags.length} selected</button>
               </section>
             )}
@@ -345,13 +349,13 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
               <section className="step step--peach">
                 <p className="eyebrow">02 · Your RESET map</p>
                 <h2>What helps you reset?</h2>
-                <p>Pick one or two pathways, then the practices inside them.</p>
+                <p>Choose 1–2 areas that help you reset.</p>
                 <div className="pathway-grid">{pathwayOptions.map((option) => {
                   const selected = form.pathways.includes(option.key);
                   const presentation = pathwayPresentation[option.key];
                   return <button type="button" aria-pressed={selected} key={option.key} className="pathway-card" style={selected ? { background: presentation.color, borderColor: presentation.color } : undefined} onClick={() => toggleList("pathways", option.key)}><strong>{option.label}</strong><span>{presentation.blurb}</span></button>;
                 })}</div>
-                {form.pathways.map((pathwayKey) => <fieldset className="practice-group" key={pathwayKey}><legend>{pathwayOptions.find((option) => option.key === pathwayKey)?.label}—what exactly?</legend><div className="chips">{practicesByPathway[pathwayKey].map((option) => <Chip key={option.key} selected={form.practices.includes(option.key)} onClick={() => toggleList("practices", option.key)}>{option.label}</Chip>)}</div></fieldset>)}
+                {form.pathways.map((pathwayKey) => <fieldset className="practice-group" key={pathwayKey}><legend>{pathwayOptions.find((option) => option.key === pathwayKey)?.label} — what helps?</legend><div className="chips">{practicesByPathway[pathwayKey].map((option) => <Chip key={option.key} selected={form.practices.includes(option.key)} onClick={() => toggleList("practices", option.key)}>{option.label}</Chip>)}</div></fieldset>)}
                 <CustomTagField side="reset" input={resetTagInput} tags={form.resetCustomTags} onInput={setResetTagInput} onAdd={() => addCustomTag("reset")} onRemove={(tag) => removeCustomTag("reset", tag)} />
                 <label>Tell us about your RESET ritual (optional)<textarea rows={3} maxLength={1500} value={form.ritual} onChange={(event) => update("ritual", event.target.value)} /></label>
                 <button className="button button--primary" type="button" onClick={() => goToStep(3)}>Continue · {form.practices.length + form.resetCustomTags.length} selected</button>
@@ -361,9 +365,9 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
             {step === 3 && (
               <form className="step step--light" onSubmit={submitFinalStep}>
                 <p className="eyebrow eyebrow--orange">03 · Complete your check-in</p>
-                <h2>{screening.rewardType === "film_access" ? "Unlock your film access" : "Complete your check-in"}</h2>
-                <p>Complete your details to finish your check-in.</p>
-                <label>Name / initials (required)<input required autoComplete="given-name" maxLength={80} value={form.firstName} onChange={(event) => update("firstName", event.target.value)} /></label>
+                <h2>Complete your check-in</h2>
+                <p>Add your details to finish your RESET and receive {screening.rewardType === "film_access" ? "film" : "trailer"} access.</p>
+                <label>Name or initials<input required autoComplete="given-name" maxLength={80} value={form.firstName} onChange={(event) => update("firstName", event.target.value)} /></label>
                 <label>Email (required)<input required type="email" autoComplete="email" maxLength={254} value={form.email} onChange={(event) => update("email", event.target.value)} /></label>
                 <div className="optional-fields-intro">
                   <p className="field-group-label">A little more about you</p>
@@ -380,7 +384,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                   <p>It could involve rest, nourishment, movement, connection, boundaries, or asking for help.</p>
                 </div> : null}
                 <label className="check-row"><input required type="checkbox" checked={form.consent} onChange={(event) => update("consent", event.target.checked)} /><span><strong>(Required)</strong> {screening.policyText}</span></label>
-                <label className="check-row"><input type="checkbox" checked={form.futureCommunications} onChange={(event) => update("futureCommunications", event.target.checked)} /><span><strong>(Optional)</strong> Virsa may contact me about future programs.</span></label>
+                <label className="check-row"><input type="checkbox" checked={form.futureCommunications} onChange={(event) => update("futureCommunications", event.target.checked)} /><span><strong>Optional:</strong> Keep me updated about Project RESET and future Virsa programs.</span></label>
                 <button className="button button--primary" type="submit" disabled={submissionStatus === "submitting"}>{submissionStatus === "submitting" ? "Saving your RESET…" : "Finish"}</button>
                 <p className="error-message" role="alert">{errorMessage}</p>
                 <a className="donation-link" href={DONATION_URL} target="_blank" rel="noreferrer">Support the project</a>
@@ -395,7 +399,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
               <header className="success__confirmation">
                 <div className="success-burst" aria-hidden="true"><span /><span /><span /><span /><span /></div>
                 <p className="eyebrow">Your check-in is complete</p>
-                <h2>Thank you—your RESET has been added to the picture.</h2>
+                <h2>Thank you - your RESET has been added to the picture.</h2>
                 {form.commitment.trim() ? (
                   <blockquote className="commitment-echo"><span>You chose to carry forward</span>{form.commitment.trim()}</blockquote>
                 ) : null}
@@ -407,8 +411,12 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <p className="eyebrow">Your access</p>
                 {submissionResult?.rewardAccess ? (
                   <div className="reward-card">
-                    <h3 id="reset-access-heading">Your film access is ready.</h3>
-                    <p>Create or sign in to your KINEMA account, open the private film page, and enter this code in the Promo Code field at checkout.</p>
+                    <h3 id="reset-access-heading">Your film is ready.</h3>
+                    <ol className="reward-steps">
+                      <li>Copy your access code</li>
+                      <li>Open the film on KINEMA</li>
+                      <li>Sign in and enter the code at checkout</li>
+                    </ol>
                     <div className="reward-code-row">
                       <input aria-label="KINEMA promo code" readOnly value={submissionResult.rewardAccess.promoCode} onFocus={(event) => event.currentTarget.select()} />
                       <button type="button" onClick={() => void copyPromoCode()}>Copy code</button>

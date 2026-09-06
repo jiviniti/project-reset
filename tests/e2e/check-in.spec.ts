@@ -39,6 +39,7 @@ test("completes the preview check-in and reaches the persisted success state", a
     expect(payload.consent.dataUseAccepted).toBe(true);
     expect(payload.communication.futureCommunicationsAllowed).toBe(false);
     expect(payload.answers.find((answer: { questionKey: string }) => answer.questionKey === "burnout_custom_tags")?.text).toBe("Doomscrolling   at 2 a.m.");
+    expect(payload.answers.find((answer: { questionKey: string }) => answer.questionKey === "burnout_note")).toBeUndefined();
     expect(payload.answers.find((answer: { questionKey: string }) => answer.questionKey === "reset_custom_tags")?.text).toBe("Making ceramics");
     expect(payload.answers.find((answer: { questionKey: string }) => answer.questionKey === "today_commitment")?.text).toBe("Call a friend after dinner");
     await route.fulfill({
@@ -49,8 +50,12 @@ test("completes the preview check-in and reaches the persisted success state", a
   });
 
   await page.goto("/s/preview-event");
-  await page.getByRole("button", { name: "Contribute your RESET" }).click();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.getByText("About 90 seconds · Public results are anonymous · Film access follows")).toBeVisible();
+  await page.getByRole("button", { name: "Start your RESET" }).click();
   await page.getByRole("button", { name: "Exhausted" }).click();
+  await expect(page.getByLabel("Add a burnout tag")).toHaveCount(0);
+  await page.getByRole("button", { name: /Something else.*Add your own/ }).click();
   await page.getByLabel("Add a burnout tag").fill("  Doomscrolling   at 2 a.m.  ");
   await page.getByRole("button", { name: /Add “Doomscrolling/ }).click();
   await page.getByRole("button", { name: /Continue · 2 selected/ }).click();
@@ -60,15 +65,20 @@ test("completes the preview check-in and reaches the persisted success state", a
   await page.getByLabel("Add a RESET tag").fill("Making ceramics");
   await page.getByRole("button", { name: /Add “Making ceramics”/ }).click();
   await page.getByRole("button", { name: /Continue · 2 selected/ }).click();
-  await page.getByLabel("Name / initials (required)").fill("María-José-Alexandria");
+  await page.getByLabel("Name or initials").fill("María-José-Alexandria");
   await page.getByLabel("Email (required)").fill("nivi@example.org");
   await page.getByLabel(/What is one small thing/).fill("Call a friend after dinner");
   await expect(page.getByText("(Required)", { exact: true })).toBeVisible();
-  await expect(page.getByText("(Optional)", { exact: true })).toBeVisible();
+  await expect(page.getByText("Optional:", { exact: true })).toBeVisible();
   await page.getByLabel(/I understand that my responses/).check();
   await page.getByRole("button", { name: "Finish", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Thank you—your RESET has been added to the picture." })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Your film access is ready." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Thank you - your RESET has been added to the picture." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Your film is ready." })).toBeVisible();
+  await expect(page.locator(".reward-steps li")).toHaveText([
+    "Copy your access code",
+    "Open the film on KINEMA",
+    "Sign in and enter the code at checkout",
+  ]);
   await expect(page.getByText("Call a friend after dinner")).toBeVisible();
   await expect(page.getByText("The burnout landscape", { exact: true })).toBeVisible();
   await expect(page.getByText("The community RESET map", { exact: true })).toBeVisible();
@@ -77,7 +87,7 @@ test("completes the preview check-in and reaches the persisted success state", a
   await expect(page.getByRole("heading", { name: "The picture in numbers." })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Where we begin again." })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Take the Check-In" })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: /Contribute your RESET/ })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /Start your RESET/ })).toHaveCount(0);
   const sequence = await page.locator(".dashboard--post-submission .dashboard__section--dark, .dashboard--post-submission .dashboard__section--cream, .success__reward, .success__conversation").evaluateAll((elements) => elements.map((element) => element.className));
   expect(sequence).toEqual([
     "dashboard__section dashboard__section--dark",
@@ -89,6 +99,11 @@ test("completes the preview check-in and reaches the persisted success state", a
   await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).toBe("EVENT_CODE");
   await expect(page.getByRole("link", { name: /Open the film on KINEMA/ })).toHaveAttribute("href", "https://kinema.com/films/private-film");
   await expect(page.getByRole("link", { name: /Explore the questions/ })).toHaveAttribute("href", "/take-it-to-the-table");
+  const mobileWidths = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
+  expect(mobileWidths.scroll).toBeLessThanOrEqual(mobileWidths.client);
+  await page.setViewportSize({ width: 430, height: 932 });
+  const largeMobileWidths = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
+  expect(largeMobileWidths.scroll).toBeLessThanOrEqual(largeMobileWidths.client);
 });
 
 test("an expired event link becomes a trailer check-in", async ({ page }) => {
@@ -101,13 +116,14 @@ test("an expired event link becomes a trailer check-in", async ({ page }) => {
   });
 
   await page.goto("/s/preview-expired-event");
+  await expect(page.getByText("About 90 seconds · Public results are anonymous · Trailer access follows")).toBeVisible();
   await expect(page.getByText(/film-access window has ended/i)).toBeVisible();
-  await expect(page.getByText(/trailer access after check-in/i)).toBeVisible();
-  await page.getByRole("button", { name: "Contribute your RESET" }).click();
+  await expect(page.getByText(/start your RESET and watch the trailer/i)).toBeVisible();
+  await page.getByRole("button", { name: "Start your RESET" }).click();
   await page.getByRole("button", { name: /Continue · 0 selected/ }).click();
   await page.getByRole("button", { name: /Continue · 0 selected/ }).click();
   await expect(page.getByRole("heading", { name: "Complete your check-in" })).toBeVisible();
-  await page.getByLabel("Name / initials (required)").fill("Guest");
+  await page.getByLabel("Name or initials").fill("Guest");
   await page.getByLabel("Email (required)").fill("guest@example.org");
   await page.getByLabel(/I understand that my responses/).check();
   await page.getByRole("button", { name: "Finish", exact: true }).click();
@@ -135,8 +151,16 @@ test("renders the cumulative community word map from the safe endpoint", async (
 
 test("shows the approved v2 practice language and hides the retired option", async ({ page }) => {
   await page.goto("/s/preview-screening");
-  await page.getByRole("button", { name: "Contribute your RESET" }).click();
-  await expect(page.getByRole("button", { name: "+ more ways it shows up" })).toBeVisible();
+  await page.getByRole("button", { name: "Start your RESET" }).click();
+  await expect(page.getByRole("button", { name: "Show more options" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Compassion fatigue", exact: true })).toHaveCount(0);
+  await page.getByRole("button", { name: "Show more options" }).click();
+  await expect(page.getByRole("button", { name: "Compassion fatigue", exact: true })).toBeVisible();
+  await expect(page.getByLabel("Add a burnout tag")).toHaveCount(0);
+  await page.getByRole("button", { name: /Something else.*Add your own/ }).click();
+  await expect(page.getByLabel("Add a burnout tag")).toBeVisible();
+  await page.getByRole("button", { name: /Something else.*Close/ }).click();
+  await expect(page.getByLabel("Add a burnout tag")).toHaveCount(0);
   await page.getByRole("button", { name: /Continue · 0 selected/ }).click();
   for (const pathway of ["Nourish", "Restore", "Move", "Connect", "Rebalance"]) {
     await page.getByRole("button", { name: new RegExp(`^${pathway}`) }).click();
@@ -148,6 +172,11 @@ test("shows the approved v2 practice language and hides the retired option", asy
   ]) {
     await expect(page.getByRole("button", { name: label, exact: true })).toBeVisible();
   }
+  for (const pathway of ["Nourish", "Restore", "Move", "Connect", "Rebalance"]) {
+    await expect(page.getByRole("button", { name: new RegExp(`^${pathway}`) })).toHaveAttribute("aria-pressed", "true");
+  }
+  await expect(page.getByText("Nourish — what helps?", { exact: true })).toBeVisible();
+  await expect(page.getByText("food, water, nature.", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Fruit & veg", exact: true })).toHaveCount(0);
 });
 
