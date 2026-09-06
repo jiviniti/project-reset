@@ -177,6 +177,7 @@ legend, .field-group-label { margin: 9px 0 7px; color: #756d68; font-family: var
 .success__conversation h3 { margin: 7px 0 10px; font-size: 1.35rem; font-weight: 600; }
 .success__conversation > p:not(.eyebrow) { margin: 0; color: #665f5a; font-size: .72rem; line-height: 1.6; }
 .success__conversation .button { width: 100%; margin-top: 20px; text-decoration: none; }
+.success__support-link { display: block; width: max-content; margin: 18px auto 0; color: var(--burgundy); font-size: .68rem; font-weight: 700; text-underline-offset: 4px; }
 .share-card { margin: 0; padding: 34px 24px 36px; color: var(--ink); background: var(--peach); text-align: left; }
 .share-card .eyebrow { color: var(--coral); }
 .share-card h3 { margin: 0 0 15px; color: var(--burgundy); font-size: 1.08rem; font-weight: 600; }

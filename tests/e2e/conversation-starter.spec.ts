@@ -14,6 +14,7 @@ test("redirects the former route and preserves a linked question", async ({ page
 
 test("starts with four featured themes and reveals the complete set", async ({ page }) => {
   await expect(page.getByRole("heading", { name: /Continue the conversation/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Support the project" })).toHaveAttribute("href", "https://thirddegreeburnout.com/fueltheimpact");
   await expect(page.getByText("Choose what feels relevant. You don’t need to have seen the film or have the answers.", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: /Burnout beyond work/i })).toBeVisible();
   await expect(page.getByRole("button", { name: /Living with climate feelings/i })).toHaveCount(0);

@@ -353,9 +353,28 @@
 }
 
 .footer {
+  padding-top: 28px;
   color: #c9c9c9;
   background: var(--kalika);
 }
+
+.supportLink {
+  display: flex;
+  width: calc(100% - 56px);
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 12px 18px;
+  color: var(--shweta);
+  border-radius: 999px;
+  background: var(--sindoor);
+  font-size: .72rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.supportLink:hover { text-decoration: underline; text-underline-offset: 4px; }
 
 .footer > p:first-child:not(.safety) {
   margin: 0;
@@ -371,7 +390,7 @@
   gap: 11px;
   width: max-content;
   max-width: calc(100% - 56px);
-  margin: 26px auto 0;
+  margin: 20px auto 0;
   padding: 10px 13px;
   color: var(--kalika);
   border-radius: 10px;

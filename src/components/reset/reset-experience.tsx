@@ -5,6 +5,7 @@ import { FormEvent, useState } from "react";
 import { BrandedReset, ResetBrand } from "@/components/brand/reset-brand";
 import { Chip } from "@/components/ui/chip";
 import { IllustrativeDashboard } from "@/features/learning-lab/illustrative-dashboard";
+import { DONATION_URL } from "@/lib/campaign-links";
 import { submissionResultSchema } from "@/lib/validation/submission";
 import type { SubmissionResult } from "@/types/pathway";
 import type { ScreeningConfig } from "@/types/screening";
@@ -45,7 +46,6 @@ const initialForm: FormState = {
   commitment: "",
 };
 
-const DONATION_URL = process.env.NEXT_PUBLIC_DONATE_URL?.trim() || "https://thirddegreeburnout.com/fueltheimpact";
 const TRAILER_URL = process.env.NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL?.trim() || "https://www.thirddegreeburnout.com/";
 
 const pathwayPresentation: Record<string, { blurb: string; color: string }> = {
@@ -462,6 +462,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <h3 id="continue-conversation-heading">Continue the conversation.</h3>
                 <p>Browse reflective questions for a meal, walk, call, classroom, or gathering. Begin with whatever feels relevant today.</p>
                 <a className="button button--primary" href="/start-a-conversation">Start a conversation <span aria-hidden="true">→</span></a>
+                <a className="success__support-link" href={DONATION_URL} target="_blank" rel="noreferrer">Support the project</a>
               </section>
             </div>
           </section>

@@ -109,6 +109,7 @@ test("completes the preview check-in and reaches the persisted success state", a
   await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).toContain("Film link: https://kinema.com/films/private-film");
   await expect(page.getByRole("link", { name: /Open the film on KINEMA/ })).toHaveAttribute("href", "https://kinema.com/films/private-film");
   await expect(page.getByRole("link", { name: /Start a conversation/ })).toHaveAttribute("href", "/start-a-conversation");
+  await expect(page.getByRole("link", { name: "Support the project" })).toHaveAttribute("href", "https://thirddegreeburnout.com/fueltheimpact");
   const mobileWidths = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
   expect(mobileWidths.scroll).toBeLessThanOrEqual(mobileWidths.client);
   await page.setViewportSize({ width: 430, height: 932 });

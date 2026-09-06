@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BrandedReset, ResetBrand } from "@/components/brand/reset-brand";
+import { DONATION_URL } from "@/lib/campaign-links";
 import {
   CONVERSATION_PROMPTS,
   CONVERSATION_THEMES,
@@ -53,6 +54,7 @@ function FilmLockup() {
 function PartnerFooter() {
   return (
     <footer className={styles.footer}>
+      <a className={styles.supportLink} href={DONATION_URL} target="_blank" rel="noreferrer">Support the project</a>
       <div className={styles.partnerPlate} aria-label="Brought to you by JIVINITI in partnership with Picture Motion">
         <span>Brought to you by</span>
         <Image src="/images/jiviniti-wordmark.png" width={1118} height={518} alt="JIVINITI by The Virsa Foundation" />
