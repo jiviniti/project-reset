@@ -754,12 +754,13 @@
 .savedPanel > .eyebrow { color: var(--sindoor); }
 .savedPanel > h2 { max-width: 620px; margin: 10px 0 12px; color: var(--kalika); font-size: clamp(2rem, 6vw, 3.2rem); line-height: 1; letter-spacing: -.05em; outline: none; }
 .savedPanel > p:not(.eyebrow) { max-width: 580px; margin: 0; color: #555; font-size: .72rem; line-height: 1.6; }
-.savedPanel ol { display: grid; gap: 0; margin: 34px 0 0; padding: 0; border-top: 1px solid var(--kalika); counter-reset: saved-question; list-style: none; }
-.savedPanel li { position: relative; min-height: 132px; padding: 25px 76px 25px 52px; border-bottom: 1px solid var(--pavitra); counter-increment: saved-question; }
-.savedPanel li::before { position: absolute; top: 25px; left: 0; color: var(--sindoor); content: counter(saved-question, decimal-leading-zero); font-size: .66rem; font-weight: 700; letter-spacing: .1em; }
+.savedPanel ol { display: grid; gap: 0; margin: 34px 0 0; padding: 0; border-top: 1px solid var(--kalika); list-style: none; }
+.savedPanel li { min-height: 132px; padding: 25px 0; border-bottom: 1px solid var(--pavitra); }
+.savedQuestionMeta { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; align-items: baseline; gap: 16px; }
+.savedQuestionMeta > span { color: var(--sindoor); font-size: .66rem; font-weight: 700; letter-spacing: .1em; }
 .savedPanel li small { color: #656565; font-size: .54rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-.savedPanel li p { max-width: 520px; margin: 15px 0 0; color: var(--kalika); font-size: 1rem; font-weight: 600; line-height: 1.4; }
-.savedPanel li button { position: absolute; top: 20px; right: 0; padding: 5px 0; color: var(--mrida); border: 0; background: transparent; cursor: pointer; font: 600 .61rem/1.2 var(--ui); text-decoration: underline; text-underline-offset: 4px; }
+.savedPanel li p { max-width: 520px; margin: 15px 0 0 52px; color: var(--kalika); font-size: 1rem; font-weight: 600; line-height: 1.4; }
+.savedPanel li button { padding: 5px 0; color: var(--mrida); border: 0; background: transparent; cursor: pointer; font: 600 .61rem/1.2 var(--ui); text-decoration: underline; text-underline-offset: 4px; }
 .savedActions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 28px; }
 .savedPanel .primaryButton { color: var(--kalika); border-color: var(--sindoor); background: var(--sindoor); }
 .savedPanel .secondaryButton { color: var(--kalika); border-color: var(--kalika); }
