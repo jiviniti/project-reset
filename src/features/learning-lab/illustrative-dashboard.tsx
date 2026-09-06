@@ -70,7 +70,7 @@ export function IllustrativeDashboard({
   }, [scheduleRefresh]);
 
   if (!snapshot) {
-    return <div className="dashboard dashboard--loading"><section className="dashboard__section dashboard__section--dark"><p className="eyebrow eyebrow--orange">The community picture</p><h2>{loadState === "loading" ? "Gathering every RESET…" : "The picture is taking a moment."}</h2><p>{loadState === "stale" ? "Please try again—the check-in remains available." : "Building the cumulative view."}</p>{loadState === "stale" && <button type="button" className="button button--light" onClick={() => void refresh()}>Try again</button>}</section></div>;
+    return <div className="dashboard dashboard--loading"><section className="dashboard__section dashboard__section--dark"><p className="eyebrow eyebrow--orange">The community picture</p><h2>{loadState === "loading" ? "Gathering every RESET…" : "The picture is taking a moment."}</h2><p>{loadState === "stale" ? "Please try again. The check-in remains available." : "Building the cumulative view."}</p>{loadState === "stale" && <button type="button" className="button button--light" onClick={() => void refresh()}>Try again</button>}</section></div>;
   }
 
   const total = snapshot.totals.combined;
@@ -113,7 +113,7 @@ export function IllustrativeDashboard({
         <ResetBrand light />
         <p className="eyebrow eyebrow--orange">The Learning Lab · illustrative preview</p>
         <h2>Every answer changes the picture.</h2>
-        <p>A living portrait of how burnout shows up—and the practices helping a community find its way back.</p>
+        <p>A living portrait of how burnout shows up and the practices helping a community find its way back.</p>
       </section>
 
       <section className="dashboard__section dashboard__section--dark">
@@ -129,7 +129,7 @@ export function IllustrativeDashboard({
       <section className="dashboard__section dashboard__section--coral-soft">
         <p className="section-number">03</p><p className="eyebrow">Growing together</p><h2>The picture in numbers.</h2>
         <div className="community-stats">{stats.map((stat) => <div key={stat.label}><strong>{stat.value}</strong><span>{stat.label}</span></div>)}</div>
-        <aside className="dashboard__seed-note"><strong>About the starting picture</strong><p>The visual starts with {snapshot.totals.seeded.toLocaleString()} illustrative demo entries from the approved prototype—not verified Project RESET participants. The {snapshot.totals.observed.toLocaleString()} observed check-ins remain structurally separate and grow live.</p></aside>
+        <aside className="dashboard__seed-note"><strong>About the starting picture</strong><p>The visual starts with {snapshot.totals.seeded.toLocaleString()} illustrative demo entries from the approved prototype. These are not verified Project RESET participants. The {snapshot.totals.observed.toLocaleString()} observed check-ins remain structurally separate and grow live.</p></aside>
       </section>
 
       <section className="dashboard__section dashboard__section--light pathway-section">

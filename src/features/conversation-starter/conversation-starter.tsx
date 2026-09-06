@@ -202,7 +202,7 @@ export function ConversationStarter() {
               <p className={styles.reviewFlag}>Draft for Foundation review</p>
               <p className={styles.eyebrow}>A conversation worth making room for</p>
               <h1>Take it to the table.</h1>
-              <p>Choose what feels relevant. You don’t need to have seen the film - or have the answers.</p>
+              <p>Choose what feels relevant. You don’t need to have seen the film or have the answers.</p>
             </div>
             <div className={styles.collage} aria-hidden="true" />
           </div>

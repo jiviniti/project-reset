@@ -272,7 +272,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       setSubmissionStatus("error");
-      setErrorMessage("We couldn’t save your RESET. Your answers are still here—please try again.");
+      setErrorMessage("We couldn’t save your RESET. Your answers are still here. Please try again.");
     }
   }
 
@@ -310,9 +310,9 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 </div>
               </div>
               <p className="eyebrow eyebrow--orange">The Learning Lab</p>
-              <h1>How do you reset?</h1>
-              <p className="hero__lede">The film asks big questions. Project RESET invites you into them - before and beyond the screen.</p>
-              <p>Created by JIVINITI in partnership with Picture Motion, this living Learning Lab explores what burnout feels like - and what helps us reset.</p>
+              <h1>How do you <span className="hero-title__reset"><span>re</span>set</span>?</h1>
+              <p className="hero__lede">The film asks big questions. Project RESET invites you into them, before and beyond the screen.</p>
+              <p>Created by JIVINITI in partnership with Picture Motion, this living Learning Lab explores what burnout feels like and what helps us reset.</p>
               <div className="hero__image-frame">
                 <Image src="/images/reset-collage.avif" alt="A collage of everyday movement, nourishment, rest, nature, and community" width={900} height={500} priority className="hero__image" />
               </div>
@@ -355,7 +355,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                   const presentation = pathwayPresentation[option.key];
                   return <button type="button" aria-pressed={selected} key={option.key} className="pathway-card" style={selected ? { background: presentation.color, borderColor: presentation.color } : undefined} onClick={() => toggleList("pathways", option.key)}><strong>{option.label}</strong><span>{presentation.blurb}</span></button>;
                 })}</div>
-                {form.pathways.map((pathwayKey) => <fieldset className="practice-group" key={pathwayKey}><legend>{pathwayOptions.find((option) => option.key === pathwayKey)?.label} — what helps?</legend><div className="chips">{practicesByPathway[pathwayKey].map((option) => <Chip key={option.key} selected={form.practices.includes(option.key)} onClick={() => toggleList("practices", option.key)}>{option.label}</Chip>)}</div></fieldset>)}
+                {form.pathways.map((pathwayKey) => <fieldset className="practice-group" key={pathwayKey}><legend>{pathwayOptions.find((option) => option.key === pathwayKey)?.label}: what helps?</legend><div className="chips">{practicesByPathway[pathwayKey].map((option) => <Chip key={option.key} selected={form.practices.includes(option.key)} onClick={() => toggleList("practices", option.key)}>{option.label}</Chip>)}</div></fieldset>)}
                 <CustomTagField side="reset" input={resetTagInput} tags={form.resetCustomTags} onInput={setResetTagInput} onAdd={() => addCustomTag("reset")} onRemove={(tag) => removeCustomTag("reset", tag)} />
                 <label>Tell us about your RESET ritual (optional)<textarea rows={3} maxLength={1500} value={form.ritual} onChange={(event) => update("ritual", event.target.value)} /></label>
                 <button className="button button--primary" type="button" onClick={() => goToStep(3)}>Continue · {form.practices.length + form.resetCustomTags.length} selected</button>
@@ -371,7 +371,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <label>Email (required)<input required type="email" autoComplete="email" maxLength={254} value={form.email} onChange={(event) => update("email", event.target.value)} /></label>
                 <div className="optional-fields-intro">
                   <p className="field-group-label">A little more about you</p>
-                  <p>Optional—city, age range, and occupation help us understand broad patterns.</p>
+                  <p>Optional: city, age range, and occupation help us understand broad patterns.</p>
                 </div>
                 <label>City<input autoComplete="address-level2" maxLength={120} value={form.city} onChange={(event) => update("city", event.target.value)} /></label>
                 <fieldset><legend>Age range</legend><div className="chips">{["18–24", "25–34", "35–44", "45–54", "55+"].map((age) => <Chip key={age} selected={form.ageBand === age} onClick={() => update("ageBand", form.ageBand === age ? "" : age)}>{age}</Chip>)}</div></fieldset>
@@ -399,7 +399,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
               <header className="success__confirmation">
                 <div className="success-burst" aria-hidden="true"><span /><span /><span /><span /><span /></div>
                 <p className="eyebrow">Your check-in is complete</p>
-                <h2>Thank you - your RESET has been added to the picture.</h2>
+                <h2>Thank you. Your RESET has been added to the picture.</h2>
                 {form.commitment.trim() ? (
                   <blockquote className="commitment-echo"><span>You chose to carry forward</span>{form.commitment.trim()}</blockquote>
                 ) : null}

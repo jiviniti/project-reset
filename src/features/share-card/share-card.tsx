@@ -175,7 +175,7 @@ export function ShareCard({ firstName, pathways, practices }: ShareCardProps) {
       });
       setStatus("Your share card is ready.");
     } catch (error) {
-      setStatus(error instanceof DOMException && error.name === "AbortError" ? "Sharing cancelled. Your card is still ready to download." : "Sharing isn’t available here — download your card to post it.");
+      setStatus(error instanceof DOMException && error.name === "AbortError" ? "Sharing cancelled. Your card is still ready to download." : "Sharing isn’t available here. Download your card to post it.");
     }
   }
 

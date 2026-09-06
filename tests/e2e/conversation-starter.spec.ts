@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
 
 test("starts with four featured themes and reveals the complete set", async ({ page }) => {
   await expect(page.getByRole("heading", { name: /Take it to the table/i })).toBeVisible();
-  await expect(page.getByText("Choose what feels relevant. You don’t need to have seen the film - or have the answers.", { exact: true })).toBeVisible();
+  await expect(page.getByText("Choose what feels relevant. You don’t need to have seen the film or have the answers.", { exact: true })).toBeVisible();
   await expect(page.getByText("Choose a theme. You can switch anytime.", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: /Burnout beyond work/i })).toBeVisible();
   await expect(page.getByRole("button", { name: /Food, memory, and care/i })).toBeVisible();

@@ -51,6 +51,8 @@ test("completes the preview check-in and reaches the persisted success state", a
 
   await page.goto("/s/preview-event");
   await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.getByRole("heading", { name: "How do you reset?" })).toBeVisible();
+  await expect(page.locator(".hero-title__reset > span")).toHaveCSS("color", "rgb(220, 87, 67)");
   await expect(page.getByText("About 90 seconds · Public results are anonymous · Film access follows")).toBeVisible();
   await page.getByRole("button", { name: "Start your RESET" }).click();
   await page.getByRole("button", { name: "Exhausted" }).click();
@@ -72,7 +74,7 @@ test("completes the preview check-in and reaches the persisted success state", a
   await expect(page.getByText("Optional:", { exact: true })).toBeVisible();
   await page.getByLabel(/I understand that my responses/).check();
   await page.getByRole("button", { name: "Finish", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Thank you - your RESET has been added to the picture." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Thank you. Your RESET has been added to the picture." })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Your film is ready." })).toBeVisible();
   await expect(page.locator(".reward-steps li")).toHaveText([
     "Copy your access code",
@@ -175,7 +177,7 @@ test("shows the approved v2 practice language and hides the retired option", asy
   for (const pathway of ["Nourish", "Restore", "Move", "Connect", "Rebalance"]) {
     await expect(page.getByRole("button", { name: new RegExp(`^${pathway}`) })).toHaveAttribute("aria-pressed", "true");
   }
-  await expect(page.getByText("Nourish — what helps?", { exact: true })).toBeVisible();
+  await expect(page.getByText("Nourish: what helps?", { exact: true })).toBeVisible();
   await expect(page.getByText("food, water, nature.", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Fruit & veg", exact: true })).toHaveCount(0);
 });
