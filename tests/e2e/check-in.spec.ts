@@ -51,6 +51,7 @@ test("completes the preview check-in and reaches the persisted success state", a
     expect(payload.answers.find((answer: { questionKey: string }) => answer.questionKey === "burnout_note")).toBeUndefined();
     expect(payload.answers.find((answer: { questionKey: string }) => answer.questionKey === "reset_custom_tags")?.text).toBe("Making ceramics");
     expect(payload.answers.find((answer: { questionKey: string }) => answer.questionKey === "today_commitment")?.text).toBe("Call a friend after dinner");
+    await new Promise((resolve) => setTimeout(resolve, 250));
     await route.fulfill({
       status: 201,
       contentType: "application/json",
@@ -89,6 +90,9 @@ test("completes the preview check-in and reaches the persisted success state", a
   await expect(page.getByRole("link", { name: "Support the project" })).toHaveAttribute("href", "https://thirddegreeburnout.com/fueltheimpact");
   await page.getByLabel(/I understand that my responses/).check();
   await page.getByRole("button", { name: "Finish", exact: true }).click();
+  const savingButton = page.getByRole("button", { name: /Saving your RESET/ });
+  await expect(savingButton).toBeVisible();
+  await expect(savingButton.locator(".branded-reset b")).toHaveCSS("color", "rgb(29, 29, 29)");
   await expect(page.getByRole("heading", { name: "Thank you. Your RESET has been added to the picture." })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Ready to watch the film?" })).toBeVisible();
   await expect(page.locator(".reward-steps li")).toHaveText([

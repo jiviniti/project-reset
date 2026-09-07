@@ -402,7 +402,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 </div> : null}
                 <label className="check-row"><input required type="checkbox" checked={form.consent} onChange={(event) => update("consent", event.target.checked)} /><span><strong>(Required)</strong> {screening.policyText}</span></label>
                 <label className="check-row"><input type="checkbox" checked={form.futureCommunications} onChange={(event) => update("futureCommunications", event.target.checked)} /><span><strong>Optional:</strong> Keep me updated about Project <BrandedReset uppercase /> and future Virsa programs.</span></label>
-                <button className="button button--primary" type="submit" disabled={submissionStatus === "submitting"}>{submissionStatus === "submitting" ? <span>Saving your <BrandedReset uppercase />…</span> : "Finish"}</button>
+                <button className="button button--primary" type="submit" disabled={submissionStatus === "submitting"}>{submissionStatus === "submitting" ? <span>Saving your <BrandedReset uppercase className="branded-reset--single-color" />…</span> : "Finish"}</button>
                 <p className="error-message" role="alert">{errorMessage}</p>
                 <a className="donation-link" href={DONATION_URL} target="_blank" rel="noreferrer">Support the project</a>
               </form>
