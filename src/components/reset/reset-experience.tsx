@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { FormEvent, useState } from "react";
-import { BrandedReset, ResetBrand } from "@/components/brand/reset-brand";
+import { BrandedReset, PathwayStrip, ProjectResetFooter, ResetBrand } from "@/components/brand/reset-brand";
 import { Chip } from "@/components/ui/chip";
 import { IllustrativeDashboard } from "@/features/learning-lab/illustrative-dashboard";
 import { DONATION_URL } from "@/lib/campaign-links";
@@ -48,12 +48,12 @@ const initialForm: FormState = {
 
 const TRAILER_URL = process.env.NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL?.trim() || "https://www.thirddegreeburnout.com/";
 
-const pathwayPresentation: Record<string, { blurb: string; color: string }> = {
-  nourish: { blurb: "food, water, nature.", color: "#458284" },
-  restore: { blurb: "sleep, stillness", color: "#82bcc8" },
-  move: { blurb: "body in motion", color: "#de5240" },
-  connect: { blurb: "people, animals", color: "#fa8757" },
-  rebalance: { blurb: "limits, meaning", color: "#d4953b" },
+const pathwayPresentation: Record<string, { blurb: string; color: string; foreground: string }> = {
+  nourish: { blurb: "food, water, nature.", color: "#458284", foreground: "#ffffff" },
+  restore: { blurb: "sleep, stillness", color: "#82bcc8", foreground: "#1d1d1d" },
+  move: { blurb: "body in motion", color: "#de5240", foreground: "#ffffff" },
+  connect: { blurb: "people, animals", color: "#fa8757", foreground: "#1d1d1d" },
+  rebalance: { blurb: "limits, meaning", color: "#d4953b", foreground: "#1d1d1d" },
 };
 
 function ProgressHeader({ step, onBack, complete = false }: { step: number; onBack?: () => void; complete?: boolean }) {
@@ -342,6 +342,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
               <p className="hero__meta">About 90 seconds · Public results are anonymous · {screening.rewardType === "film_access" ? "Film access follows" : "Trailer access follows"}</p>
               <button type="button" className="text-button" onClick={() => setView("lab")}>Explore the Learning Lab <span aria-hidden="true">→</span></button>
             </div>
+            <ProjectResetFooter showDataNote={false} />
           </section>
         )}
 
@@ -362,14 +363,14 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
             )}
 
             {step === 2 && (
-              <section className="step step--peach">
+              <section className="step step--light">
                 <p className="eyebrow">02 · Your <BrandedReset uppercase /> map</p>
                 <h2>What helps you <BrandedReset />?</h2>
                 <p>Choose 1–2 areas that help you <BrandedReset />.</p>
                 <div className="pathway-grid">{pathwayOptions.map((option) => {
                   const selected = form.pathways.includes(option.key);
                   const presentation = pathwayPresentation[option.key];
-                  return <button type="button" aria-pressed={selected} key={option.key} className="pathway-card" style={selected ? { background: presentation.color, borderColor: presentation.color } : undefined} onClick={() => toggleList("pathways", option.key)}><strong>{option.label}</strong><span>{presentation.blurb}</span></button>;
+                  return <button type="button" aria-pressed={selected} key={option.key} className="pathway-card" style={selected ? { background: presentation.color, borderColor: presentation.color, color: presentation.foreground } : undefined} onClick={() => toggleList("pathways", option.key)}><strong>{option.label}</strong><span>{presentation.blurb}</span>{selected ? <i aria-hidden="true">✓</i> : null}</button>;
                 })}</div>
                 {form.pathways.map((pathwayKey) => <fieldset className="practice-group" key={pathwayKey}><legend>{pathwayOptions.find((option) => option.key === pathwayKey)?.label}: what helps?</legend><div className="chips">{practicesByPathway[pathwayKey].map((option) => <Chip key={option.key} selected={form.practices.includes(option.key)} onClick={() => toggleList("practices", option.key)}>{option.label}</Chip>)}</div></fieldset>)}
                 <CustomTagField side="reset" input={resetTagInput} tags={form.resetCustomTags} onInput={setResetTagInput} onAdd={() => addCustomTag("reset")} onRemove={(tag) => removeCustomTag("reset", tag)} />
@@ -406,6 +407,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <a className="donation-link" href={DONATION_URL} target="_blank" rel="noreferrer">Support the project</a>
               </form>
             )}
+            <PathwayStrip />
           </section>
         )}
 
@@ -464,6 +466,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <a className="button button--primary" href="/start-a-conversation">Start a conversation <span aria-hidden="true">→</span></a>
                 <a className="success__support-link" href={DONATION_URL} target="_blank" rel="noreferrer">Support the project</a>
               </section>
+              <ProjectResetFooter />
             </div>
           </section>
         )}

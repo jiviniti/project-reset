@@ -62,7 +62,7 @@ test("completes the preview check-in and reaches the persisted success state", a
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.getByRole("heading", { name: "How do you reset?" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Support the project" })).toHaveAttribute("href", "https://thirddegreeburnout.com/fueltheimpact");
-  await expect(page.locator("h1 .branded-reset b")).toHaveCSS("color", "rgb(220, 87, 67)");
+  await expect(page.locator("h1 .branded-reset b")).toHaveCSS("color", "rgb(250, 135, 87)");
   await expect(page.getByRole("button", { name: "Start your RESET" }).locator(".branded-reset b")).toHaveCSS("color", "rgb(255, 255, 255)");
   await expect(page.getByText("About 90 seconds · Public results are anonymous · Film access follows")).toBeVisible();
   await page.getByRole("button", { name: "Start your RESET" }).click();
@@ -107,13 +107,14 @@ test("completes the preview check-in and reaches the persisted success state", a
   await expect(page.getByRole("heading", { name: "Where we begin again." })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Take the Check-In" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: /Start your RESET/ })).toHaveCount(0);
-  const sequence = await page.locator(".dashboard--post-submission .dashboard__section--dark, .dashboard--post-submission .dashboard__section--cream, .success__reward, .success__conversation").evaluateAll((elements) => elements.map((element) => element.className));
+  const sequence = await page.locator(".dashboard--post-submission .dashboard__section--dark, .dashboard--post-submission .dashboard__section--light, .success__reward, .success__conversation").evaluateAll((elements) => elements.map((element) => element.className));
   expect(sequence).toEqual([
     "dashboard__section dashboard__section--dark",
-    "dashboard__section dashboard__section--cream",
+    "dashboard__section dashboard__section--light",
     "success__reward",
     "success__conversation",
   ]);
+  await expect(page.locator(".success > .pathway-strip")).toHaveCount(1);
   await page.getByRole("button", { name: "Copy code" }).click();
   await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).toBe("EVENT_CODE");
   await page.getByRole("button", { name: "Copy access details" }).click();

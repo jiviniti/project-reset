@@ -1,17 +1,24 @@
 "use client";
 
-import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { BrandedReset, ResetBrand } from "@/components/brand/reset-brand";
+import { BrandedReset, ProjectResetFooter, ResetBrand } from "@/components/brand/reset-brand";
 import { publicAggregateSnapshotSchema, type PublicAggregateMetric, type PublicAggregateSnapshot } from "@/lib/validation/aggregate";
 import { subscribeToAggregateRevision } from "@/services/aggregates/realtime";
 
 type LoadState = "loading" | "ready" | "stale";
 type MetricCategory = "emotions" | "practices";
 const categoryColors = {
-  emotions: ["#f18262", "#dfa38f", "#b8655c", "#f3c8b8", "#93474d"],
-  practices: ["#286b72", "#448d91", "#d4933e", "#ef805b", "#7ab6bb"],
+  emotions: ["#edbaa6", "#fa8757", "#ffffff", "#de5240"],
+  practices: ["#458284", "#52292b", "#de5240", "#1d1d1d", "#d4953b", "#fa8757"],
 } as const;
+
+const pathwayColors: Record<string, string> = {
+  nourish: "#458284",
+  restore: "#82bcc8",
+  move: "#de5240",
+  connect: "#fa8757",
+  rebalance: "#d4953b",
+};
 
 function WordCloud({ metrics, category }: { metrics: PublicAggregateMetric[]; category: MetricCategory }) {
   const ordered = useMemo(
@@ -91,7 +98,7 @@ export function IllustrativeDashboard({
           <WordCloud metrics={snapshot.metrics.emotions} category="emotions" />
         </section>
 
-        <section className="dashboard__section dashboard__section--cream">
+        <section className="dashboard__section dashboard__section--light">
           <p className="section-number">02</p>
           <p className="eyebrow">The community <BrandedReset uppercase /> map</p>
           <h2>What brings us back.</h2>
@@ -120,12 +127,12 @@ export function IllustrativeDashboard({
         <WordCloud metrics={snapshot.metrics.emotions} category="emotions" />
       </section>
 
-      <section className="dashboard__section dashboard__section--cream">
+      <section className="dashboard__section dashboard__section--light">
         <p className="section-number">02</p><p className="eyebrow">The community <BrandedReset uppercase /> map</p><h2>What brings us back.</h2><p>Together, our choices create a map of what helps.</p>
         <WordCloud metrics={snapshot.metrics.practices} category="practices" />
       </section>
 
-      <section className="dashboard__section dashboard__section--coral-soft">
+      <section className="dashboard__section dashboard__section--light dashboard__section--stats">
         <p className="section-number">03</p><p className="eyebrow">Growing together</p><h2>The picture in numbers.</h2>
         <div className="community-stats">{stats.map((stat) => <div key={stat.label}><strong>{stat.value}</strong><span>{stat.label}</span></div>)}</div>
         <aside className="dashboard__seed-note"><strong>About the starting picture</strong><p>The visual starts with {snapshot.totals.seeded.toLocaleString()} illustrative demo entries from the approved prototype. These are not verified Project <BrandedReset uppercase /> participants. The {snapshot.totals.observed.toLocaleString()} observed check-ins remain structurally separate and grow live.</p></aside>
@@ -133,26 +140,18 @@ export function IllustrativeDashboard({
 
       <section className="dashboard__section dashboard__section--light pathway-section">
         <p className="section-number">04</p><p className="eyebrow">Five pathways</p><h2>Where we begin again.</h2>
-        <div className="pathway-blooms">{snapshot.metrics.pathways.map((metric, index) => {
+        <div className="pathway-blooms">{snapshot.metrics.pathways.map((metric) => {
           const percent = total > 0 ? Math.min(100, Math.round((metric.combined / total) * 100)) : 0;
-          return <div className="pathway-bloom" key={metric.key} style={{ "--bloom-color": ["#286b72", "#7ab6bb", "#dc5743", "#ef805b", "#d4933e"][index % 5], "--bloom-scale": `${0.4 + Math.sqrt(percent / 100) * 0.6}` } as CSSProperties}><span><strong>{percent}%</strong></span><b>{metric.label}</b></div>;
+          return <div className="pathway-bloom" key={metric.key} style={{ "--bloom-color": pathwayColors[metric.key] ?? "#1d1d1d", "--bloom-scale": `${0.4 + Math.sqrt(percent / 100) * 0.6}` } as CSSProperties}><span><strong>{percent}%</strong></span><b>{metric.label}</b></div>;
         })}</div>
       </section>
 
       <section className="dashboard__section dashboard__section--coral dashboard__cta">
-        <p className="script-line script-line--white">Your answer belongs here.</p><h2>Add your <BrandedReset uppercase />.</h2><p>The picture grows because people choose to share.</p>
+        <p className="script-line">Your answer belongs here.</p><h2>Add your <BrandedReset uppercase period /> </h2><p>The picture grows because people choose to share.</p>
         <button type="button" className="button button--light" onClick={onContribute}><span>Start your <BrandedReset uppercase /></span><span aria-hidden="true">→</span></button>
       </section>
 
-      <footer className="dashboard__footer">
-        <p className="dashboard__footer-label">Brought to you by</p>
-        <div className="dashboard__footer-lockup">
-          <Image className="dashboard__footer-jiviniti" src="/images/jiviniti-wordmark.png" alt="JIVINITI" width={112} height={52} />
-          <span>in partnership with</span>
-          <Image className="dashboard__footer-picture-motion" src="/images/picture-motion.jpg" alt="Picture Motion" width={54} height={54} />
-        </div>
-        <p>Public results are aggregated and de-identified. Free text, custom tags, participant identifiers, and demographics are never shown here.</p>
-      </footer>
+      <ProjectResetFooter />
     </div>
   );
 }

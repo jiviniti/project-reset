@@ -44,6 +44,13 @@ function fitImage(context: CanvasRenderingContext2D, image: HTMLImageElement, x:
   context.drawImage(image, x + maxWidth - width, y + maxHeight - height, width, height);
 }
 
+function drawContainedImage(context: CanvasRenderingContext2D, image: HTMLImageElement, x: number, y: number, maxWidth: number, maxHeight: number) {
+  const scale = Math.min(maxWidth / image.naturalWidth, maxHeight / image.naturalHeight);
+  const width = image.naturalWidth * scale;
+  const height = image.naturalHeight * scale;
+  context.drawImage(image, x, y + (maxHeight - height) / 2, width, height);
+}
+
 export async function downloadSavedQuestionsCard(items: SavedQuestionCardItem[]) {
   await document.fonts.ready;
   const measuringCanvas = document.createElement("canvas");
@@ -56,7 +63,7 @@ export async function downloadSavedQuestionsCard(items: SavedQuestionCardItem[])
     return { ...item, lines, height: 120 + lines.length * QUESTION_LINE_HEIGHT };
   });
   const questionsHeight = layouts.reduce((total, item) => total + item.height, 0);
-  const footerHeight = 300;
+  const footerHeight = 390;
   const cardHeight = 290 + questionsHeight + footerHeight;
   const canvas = document.createElement("canvas");
   canvas.width = CARD_WIDTH;
@@ -120,7 +127,11 @@ export async function downloadSavedQuestionsCard(items: SavedQuestionCardItem[])
     y += item.height;
   });
 
-  const collage = await loadImage("/images/share-card-film-collage.png");
+  const [collage, jiviniti, pictureMotion] = await Promise.all([
+    loadImage("/images/share-card-film-collage.png"),
+    loadImage("/images/jiviniti-wordmark.png"),
+    loadImage("/images/picture-motion.jpg"),
+  ]);
   const footerTop = cardHeight - footerHeight;
   context.fillStyle = "#52292b";
   context.font = "700 17px Poppins, Arial, sans-serif";
@@ -134,6 +145,27 @@ export async function downloadSavedQuestionsCard(items: SavedQuestionCardItem[])
   context.fillText("A question worth keeping open.", SIDE, footerTop + 170);
   context.fillText("thirddegreeburnout.com", SIDE, footerTop + 203);
   if (collage) fitImage(context, collage, CARD_WIDTH - SIDE - 235, footerTop + 28, 235, 220);
+
+  const partnerTop = footerTop + 265;
+  context.fillStyle = "#656565";
+  context.font = "600 13px Poppins, Arial, sans-serif";
+  context.fillText("BROUGHT TO YOU BY", SIDE, partnerTop - 14);
+  const jivinitiWidth = 145;
+  const partnerGap = 16;
+  const partnerLabel = "IN PARTNERSHIP WITH";
+  context.font = "500 13px Poppins, Arial, sans-serif";
+  const partnerLabelWidth = context.measureText(partnerLabel).width;
+  const partnerLabelX = SIDE + jivinitiWidth + partnerGap;
+  const pictureMotionX = partnerLabelX + partnerLabelWidth + partnerGap;
+  if (jiviniti) {
+    context.save();
+    context.filter = "brightness(0)";
+    drawContainedImage(context, jiviniti, SIDE, partnerTop, jivinitiWidth, 58);
+    context.restore();
+  }
+  context.fillStyle = "#656565";
+  context.fillText(partnerLabel, partnerLabelX, partnerTop + 34);
+  if (pictureMotion) drawContainedImage(context, pictureMotion, pictureMotionX, partnerTop, 58, 58);
 
   const bandWidth = (CARD_WIDTH - FRAME * 2) / 5;
   ["#458284", "#82bcc8", "#de5240", "#fa8757", "#d4953b"].forEach((color, index) => {

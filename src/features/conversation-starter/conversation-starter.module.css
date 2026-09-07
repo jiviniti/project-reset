@@ -361,7 +361,7 @@
   justify-content: center;
   margin: 0 auto;
   padding: 12px 18px;
-  color: var(--shweta);
+  color: var(--kalika);
   border-radius: 999px;
   background: var(--sindoor);
   font-size: .72rem;
@@ -723,8 +723,8 @@
 }
 .saveButton:hover { color: var(--sindoor); border-color: var(--sindoor); }
 .saveButton[aria-pressed="true"] { color: var(--mrida); border-color: var(--mrida); }
-.saveButton[aria-pressed="true"] span { display: inline-grid; width: 20px; height: 20px; margin-right: 7px; color: var(--shweta); border-radius: 50%; background: var(--nourish); place-items: center; }
-.carryConfirmation { margin: 10px 0 0 !important; color: var(--nourish) !important; font-size: .62rem !important; font-weight: 600; line-height: 1.45 !important; }
+.saveButton[aria-pressed="true"] span { display: inline-grid; width: 20px; height: 20px; margin-right: 7px; color: var(--shweta); border-radius: 50%; background: var(--kalika); place-items: center; }
+.carryConfirmation { margin: 10px 0 0 !important; color: var(--mrida) !important; font-size: .62rem !important; font-weight: 600; line-height: 1.45 !important; }
 
 .carryPanel { position: relative; margin-top: 30px; padding: 32px 30px; overflow: hidden; color: var(--kalika); border-top: 8px solid var(--sindoor); background: var(--shweta); }
 .carryPanel h2 { max-width: 520px; margin: 9px 0 16px; font-size: 1.65rem; line-height: 1.1; }
@@ -762,8 +762,7 @@
   color: var(--shweta);
   border: 2px solid var(--shweta);
   border-radius: 999px;
-  background: var(--nourish);
-  box-shadow: 0 7px 24px rgb(0 0 0 / 24%);
+  background: var(--kalika);
   cursor: pointer;
   font: 700 .68rem/1.2 var(--ui);
 }
