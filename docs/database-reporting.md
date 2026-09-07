@@ -137,44 +137,84 @@ order by five_minute_window_utc desc, screening.slug;
 
 ## 6. Most selected burnout experiences
 
+Question and option UUIDs are version-specific. Join through the stable aggregate definition so identical choices from questionnaire versions 1, 2, and 3 are combined under the current approved label.
+
+To inspect the version split itself, use:
+
 ```sql
 select
+  questionnaire.version,
+  option.key as stable_option_key,
   option.label,
   count(*) as selections
 from private.response_selections selection
 join private.questions question on question.id = selection.question_id
+join private.questionnaire_versions questionnaire
+  on questionnaire.id = question.questionnaire_version_id
 join private.question_options option on option.id = selection.option_id
 where question.key = 'burnout_signs'
-group by option.id
-order by selections desc, option.label;
+group by questionnaire.version, option.key, option.label
+order by option.key, questionnaire.version;
+```
+
+Repeated labels across different version numbers are expected. They are separate historical definitions, not duplicate participant selections.
+
+```sql
+select
+  definition.metric_key,
+  definition.label,
+  count(*) as selections
+from private.response_selections selection
+join private.questions question on question.id = selection.question_id
+join private.question_options option on option.id = selection.option_id
+join aggregate.metric_definitions definition
+  on definition.source_question_key = question.key
+ and definition.source_option_key = option.key
+ and definition.category = 'emotions'
+ and definition.is_active
+where question.key = 'burnout_signs'
+group by definition.id
+order by selections desc, definition.label;
 ```
 
 ## 7. Most selected RESET pathways
 
 ```sql
 select
-  option.label,
+  definition.metric_key,
+  definition.label,
   count(*) as selections
 from private.response_selections selection
 join private.questions question on question.id = selection.question_id
 join private.question_options option on option.id = selection.option_id
+join aggregate.metric_definitions definition
+  on definition.source_question_key = question.key
+ and definition.source_option_key = option.key
+ and definition.category = 'pathways'
+ and definition.is_active
 where question.key = 'reset_pathways'
-group by option.id
-order by selections desc, option.label;
+group by definition.id
+order by selections desc, definition.label;
 ```
 
 ## 8. Most selected RESET practices
 
 ```sql
 select
-  option.label,
+  definition.metric_key,
+  definition.label,
   count(*) as selections
 from private.response_selections selection
 join private.questions question on question.id = selection.question_id
 join private.question_options option on option.id = selection.option_id
+join aggregate.metric_definitions definition
+  on definition.source_question_key = question.key
+ and definition.source_option_key = option.key
+ and definition.category = 'practices'
+ and definition.is_active
 where question.key = 'reset_practices'
-group by option.id
-order by selections desc, option.label;
+group by definition.id
+order by selections desc, definition.label;
 ```
 
 ## 9. Communications opt-in totals by screening
