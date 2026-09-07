@@ -51,6 +51,27 @@ function drawContainedImage(context: CanvasRenderingContext2D, image: HTMLImageE
   context.drawImage(image, x, y + (maxHeight - height) / 2, width, height);
 }
 
+function drawTintedContainedImage(context: CanvasRenderingContext2D, image: HTMLImageElement, color: string, x: number, y: number, maxWidth: number, maxHeight: number) {
+  const tinted = document.createElement("canvas");
+  tinted.width = image.naturalWidth;
+  tinted.height = image.naturalHeight;
+  const tintedContext = tinted.getContext("2d");
+  if (!tintedContext) {
+    context.fillStyle = "#1d1d1d";
+    context.fillRect(x, y, maxWidth, maxHeight);
+    drawContainedImage(context, image, x, y, maxWidth, maxHeight);
+    return;
+  }
+  tintedContext.drawImage(image, 0, 0);
+  tintedContext.globalCompositeOperation = "source-in";
+  tintedContext.fillStyle = color;
+  tintedContext.fillRect(0, 0, tinted.width, tinted.height);
+  const scale = Math.min(maxWidth / tinted.width, maxHeight / tinted.height);
+  const width = tinted.width * scale;
+  const height = tinted.height * scale;
+  context.drawImage(tinted, x, y + (maxHeight - height) / 2, width, height);
+}
+
 export async function downloadSavedQuestionsCard(items: SavedQuestionCardItem[]) {
   await document.fonts.ready;
   const measuringCanvas = document.createElement("canvas");
@@ -158,10 +179,7 @@ export async function downloadSavedQuestionsCard(items: SavedQuestionCardItem[])
   const partnerLabelX = SIDE + jivinitiWidth + partnerGap;
   const pictureMotionX = partnerLabelX + partnerLabelWidth + partnerGap;
   if (jiviniti) {
-    context.save();
-    context.filter = "brightness(0)";
-    drawContainedImage(context, jiviniti, SIDE, partnerTop, jivinitiWidth, 58);
-    context.restore();
+    drawTintedContainedImage(context, jiviniti, "#1d1d1d", SIDE, partnerTop, jivinitiWidth, 58);
   }
   context.fillStyle = "#656565";
   context.fillText(partnerLabel, partnerLabelX, partnerTop + 34);
