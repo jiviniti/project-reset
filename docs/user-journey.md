@@ -1,6 +1,6 @@
 # Project RESET user journey
 
-Last updated: 6 September 2026
+Last updated: 7 September 2026
 
 ## Current product model
 
@@ -36,7 +36,7 @@ Questionnaire version 3 adds only the optional private commitment. It is limited
 
 The earlier optional `burnout_note` answer remains accepted by the server for historical responses and forms that were already loaded, but the current questionnaire does not display or submit that field.
 
-The required consent statement remains unchanged for launch. Its final wording and the destination for a future Privacy & Data Use link are pending editorial approval from the Foundation. No privacy link should be added until both are approved.
+The Foundation-approved launch consent is: “I understand that my responses will be securely stored and may be used for Project RESET research. Anything shared publicly will be de-identified or combined with other responses.” Because every existing record is an internal pre-launch test, this wording replaces the test-era text under `reset_data_use_v1_us`. After real participant collection begins, every material wording change must use a new policy version so prior consent provenance remains exact. The destination for a future Privacy & Data Use link remains pending Legal-approved content.
 
 ## Completion
 
@@ -52,10 +52,10 @@ saved confirmation + gentle celebration
 
 If a commitment was entered, it is echoed from local form state on the success page. It is never placed in a public visualization or URL.
 
-Eligible event participants receive a manually entered KINEMA code and private film link. They create or sign in to a KINEMA account, complete the free rental, have 30 days to start and 48 hours to finish after starting. KINEMA controls DRM, caps, reports, fees and manual code shutdown.
+Eligible event participants receive a manually entered KINEMA code and a direct link to the private film page. A private KINEMA page does not need to be listed in the public catalogue. Participants copy or screenshot the code, open the direct page, create or sign in to KINEMA, and enter the code at checkout for free access. They have 30 days to start and 48 hours to finish after starting. KINEMA controls DRM, caps, reports, fees and manual code shutdown.
 
 The share card is no longer part of this journey. Its concept route remains available for internal review only.
 
 ## Conversation companion
 
-Continue the Conversation initially offers four featured themes and can reveal all 10. Selecting a theme displays all six questions together; deeper prompts are optional. Participants may save multiple questions across themes on their current browser and device, then copy or download a plain-text list. Existing theme and question deep links remain compatible. No answers, identities, analytics events or saved selections are submitted.
+Continue the Conversation initially offers four featured themes and can reveal all 10. Selecting a theme displays all six questions together; deeper prompts are optional. Participants may save multiple questions across themes on their current browser and device, then copy a plain-text list or save a branded PNG question card. Existing theme and question deep links remain compatible. No answers, identities, analytics events or saved selections are submitted.

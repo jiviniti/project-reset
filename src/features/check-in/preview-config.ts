@@ -13,7 +13,7 @@ export const previewScreeningConfig: ScreeningConfig = {
   questionnaireVersion: 3,
   policyVersion: "reset_data_use_v1_us",
   policyText:
-    "I understand that my responses will be stored for Project RESET research and may contribute to anonymized or aggregated findings.",
+    "I understand that my responses will be securely stored and may be used for Project RESET research. Anything shared publicly will be de-identified or combined with other responses.",
   entryPathway: "non_event",
   rewardType: "trailer_access",
   eventWindowStatus: "non_event",

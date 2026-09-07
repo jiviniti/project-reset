@@ -75,6 +75,7 @@ test("completes the preview check-in and reaches the persisted success state", a
   await page.getByLabel("Email (required)").fill("nivi@example.org");
   await page.getByLabel(/What is one thing you will do today/).fill("Call a friend after dinner");
   await expect(page.getByText("(Required)", { exact: true })).toBeVisible();
+  await expect(page.getByRole("checkbox", { name: "(Required) I understand that my responses will be securely stored and may be used for Project RESET research. Anything shared publicly will be de-identified or combined with other responses.", exact: true })).toBeVisible();
   await expect(page.getByText("Optional:", { exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Support the project" })).toHaveAttribute("href", "https://thirddegreeburnout.com/fueltheimpact");
   await page.getByLabel(/I understand that my responses/).check();
@@ -83,9 +84,10 @@ test("completes the preview check-in and reaches the persisted success state", a
   await expect(page.getByRole("heading", { name: "Ready to watch the film?" })).toBeVisible();
   await expect(page.locator(".reward-steps li")).toHaveText([
     "Copy or screenshot your access code",
-    "Open the film on KINEMA",
-    "Sign in or create an account, then enter the code at checkout",
+    "Select “Open the private film page” below",
+    "Sign in or create a KINEMA account, then enter the code at checkout to unlock free access",
   ]);
+  await expect(page.getByText("The button below opens the film’s direct, private KINEMA page. The film does not need to appear in KINEMA’s public catalogue.", { exact: true })).toBeVisible();
   await expect(page.getByText(/This code is not sent by email/)).toBeVisible();
   await expect(page.getByText("Call a friend after dinner")).toBeVisible();
   await expect(page.getByText("The burnout landscape", { exact: true })).toBeVisible();
@@ -107,7 +109,7 @@ test("completes the preview check-in and reaches the persisted success state", a
   await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).toBe("EVENT_CODE");
   await page.getByRole("button", { name: "Copy access details" }).click();
   await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).toContain("Film link: https://kinema.com/films/private-film");
-  await expect(page.getByRole("link", { name: /Open the film on KINEMA/ })).toHaveAttribute("href", "https://kinema.com/films/private-film");
+  await expect(page.getByRole("link", { name: /Open the private film page/ })).toHaveAttribute("href", "https://kinema.com/films/private-film");
   await expect(page.getByRole("link", { name: /Start a conversation/ })).toHaveAttribute("href", "/start-a-conversation");
   await expect(page.getByRole("link", { name: "Support the project" })).toHaveAttribute("href", "https://thirddegreeburnout.com/fueltheimpact");
   const mobileWidths = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));

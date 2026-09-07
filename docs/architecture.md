@@ -1,6 +1,6 @@
 # Architecture
 
-Last verified: 5 September 2026
+Last verified: 7 September 2026
 
 Project RESET is a screening-aware Next.js application deployed on Vercel. Participants complete the RESET Check-In without a Supabase Auth account. Browser submissions go only to `POST /api/v1/submissions`; raw identity and research records remain in the non-exposed Supabase `private` schema.
 
@@ -69,6 +69,8 @@ Persisted success is presented as Step 04 of 04; it is not a fourth write stage.
 The self-contained source prototype and checksum are preserved under `reference/prototype/`. The active production-oriented UI is the typed React implementation under `src/`. Poppins supplies interface text, headings, labels and buttons; Petit Formal Script supplies intentional script accents; EB Garamond and italic variation are confined to the word clouds. Local font assets are loaded through `next/font/local`; no prototype runtime or opaque generated code ships in the app.
 
 Questionnaire version 3 copies version 2 and adds the optional private `today_commitment` text response. Screening configuration determines the version served, while every participation retains its submitted version. The commitment is not an aggregate metric.
+
+The launch acknowledgement is stored under `reset_data_use_v1_us`. Its test-era wording was corrected in place before public collection because all earlier records were internal team tests. Once real participant collection begins, this row is immutable in practice: a material wording change requires a new policy-version row and new submissions must reference that new identifier.
 
 The share-card renderer remains available only in the internal concept route. The active participant journey does not create or request a personalized card.
 

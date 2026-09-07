@@ -193,9 +193,9 @@ export function ConversationStarter() {
   async function downloadSavedQuestions() {
     try {
       await downloadSavedQuestionsCard(savedPrompts.map((prompt) => ({ theme: CONVERSATION_THEMES[prompt.theme].label, question: prompt.question })));
-      setSaveStatus("Your saved-question card was downloaded.");
+      setSaveStatus("Your question card has been saved to your device");
     } catch {
-      setSaveStatus("The image could not be created on this device. You can still copy your questions.");
+      setSaveStatus("The question card could not be created on this device. You can still copy your questions.");
     }
   }
 
@@ -211,7 +211,7 @@ export function ConversationStarter() {
         <header className={styles.hero}>
           <div className={styles.heroTop}><ResetBrand light /><FilmLockup /></div>
           <div className={styles.heroBody}>
-            <div className={styles.heroCopy}><p className={styles.reviewFlag}>Draft for Foundation review</p><p className={styles.eyebrow}>A conversation worth making room for</p><h1>Continue the conversation.</h1><p>Choose what feels relevant. You don’t need to have seen the film or have the answers.</p></div>
+            <div className={styles.heroCopy}><p className={styles.eyebrow}>A conversation worth making room for</p><h1>Continue the conversation.</h1><p>Questions to help you reflect, connect, and see things differently - on your own or with others.</p></div>
             <div className={styles.collage} aria-hidden="true" />
           </div>
           <div className={styles.tornBand}><p>Questions for meals, walks, calls, classrooms, and gatherings.</p></div>
@@ -219,14 +219,14 @@ export function ConversationStarter() {
 
         <section ref={themeSelectorRef} className={styles.startPanel} aria-labelledby="choose-theme-title">
           <div className={styles.stepLabel}><span>01</span><p>Choose a topic</p></div>
-          <h2 id="choose-theme-title">What feels worth talking about?</h2>
+          <h2 id="choose-theme-title">What feels worth exploring?</h2>
           <p className={styles.introText}>Choose a theme. You can switch anytime.</p>
           <div className={styles.themeGrid}>
-            <button className={styles.acrossTheme} aria-pressed={selectedTheme === "across"} type="button" onClick={() => selectTheme("across")}><b>Not sure where to begin?</b><span>Browse six questions drawn from across the film&apos;s themes.</span><i aria-hidden="true">{selectedTheme === "across" ? "✓" : "→"}</i></button>
+            <button className={styles.acrossTheme} aria-pressed={selectedTheme === "across"} type="button" onClick={() => selectTheme("across")}><b>Not sure where to begin?</b><span>Start with six questions from across the themes.</span><i aria-hidden="true">{selectedTheme === "across" ? "✓" : "→"}</i></button>
             {visibleThemes.map((themeId) => <ThemeButton key={themeId} themeId={themeId} selected={selectedTheme === themeId} onSelect={selectTheme} />)}
           </div>
           <button className={styles.showThemesButton} type="button" aria-expanded={showAllThemes} onClick={() => setShowAllThemes((shown) => !shown)}>{showAllThemes ? "Show the four featured themes" : "Show all 10 themes"}</button>
-          <aside className={styles.agreement}><p className={styles.eyebrow}>A few things to hold gently</p><ul><li>Share only what feels comfortable.</li><li>Skip any question, pause, or stop.</li><li>Listen without needing to fix anything.</li><li>Keep personal stories private.</li></ul></aside>
+          <aside className={styles.agreement}><p className={styles.eyebrow}>A few things to hold gently</p><p className={styles.agreementIntro}>Whether reflecting alone or with others:</p><ul><li>Share only what feels comfortable.</li><li>Skip any question, pause, or stop.</li><li>Listen with curiosity, not solutions.</li><li>Let personal stories stay with those who share them.</li></ul></aside>
         </section>
 
         {selectedTheme ? (
@@ -239,6 +239,7 @@ export function ConversationStarter() {
                 return <article className={`${styles.questionCard}${saved ? ` ${styles.savedCard}` : ""}`} key={prompt.id}><div className={styles.questionNumber}><span>{String(index + 1).padStart(2, "0")}</span><small>{CONVERSATION_THEMES[prompt.theme].label}</small></div><p>{prompt.context}</p><h3>{prompt.question}</h3><button className={styles.followUpButton} type="button" aria-expanded={expanded} onClick={() => setExpandedPrompt(expanded ? null : prompt.id)}>{expanded ? "Close the deeper prompt" : "Go a little deeper"}</button>{expanded ? <div className={styles.followUp}><span>Consider this too</span>{prompt.followUp}</div> : null}<button className={styles.saveButton} type="button" aria-pressed={saved} onClick={() => toggleSaved(prompt.id)}>{saved ? <><span aria-hidden="true">✓</span> Saved. Remove question.</> : "Save this question."}</button></article>;
               })}
             </div>
+            <button className={styles.bottomThemeButton} type="button" onClick={chooseAnotherTheme}>Choose another theme</button>
           </section>
         ) : null}
 
@@ -248,7 +249,7 @@ export function ConversationStarter() {
             <h2 id="saved-questions-heading" tabIndex={-1}>My saved questions</h2>
             <p>Saved on this browser and device only. Your choices are not sent to Project <BrandedReset uppercase />.</p>
             <ol>{savedPrompts.map((prompt, index) => <li key={prompt.id}><div className={styles.savedQuestionMeta}><span>{String(index + 1).padStart(2, "0")}</span><small>{CONVERSATION_THEMES[prompt.theme].label}</small><button type="button" onClick={() => toggleSaved(prompt.id)}>Remove</button></div><p>{prompt.question}</p></li>)}</ol>
-            <div className={styles.savedActions}><button className={styles.primaryButton} type="button" onClick={() => void copySavedQuestions()}>Copy my questions</button><button className={styles.secondaryButton} type="button" onClick={() => void downloadSavedQuestions()}>Download a share card</button></div>
+            <div className={styles.savedActions}><button className={styles.primaryButton} type="button" onClick={() => void copySavedQuestions()}>Copy my questions</button><button className={styles.secondaryButton} type="button" onClick={() => void downloadSavedQuestions()}>Create and Save my question card</button></div>
             {!confirmClear ? <button className={styles.clearButton} type="button" onClick={() => setConfirmClear(true)}>Clear saved questions</button> : <div className={styles.clearConfirmation} role="group" aria-label="Confirm clearing saved questions"><p>Remove all saved questions from this device?</p><button type="button" onClick={() => { setSavedPromptIds([]); setConfirmClear(false); setSaveStatus("All saved questions were cleared."); }}>Yes, clear all</button><button type="button" onClick={() => setConfirmClear(false)}>Keep my questions</button></div>}
           </section>
         ) : null}

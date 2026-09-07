@@ -1,6 +1,6 @@
 # Data model
 
-Last verified: 5 September 2026
+Last verified: 7 September 2026
 
 ## Raw research model
 
@@ -43,7 +43,7 @@ Version 3 copies the complete version-2 questionnaire and adds optional text que
 - Tags are serialized as newline-delimited `text_value` in `private.response_answers`, so they retain their question association without creating public metric definitions.
 - They are not canonicalized, alias-matched, clustered, moderated, copied to `metric_definitions`, returned by the aggregate API, displayed in the Learning Lab or included in any active sharing experience.
 
-`private.policy_versions.reset_data_use_v1_us` contains the U.S.-English acknowledgement. The earlier `reset_data_use_v1` row remains intact so prior consent provenance is not rewritten.
+`private.policy_versions.reset_data_use_v1_us` contains the Foundation-approved launch acknowledgement. It was corrected in place before public launch because all records collected under it were internal team tests. The earlier `reset_data_use_v1` row remains intact. After real participant collection begins, consent wording must not be overwritten; each material change requires a new policy-version row.
 
 ### Questionnaire version 2
 

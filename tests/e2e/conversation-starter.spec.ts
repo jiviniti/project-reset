@@ -15,7 +15,10 @@ test("redirects the former route and preserves a linked question", async ({ page
 test("starts with four featured themes and reveals the complete set", async ({ page }) => {
   await expect(page.getByRole("heading", { name: /Continue the conversation/i })).toBeVisible();
   await expect(page.getByRole("link", { name: "Support the project" })).toHaveAttribute("href", "https://thirddegreeburnout.com/fueltheimpact");
-  await expect(page.getByText("Choose what feels relevant. You don’t need to have seen the film or have the answers.", { exact: true })).toBeVisible();
+  await expect(page.getByText("Questions to help you reflect, connect, and see things differently - on your own or with others.", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "What feels worth exploring?" })).toBeVisible();
+  await expect(page.getByText("Start with six questions from across the themes.", { exact: true })).toBeVisible();
+  await expect(page.getByText("Whether reflecting alone or with others:", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: /Burnout beyond work/i })).toBeVisible();
   await expect(page.getByRole("button", { name: /Living with climate feelings/i })).toHaveCount(0);
   await page.getByRole("button", { name: "Show all 10 themes" }).click();
@@ -40,7 +43,8 @@ test("saves, removes and restores multiple questions across themes", async ({ pa
   const foodCards = page.locator("#question-library article");
   await foodCards.nth(0).getByRole("button", { name: "Save this question." }).click();
   await foodCards.nth(1).getByRole("button", { name: "Save this question." }).click();
-  await page.getByRole("button", { name: "Choose another theme" }).click();
+  await expect(page.getByRole("button", { name: "Choose another theme" })).toHaveCount(2);
+  await page.getByRole("button", { name: "Choose another theme" }).last().click();
   await page.getByRole("button", { name: /Connection and isolation/i }).click();
   await page.locator("#question-library article").nth(0).getByRole("button", { name: "Save this question." }).click();
   await expect(page.getByRole("button", { name: "3 questions saved" })).toBeVisible();
@@ -63,7 +67,7 @@ test("copies, downloads and clears the saved list", async ({ page }) => {
   expect(copied).toContain("1. Food, memory, and care");
   expect(copied).toContain("What is the first meal you can remember");
   const downloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Download a share card" }).click();
+  await page.getByRole("button", { name: "Create and Save my question card" }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe("project-reset-saved-questions.png");
   const downloadPath = await download.path();
@@ -72,13 +76,14 @@ test("copies, downloads and clears the saved list", async ({ page }) => {
   expect(png.subarray(1, 4).toString()).toBe("PNG");
   expect(png.readUInt32BE(16)).toBe(900);
   expect(png.readUInt32BE(20)).toBeGreaterThan(700);
+  await expect(page.getByText("Your question card has been saved to your device", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Clear saved questions" }).click();
   await page.getByRole("button", { name: "Yes, clear all" }).click();
   await expect(page.getByRole("button", { name: /question saved/ })).toHaveCount(0);
 });
 
 test("valid deep links add a question while invalid stored IDs are discarded", async ({ page }) => {
-  await page.evaluate(() => localStorage.setItem("project-reset:conversation-saved:v1", JSON.stringify(["not-real", "food-first-meal"])));
+  await page.addInitScript(() => localStorage.setItem("project-reset:conversation-saved:v1", JSON.stringify(["not-real", "food-first-meal"])));
   await page.goto("/start-a-conversation?theme=connection&question=connection-understood");
   await expect(page.getByRole("heading", { name: "Questions about Connection and isolation" })).toBeVisible();
   await expect(page.getByRole("button", { name: "2 questions saved" })).toBeVisible();

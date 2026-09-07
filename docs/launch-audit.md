@@ -1,12 +1,12 @@
 # Project RESET launch audit
 
-Audit date: 5 September 2026
+Audit date: 7 September 2026
 
 Scope: participant check-in, questionnaire v3, KINEMA manual rewards, Continue the Conversation, security boundaries, build quality, responsive behavior, and visual alignment with the RESET brand system.
 
 ## Current assessment
 
-The implementation is suitable for stakeholder testing. Questionnaire v3 is active, the server-only KINEMA production settings are configured, and the two approved event windows are defined in a migration. A controlled redemption test and KINEMA activation coordination remain required before QR distribution.
+The implementation is suitable for final launch testing. Questionnaire v3 is active, the final participant copy is locked, the server-only KINEMA production settings are configured, and the two approved event windows are defined in a migration. A controlled redemption test and KINEMA activation coordination remain required before QR distribution.
 
 ## Launch blockers
 
@@ -32,15 +32,19 @@ The following Vercel production values were configured on 5 September 2026:
 
 The provider is enabled in Production, but no launch event route exists yet. After the approved windows are added, a controlled check-in must confirm that each route returns only its own code before either QR code is distributed.
 
-### 2. Editorial approval remains outstanding
+### Completed: participant copy approval
 
-The 60-question conversation bank and participant-facing copy remain draft content for Foundation review. The tool is correctly marked `noindex, nofollow` during this stage. Multiple saved questions remain local to the participant's browser and can be copied or downloaded as plain text.
+The Foundation has approved and locked the check-in and conversation copy, except for any future KINEMA clarification required after a controlled redemption test. The visible “Draft for Foundation review” label has been removed. The tool remains `noindex, nofollow` until the production-domain launch. Multiple saved questions remain local to the participant's browser and can be copied as text or saved as a branded PNG card.
+
+### Completed: launch consent wording
+
+The final acknowledgement is applied to `reset_data_use_v1_us` by `202609070001_final_consent_policy.sql`. The in-place correction is safe because the earlier records are internal pre-launch tests rather than public participant submissions. Any material wording change after launch requires a new policy version.
 
 ## Operational checks before launch
 
 - Confirm the Vercel `reset-submissions` firewall rule is configured and reconsider its threshold for many attendees sharing venue Wi-Fi.
 - Complete one controlled eligible check-in for each event and one premature or expired check-in.
-- Confirm the private KINEMA film page remains private and that both codes work through manual checkout entry.
+- Confirm the direct private KINEMA link opens the unlisted film page and that both codes work through manual checkout entry.
 - Record who will monitor the KINEMA Reports page and who is authorized to email KINEMA to disable or raise a code cap.
 - Remember that KINEMA gives a redeemed rental 30 days to start and 48 hours to finish. Project RESET cannot revoke it earlier.
 - At the current caps, maximum platform delivery cost is $350 if all 350 redemptions are used.

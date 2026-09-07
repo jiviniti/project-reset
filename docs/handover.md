@@ -282,11 +282,14 @@ Questionnaire-v2 hosted rollout on 2 September 2026:
 - Do not activate the launch screenings until exact check-in windows are approved. The application cannot revoke a KINEMA rental or schedule promo-code shutdown.
 - The conversation tool is a browseable 60-question library with four featured themes, all-theme reveal, stable deep-link compatibility and no answer collection.
 
-## Stakeholder launch-readiness update — 6 September 2026
+## Stakeholder launch-readiness update — 7 September 2026
 
 - Apply `supabase/migrations/202609060001_launch_event_windows.sql` after its database tests pass. It provisions the Climate Week and Columbia version-3 routes with exclusive 15-day New York-time windows.
 - KINEMA must disable both codes before launch, enable each for its event, and disable it at the matching application close. The application cannot invalidate a previously copied code.
 - Continue the Conversation is served at `/start-a-conversation`; `/take-it-to-the-table` permanently redirects there for compatibility. The tool saves multiple prompt IDs locally, supports removal across themes, and offers plain-text copy and image download instead of social sharing.
-- Required consent remains unchanged. A new policy version and an unlisted `/privacy` route remain blocked on Legal-approved text. The support CTA links to the approved Fuel the Impact page and remains configurable through `NEXT_PUBLIC_DONATE_URL`.
+- The Foundation-approved launch consent is applied by `202609070001_final_consent_policy.sql`. It updates `reset_data_use_v1_us` in place because all earlier records are internal pre-launch tests; every material post-launch wording change must create a new policy version.
+- The conversation companion now uses the locked participant copy, repeats “Choose another theme” after the sixth question, and labels its image action “Create and Save my question card.” The success message confirms that the card was saved to the device.
+- The KINEMA card explains that its button opens the direct private film page even while the title is absent from the public catalogue. The support CTA links to the approved Fuel the Impact page and remains configurable through `NEXT_PUBLIC_DONATE_URL`.
+- An unlisted `/privacy` route remains blocked only on the Legal-approved privacy-page content and destination.
 
 Production cutover and custom-domain work remain deferred. Automated KINEMA API or email delivery is not part of this launch implementation.

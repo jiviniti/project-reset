@@ -24,4 +24,4 @@ The renderers live in `src/features/share-card/concept-renderers.ts`. The galler
 
 ## Decision boundary
 
-These concepts are retained for internal review in case the team revisits the idea. The active participant journey now uses Take It to the Table instead of a share card.
+These concepts are retained for internal review in case the team revisits the idea. The active participant journey now uses Continue the Conversation instead of a personalized RESET share card.

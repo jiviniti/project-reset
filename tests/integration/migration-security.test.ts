@@ -31,6 +31,10 @@ const launchEventMigration = readFileSync(
   resolve("supabase/migrations/202609060001_launch_event_windows.sql"),
   "utf8",
 ).toLowerCase();
+const finalConsentPolicyMigration = readFileSync(
+  resolve("supabase/migrations/202609070001_final_consent_policy.sql"),
+  "utf8",
+).toLowerCase();
 
 describe("database security migration", () => {
   it("uses only invoker functions", () => {
@@ -127,6 +131,14 @@ describe("database security migration", () => {
     expect(launchEventMigration).toContain("'2026-10-22 04:00:00+00'");
     expect(launchEventMigration).toContain("version = 3");
     expect(launchEventMigration).not.toContain("promo code");
+  });
+
+  it("locks the approved launch consent into the pre-launch U.S. policy", () => {
+    expect(finalConsentPolicyMigration).toContain("update private.policy_versions");
+    expect(finalConsentPolicyMigration).toContain("where version = 'reset_data_use_v1_us'");
+    expect(finalConsentPolicyMigration).toContain("securely stored");
+    expect(finalConsentPolicyMigration).toContain("de-identified or combined with other responses");
+    expect(finalConsentPolicyMigration).not.toContain("insert into private.policy_versions");
   });
 
   it("derives cumulative observed values from screening scopes and seeded values from one baseline", () => {

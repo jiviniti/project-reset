@@ -427,11 +427,11 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 {submissionResult?.rewardAccess ? (
                   <div className="reward-card">
                     <h3 id="reset-access-heading">Ready to watch the film?</h3>
-                    <p>Your promo code gives you free film access. Enter it manually in the Promo Code field at KINEMA checkout.</p>
+                    <p>The button below opens the film’s direct, private KINEMA page. The film does not need to appear in KINEMA’s public catalogue.</p>
                     <ol className="reward-steps">
                       <li>Copy or screenshot your access code</li>
-                      <li>Open the film on KINEMA</li>
-                      <li>Sign in or create an account, then enter the code at checkout</li>
+                      <li>Select “Open the private film page” below</li>
+                      <li>Sign in or create a KINEMA account, then enter the code at checkout to unlock free access</li>
                     </ol>
                     <div className="reward-code-row">
                       <code aria-label="KINEMA promo code">{submissionResult.rewardAccess.promoCode}</code>
@@ -439,7 +439,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                     </div>
                     <p className="reward-warning">This code is not sent by email. Copy it or take a screenshot before leaving this page.</p>
                     <p className="reward-copy-status" aria-live="polite">{rewardCopyStatus}</p>
-                    <a className="button button--primary reward-card__action" href={submissionResult.rewardAccess.filmUrl} target="_blank" rel="noreferrer">Open the film on KINEMA <span aria-hidden="true">→</span></a>
+                    <a className="button button--primary reward-card__action" href={submissionResult.rewardAccess.filmUrl} target="_blank" rel="noreferrer">Open the private film page <span aria-hidden="true">→</span></a>
                     <button className="button button--secondary reward-card__action" type="button" onClick={() => void copyAccessDetails()}>Copy access details</button>
                     <p className="reward-terms">After signing into KINEMA, you have {submissionResult.rewardAccess.startWithinDays} days to begin watching and {submissionResult.rewardAccess.finishWithinHours} hours to finish once you start. The film access is tied to your KINEMA account.</p>
                   </div>

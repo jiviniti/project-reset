@@ -4,7 +4,7 @@
 
 Milestone 1 was verified on 24 August 2026, Milestone 2 and the pre-Milestone-3 product/visual reconciliation on 25 August 2026 at [project-reset-psi.vercel.app](https://project-reset-psi.vercel.app/). Questionnaire version 3 was rolled out and verified there on 5 September 2026.
 
-1. Apply the committed files in `supabase/migrations/` in filename order, including `202609050001_questionnaire_v3_commitment.sql`, then apply preview seeds only when preparing a fresh preview project. `supabase/seed.sql` is a psql entry point and its `\ir` command is not accepted by the Dashboard SQL Editor.
+1. Apply the committed files in `supabase/migrations/` in filename order, including `202609050001_questionnaire_v3_commitment.sql`, `202609060001_launch_event_windows.sql`, and `202609070001_final_consent_policy.sql`, then apply preview seeds only when preparing a fresh preview project. `supabase/seed.sql` is a psql entry point and its `\ir` command is not accepted by the Dashboard SQL Editor.
 2. In Supabase **Data API → Settings**, add `api` to the exposed schemas and leave `private` and `aggregate` excluded. Do not use dashboard exposure toggles for server-only functions. The migration explicitly grants execution to `service_role`.
 3. Set the Vercel variables listed in `.env.example`. Only the Supabase URL, current publishable key and browser-visible campaign URLs may use `NEXT_PUBLIC_`; the secret key must remain server-only. `NEXT_PUBLIC_DONATE_URL` defaults to the approved Fuel the Impact page at `https://thirddegreeburnout.com/fueltheimpact`. `NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL` defaults to the approved film homepage `https://www.thirddegreeburnout.com/`.
 4. Deploy from the private GitHub repository.
@@ -36,6 +36,10 @@ The launch windows are configured by `202609060001_launch_event_windows.sql`:
 Closing timestamps are exclusive. At each closing time the application returns to trailer access, but a code copied earlier remains redeemable until KINEMA disables it. Ask KINEMA to keep both codes disabled before their opening dates and to disable each code at its matching closing time. Never reuse either code for another event.
 
 The preview WAF threshold is intentionally provisional and must be reviewed against expected audience size, venue networking and submission bursts before production.
+
+## Consent cutover
+
+`202609070001_final_consent_policy.sql` replaces the test-era wording in `reset_data_use_v1_us` with the Foundation-approved launch statement. This in-place correction is permitted only because all existing submissions are internal pre-launch tests. Once public participant collection starts, do not edit this row again. Publish every material future wording change under a new policy-version identifier and point only new screenings or submissions to it.
 
 ## Production cutover
 
