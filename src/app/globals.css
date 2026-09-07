@@ -31,9 +31,6 @@ h1, h2, h3, p { text-wrap: pretty; }
 
 .experience { min-height: 100vh; padding: 34px 16px 70px; }
 .phone-shell { width: min(100%, 390px); margin: 0 auto; overflow: clip; border-radius: 26px; background: var(--white); box-shadow: 0 28px 80px rgb(0 0 0 / 62%); }
-.landing { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: var(--cream); }
-.landing__card { max-width: 640px; padding: 48px; border-radius: 24px; background: white; }
-.landing h1 { font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1; text-transform: lowercase; }
 
 .nav { height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 11px 22px; border-bottom: 1px solid #363130; }
 .nav--logo-only { justify-content: flex-start; }

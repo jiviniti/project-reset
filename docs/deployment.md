@@ -13,9 +13,10 @@ Milestone 1 was verified on 24 August 2026, Milestone 2 and the pre-Milestone-3 
 
 ### Participant-path preview routes
 
+- `/` opens the ordinary non-event Learning Lab check-in directly. The former screening-selection interstitial has been removed.
 - `/s/preview-event` simulates an active event and returns `DEMO_CODE_NOT_VALID` with a generic KINEMA link. It never exposes a real promo code or the private film URL.
 - `/s/preview-expired-event` simulates an event whose access window has ended and shows the trailer pathway.
-- `/s/preview-screening` is the ordinary non-event pathway and shows trailer access after check-in.
+- `/s/preview-screening` remains a compatibility and testing URL for the same ordinary non-event pathway and shows trailer access after check-in.
 
 These routes are demonstrations, not launch QR destinations. The active-event placeholder is available only while `DATASET_ENV=preview`.
 

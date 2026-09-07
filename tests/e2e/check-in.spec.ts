@@ -25,6 +25,15 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+test("opens the general check-in directly from the site root", async ({ page }) => {
+  await page.goto("/");
+
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("heading", { name: "How do you reset?" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Start your RESET" })).toBeVisible();
+  await expect(page.getByText("Every screening has its own RESET link.")).toHaveCount(0);
+});
+
 test("completes the preview check-in and reaches the persisted success state", async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "clipboard", {
