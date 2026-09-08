@@ -172,12 +172,13 @@ export async function downloadSavedQuestionsCard(items: SavedQuestionCardItem[])
   context.font = "600 13px Poppins, Arial, sans-serif";
   context.fillText("BROUGHT TO YOU BY", SIDE, partnerTop - 14);
   const jivinitiWidth = 145;
-  const partnerGap = 16;
+  const logoToLabelGap = -10;
+  const labelToPictureMotionGap = 5;
   const partnerLabel = "IN PARTNERSHIP WITH";
   context.font = "500 13px Poppins, Arial, sans-serif";
   const partnerLabelWidth = context.measureText(partnerLabel).width;
-  const partnerLabelX = SIDE + jivinitiWidth + partnerGap;
-  const pictureMotionX = partnerLabelX + partnerLabelWidth + partnerGap;
+  const partnerLabelX = SIDE + jivinitiWidth + logoToLabelGap;
+  const pictureMotionX = partnerLabelX + partnerLabelWidth + labelToPictureMotionGap;
   if (jiviniti) {
     drawTintedContainedImage(context, jiviniti, "#1d1d1d", SIDE, partnerTop, jivinitiWidth, 58);
   }

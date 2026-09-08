@@ -215,12 +215,12 @@
 
 .themeGrid button:hover,
 .themeGrid button:focus-visible {
-  color: var(--kalika);
+  color: var(--shweta);
   background: var(--sindoor);
 }
 
 .themeGrid button[aria-pressed="true"] {
-  color: var(--kalika);
+  color: var(--shweta);
   background: var(--sindoor);
   box-shadow: inset 0 0 0 3px var(--kalika);
 }
@@ -246,7 +246,8 @@
 }
 
 .themeGrid button:hover b,
-.themeGrid button:focus-visible b { color: var(--kalika); }
+.themeGrid button:focus-visible b,
+.themeGrid button[aria-pressed="true"] b { color: var(--shweta); }
 
 .themeGrid button span {
   display: block;
@@ -265,7 +266,8 @@
 }
 
 .themeGrid button:hover small,
-.themeGrid button:focus-visible small { color: var(--kalika); }
+.themeGrid button:focus-visible small,
+.themeGrid button[aria-pressed="true"] small { color: var(--shweta); }
 
 .themeGrid button i {
   position: absolute;
@@ -287,10 +289,10 @@
 .themeGrid .acrossTheme:hover,
 .themeGrid .acrossTheme:focus-visible { background: var(--sindoor); }
 .themeGrid .acrossTheme:hover b,
-.themeGrid .acrossTheme:focus-visible b { color: var(--kalika); }
+.themeGrid .acrossTheme:focus-visible b { color: var(--shweta); }
 
-.themeGrid .acrossTheme[aria-pressed="true"] { color: var(--kalika); background: var(--sindoor); }
-.themeGrid .acrossTheme[aria-pressed="true"] b { color: var(--kalika); }
+.themeGrid .acrossTheme[aria-pressed="true"] { color: var(--shweta); background: var(--sindoor); }
+.themeGrid .acrossTheme[aria-pressed="true"] b { color: var(--shweta); }
 
 .showThemesButton {
   width: 100%;
