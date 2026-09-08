@@ -45,6 +45,21 @@ describe("KINEMA manual reward access", () => {
     expect(resolveKinemaRewardAccess("preview-event", activeEvent, { ...env, DATASET_ENV: "production" })).toBeUndefined();
   });
 
+  it("uses the private film and limited test code only when the preview test override is configured", () => {
+    expect(resolveKinemaRewardAccess("preview-event", activeEvent, { ...env, KINEMA_TEST_CODE: "LIMITED_TEST_CODE" })).toEqual({
+      provider: "kinema",
+      filmUrl: "https://kinema.com/films/private-film",
+      promoCode: "LIMITED_TEST_CODE",
+      accountRequired: true,
+      startWithinDays: 30,
+      finishWithinHours: 48,
+    });
+  });
+
+  it("fails closed when the preview test code has no private film URL", () => {
+    expect(() => resolveKinemaRewardAccess("preview-event", activeEvent, { ...env, KINEMA_TEST_CODE: "LIMITED_TEST_CODE", KINEMA_FILM_URL: undefined })).toThrow("kinema_test_reward_not_configured");
+  });
+
   it("does not expose access for trailer pathways or disabled delivery", () => {
     expect(resolveKinemaRewardAccess("climate-week-nyc-2026", { ...activeEvent, entryPathway: "non_event", rewardType: "trailer_access", eventWindowStatus: "event_expired" }, env)).toBeUndefined();
     expect(resolveKinemaRewardAccess("climate-week-nyc-2026", activeEvent, { ...env, REWARD_PROVIDER: "disabled" })).toBeUndefined();

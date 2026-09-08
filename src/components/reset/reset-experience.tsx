@@ -47,6 +47,7 @@ const initialForm: FormState = {
 };
 
 const TRAILER_URL = process.env.NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL?.trim() || "https://www.thirddegreeburnout.com/";
+const PREVIEW_EVENT_SLUG = "preview-event";
 
 function formatRedemptionDeadline(value: string | null | undefined) {
   if (!value) return null;
@@ -171,7 +172,8 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
   const practiceOptions = question("reset_practices").options;
   const hasCommitmentQuestion = screening.questions.some((item) => item.key === "today_commitment");
   const visibleEmotions = showMoreEmotions ? emotionOptions : emotionOptions.slice(0, 10);
-  const redemptionDeadline = formatRedemptionDeadline(submissionResult?.accessEndsAt ?? screening.checkInClosesAt);
+  const isPreviewEvent = screening.slug === PREVIEW_EVENT_SLUG;
+  const redemptionDeadline = isPreviewEvent ? null : formatRedemptionDeadline(submissionResult?.accessEndsAt ?? screening.checkInClosesAt);
 
   const practicesByPathway = Object.fromEntries(
     pathwayOptions.map((pathway) => [
@@ -465,6 +467,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                       <code aria-label="KINEMA promo code">{submissionResult.rewardAccess.promoCode}</code>
                       <button type="button" onClick={() => void copyPromoCode()}>Copy code</button>
                     </div>
+                    {isPreviewEvent ? <p className="reward-warning">Team test only. Each completed checkout uses one limited test redemption.</p> : null}
                     {redemptionDeadline ? <p className="reward-warning">Redeem this code by {redemptionDeadline}.</p> : null}
                     <p className="reward-warning">Project RESET does not email this code, so copy it or take a screenshot before leaving this page. After redemption, KINEMA sends a confirmation email with a way back to the film.</p>
                     <p className="reward-copy-status" aria-live="polite">{rewardCopyStatus}</p>

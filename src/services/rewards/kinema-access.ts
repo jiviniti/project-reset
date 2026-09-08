@@ -5,7 +5,7 @@ export const CLIMATE_WEEK_SCREENING_SLUG = "climate-week-nyc-2026";
 export const COLUMBIA_SCREENING_SLUG = "columbia-climate-school-2026";
 export const PREVIEW_EVENT_SCREENING_SLUG = "preview-event";
 
-const PREVIEW_KINEMA_ACCESS: KinemaRewardAccess = {
+const PLACEHOLDER_PREVIEW_KINEMA_ACCESS: KinemaRewardAccess = {
   provider: "kinema",
   filmUrl: "https://kinema.com/",
   promoCode: "DEMO_CODE_NOT_VALID",
@@ -13,6 +13,17 @@ const PREVIEW_KINEMA_ACCESS: KinemaRewardAccess = {
   startWithinDays: 30,
   finishWithinHours: 48,
 };
+
+function previewKinemaAccess(env: ServerEnv): KinemaRewardAccess {
+  if (!env.KINEMA_TEST_CODE) return PLACEHOLDER_PREVIEW_KINEMA_ACCESS;
+  if (!env.KINEMA_FILM_URL) throw new Error("kinema_test_reward_not_configured");
+
+  return {
+    ...PLACEHOLDER_PREVIEW_KINEMA_ACCESS,
+    filmUrl: env.KINEMA_FILM_URL,
+    promoCode: env.KINEMA_TEST_CODE,
+  };
+}
 
 function codeForScreening(slug: string, env: ServerEnv) {
   if (slug === CLIMATE_WEEK_SCREENING_SLUG) return env.KINEMA_CLIMATE_WEEK_NYC_2026_CODE;
@@ -29,10 +40,10 @@ export function resolveKinemaRewardAccess(
     return undefined;
   }
 
-  // The public preview route exercises the complete success-page UI without
-  // exposing a real event code or the private film URL.
+  // The preview route uses harmless placeholders by default. A temporary,
+  // server-only test code can opt the same journey into controlled team tests.
   if (screeningSlug === PREVIEW_EVENT_SCREENING_SLUG) {
-    return env.DATASET_ENV === "preview" ? PREVIEW_KINEMA_ACCESS : undefined;
+    return env.DATASET_ENV === "preview" ? previewKinemaAccess(env) : undefined;
   }
 
   const promoCode = codeForScreening(screeningSlug, env);
