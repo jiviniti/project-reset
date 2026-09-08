@@ -130,7 +130,7 @@
   z-index: 3;
   margin-top: -16px;
   padding: 37px 42px 26px;
-  color: var(--kalika);
+  color: var(--shweta);
   background: var(--sindoor);
   clip-path: polygon(0 10%, 5% 4%, 10% 11%, 16% 3%, 22% 10%, 28% 2%, 34% 11%, 40% 3%, 47% 10%, 54% 2%, 61% 10%, 68% 3%, 75% 11%, 82% 3%, 90% 9%, 96% 2%, 100% 8%, 100% 100%, 0 100%);
 }
@@ -361,7 +361,7 @@
   justify-content: center;
   margin: 0 auto;
   padding: 12px 18px;
-  color: var(--kalika);
+  color: var(--shweta);
   border-radius: 999px;
   background: var(--sindoor);
   font-size: .72rem;
@@ -789,7 +789,7 @@
 .savedPanel li p { max-width: 520px; margin: 15px 0 0 52px; color: var(--kalika); font-size: 1rem; font-weight: 600; line-height: 1.4; }
 .savedPanel li button { padding: 5px 0; color: var(--mrida); border: 0; background: transparent; cursor: pointer; font: 600 .61rem/1.2 var(--ui); text-decoration: underline; text-underline-offset: 4px; }
 .savedActions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 28px; }
-.savedPanel .primaryButton { color: var(--kalika); border-color: var(--sindoor); background: var(--sindoor); }
+.savedPanel .primaryButton { color: var(--shweta); border-color: var(--sindoor); background: var(--sindoor); }
 .savedPanel .secondaryButton { color: var(--kalika); border-color: var(--kalika); }
 .savedPanel .secondaryButton:hover { color: var(--shweta); background: var(--kalika); }
 .clearButton { margin-top: 20px; padding: 6px 0; color: var(--mrida); border: 0; background: transparent; cursor: pointer; font: 600 .62rem/1.2 var(--ui); text-decoration: underline; text-underline-offset: 4px; }
