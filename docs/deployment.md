@@ -27,14 +27,20 @@ These routes are demonstrations, not launch QR destinations. The active-event pl
 3. Set `REWARD_PROVIDER=kinema_manual`, redeploy, and complete one controlled eligible check-in per event.
 4. Confirm expired and not-yet-open routes return trailer access and never include `rewardAccess`.
 5. Monitor redemption counts in KINEMA Reports. KINEMA charges $1 per redemption; the current combined cap is 350.
-6. Email KINEMA to disable or change a code. There is no scheduled shutdown or app-side revocation after redemption. Rentals allow 30 days to start and 48 hours to finish once started.
+6. In the KINEMA Filmmaker Dashboard, enable TVOD/rentals, set rental availability to cover both event windows, and publish the film page as **Private**. Add `https://reset.thirddegreeburnout.com/start-a-conversation` as the post-film engagement link.
+7. Run one controlled checkout with KINEMA's no-cost, limited-use dummy code. Use a participant test account, confirm the price becomes zero, verify the confirmation email and return path, and confirm the redemption appears under Reports → Rentals. Never place the dummy code in application configuration or documentation.
+8. Obtain written confirmation from KINEMA that the two production-code shutdowns are scheduled separately. The application cannot revoke a copied code or an already redeemed rental. A redeemed rental allows 30 days to start and 48 hours to finish once started.
+
+Controlled KINEMA verification completed on 8 September 2026: TVOD/rentals were enabled, the film page was published privately, the no-cost dummy code unlocked the film, and the redemption appeared in Reports → Rentals. Verification of the standard confirmation email's return link remains outstanding.
 
 The launch windows are configured by `202609060001_launch_event_windows.sql`:
 
 - Climate Week NYC: September 22 through October 7, 2026, closing at midnight New York time on October 7.
 - Columbia Climate School: October 7 through October 22, 2026, closing at midnight New York time on October 22.
 
-Closing timestamps are exclusive. At each closing time the application returns to trailer access, but a code copied earlier remains redeemable until KINEMA disables it. Ask KINEMA to keep both codes disabled before their opening dates and to disable each code at its matching closing time. Never reuse either code for another event.
+Closing timestamps are exclusive. The participant-facing deadline is therefore 11:59 p.m. New York time on October 6 for Climate Week and October 21 for Columbia. At each closing time the application returns to trailer access, but a code copied earlier remains redeemable until KINEMA disables it. KINEMA has confirmed that each code can be shut down separately; written confirmation that both shutdowns are scheduled is still required. Never reuse either code for another event.
+
+The production codes are already active. KINEMA advised leaving them active rather than issuing replacement codes. They remain server-only and are not returned by Project RESET before the relevant event window. After redemption, KINEMA sends its standard confirmation email with a way back to the film; Project RESET itself does not email the promo code.
 
 The preview WAF threshold is intentionally provisional and must be reviewed against expected audience size, venue networking and submission bursts before production.
 
@@ -42,6 +48,6 @@ The preview WAF threshold is intentionally provisional and must be reviewed agai
 
 `202609070001_final_consent_policy.sql` replaces the test-era wording in `reset_data_use_v1_us` with the Foundation-approved launch statement. This in-place correction is permitted only because all existing submissions are internal pre-launch tests. Once public participant collection starts, do not edit this row again. Publish every material future wording change under a new policy-version identifier and point only new screenings or submissions to it.
 
-## Production cutover
+## Production data preparation
 
-Production cutover is not part of this milestone. Before promotion: disable writes, back up, explicitly unlock and run `supabase/scripts/prepare_production.sql`, reseed approved configuration, verify zero test research rows, remove the production secret from Preview, and set Preview `SUBMISSIONS_ENABLED=false`.
+The custom domain is active. Before public collection, obtain written Foundation approval for the dataset policy. If the approved direction is an empty live dataset followed by genuine team submissions, disable writes, back up the internal-test dataset, remove both internal responses and the canonical illustrative baseline with a purpose-built guarded script, verify zero research and aggregate rows, update any remaining illustrative-baseline copy, and re-enable submissions. The existing `supabase/scripts/prepare_production.sql` is not sufficient for that decision because it deliberately preserves the seeded baseline.

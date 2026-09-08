@@ -48,6 +48,29 @@ const initialForm: FormState = {
 
 const TRAILER_URL = process.env.NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL?.trim() || "https://www.thirddegreeburnout.com/";
 
+function formatRedemptionDeadline(value: string | null | undefined) {
+  if (!value) return null;
+  const deadline = new Date(value);
+  if (Number.isNaN(deadline.getTime())) return null;
+
+  // Screening closing timestamps are exclusive. Display the final available
+  // minute so participants see the inclusive redemption deadline.
+  const finalMinute = new Date(deadline.getTime() - 60_000);
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZoneName: "short",
+  })
+    .format(finalMinute)
+    .replace(" AM ", " a.m. ")
+    .replace(" PM ", " p.m. ")
+    .replace(/ E(?:D|S)T$/, " ET");
+}
+
 const pathwayPresentation: Record<string, { blurb: string; color: string; foreground: string }> = {
   nourish: { blurb: "food, water, nature.", color: "#458284", foreground: "#ffffff" },
   restore: { blurb: "sleep, stillness", color: "#82bcc8", foreground: "#1d1d1d" },
@@ -148,6 +171,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
   const practiceOptions = question("reset_practices").options;
   const hasCommitmentQuestion = screening.questions.some((item) => item.key === "today_commitment");
   const visibleEmotions = showMoreEmotions ? emotionOptions : emotionOptions.slice(0, 10);
+  const redemptionDeadline = formatRedemptionDeadline(submissionResult?.accessEndsAt ?? screening.checkInClosesAt);
 
   const practicesByPathway = Object.fromEntries(
     pathwayOptions.map((pathway) => [
@@ -238,7 +262,9 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
       `Film link: ${access.filmUrl}`,
       `Promo code: ${access.promoCode}`,
       "Sign in or create a KINEMA account, then enter the promo code manually at checkout for free film access.",
+      ...(redemptionDeadline ? [`Redeem by: ${redemptionDeadline}`] : []),
       `You have ${access.startWithinDays} days to begin watching and ${access.finishWithinHours} hours to finish once you start.`,
+      "After redemption, KINEMA sends a confirmation email with a way back to the film.",
     ].join("\n");
     try {
       await navigator.clipboard.writeText(details);
@@ -439,7 +465,8 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                       <code aria-label="KINEMA promo code">{submissionResult.rewardAccess.promoCode}</code>
                       <button type="button" onClick={() => void copyPromoCode()}>Copy code</button>
                     </div>
-                    <p className="reward-warning">This code is not sent by email. Copy it or take a screenshot before leaving this page.</p>
+                    {redemptionDeadline ? <p className="reward-warning">Redeem this code by {redemptionDeadline}.</p> : null}
+                    <p className="reward-warning">Project RESET does not email this code, so copy it or take a screenshot before leaving this page. After redemption, KINEMA sends a confirmation email with a way back to the film.</p>
                     <p className="reward-copy-status" aria-live="polite">{rewardCopyStatus}</p>
                     <a className="button button--coral reward-card__action" href={submissionResult.rewardAccess.filmUrl} target="_blank" rel="noreferrer">Open the private film page <span aria-hidden="true">→</span></a>
                     <button className="button button--secondary reward-card__action" type="button" onClick={() => void copyAccessDetails()}>Copy access details</button>

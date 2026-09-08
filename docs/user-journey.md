@@ -52,7 +52,7 @@ saved confirmation + gentle celebration
 
 If a commitment was entered, it is echoed from local form state on the success page. It is never placed in a public visualization or URL.
 
-Eligible event participants receive a manually entered KINEMA code and a direct link to the private film page. A private KINEMA page does not need to be listed in the public catalogue. Participants copy or screenshot the code, open the direct page, create or sign in to KINEMA, and enter the code at checkout for free access. They have 30 days to start and 48 hours to finish after starting. KINEMA controls DRM, caps, reports, fees and manual code shutdown.
+Eligible event participants receive a manually entered KINEMA code and a direct link to the private film page. A private KINEMA page does not need to be listed in the public catalogue. Participants copy or screenshot the code, open the direct page, create or sign in to KINEMA, and enter the code at checkout for free access. The success page states the route-specific redemption deadline. Project RESET does not email the code; after redemption, KINEMA sends a confirmation with a way back to the film. Participants then have 30 days to start and 48 hours to finish after starting. KINEMA controls DRM, caps, reports, fees and code shutdown.
 
 The share card is no longer part of this journey. Its concept route remains available for internal review only.
 

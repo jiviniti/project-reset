@@ -55,7 +55,7 @@ test("completes the preview check-in and reaches the persisted success state", a
     await route.fulfill({
       status: 201,
       contentType: "application/json",
-      body: JSON.stringify({ submissionId: crypto.randomUUID(), participationId: crypto.randomUUID(), rewardDeliveryId: crypto.randomUUID(), status: "completed", replayed: false, entryPathway: "event", rewardType: "film_access", eventWindowStatus: "active_event", accessEndsAt: null, rewardAccess: { provider: "kinema", filmUrl: "https://kinema.com/films/private-film", promoCode: "EVENT_CODE", accountRequired: true, startWithinDays: 30, finishWithinHours: 48 } }),
+      body: JSON.stringify({ submissionId: crypto.randomUUID(), participationId: crypto.randomUUID(), rewardDeliveryId: crypto.randomUUID(), status: "completed", replayed: false, entryPathway: "event", rewardType: "film_access", eventWindowStatus: "active_event", accessEndsAt: "2026-10-07T04:00:00.000Z", rewardAccess: { provider: "kinema", filmUrl: "https://kinema.com/films/private-film", promoCode: "EVENT_CODE", accountRequired: true, startWithinDays: 30, finishWithinHours: 48 } }),
     });
   });
 
@@ -101,7 +101,8 @@ test("completes the preview check-in and reaches the persisted success state", a
     "Sign in or create a KINEMA account, then enter the code at checkout to unlock free access",
   ]);
   await expect(page.getByText("The button below opens the film’s direct, private KINEMA page. The film does not need to appear in KINEMA’s public catalogue.", { exact: true })).toBeVisible();
-  await expect(page.getByText(/This code is not sent by email/)).toBeVisible();
+  await expect(page.getByText("Redeem this code by October 6, 2026 at 11:59 p.m. ET.", { exact: true })).toBeVisible();
+  await expect(page.getByText(/Project RESET does not email this code/)).toBeVisible();
   await expect(page.getByText("Call a friend after dinner")).toBeVisible();
   await expect(page.getByText("The burnout landscape", { exact: true })).toBeVisible();
   await expect(page.getByText("The community RESET map", { exact: true })).toBeVisible();
@@ -122,7 +123,7 @@ test("completes the preview check-in and reaches the persisted success state", a
   await page.getByRole("button", { name: "Copy code" }).click();
   await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).toBe("EVENT_CODE");
   await page.getByRole("button", { name: "Copy access details" }).click();
-  await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).toContain("Film link: https://kinema.com/films/private-film");
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).toContain("Redeem by: October 6, 2026 at 11:59 p.m. ET");
   await expect(page.getByRole("link", { name: /Open the private film page/ })).toHaveAttribute("href", "https://kinema.com/films/private-film");
   await expect(page.getByRole("link", { name: /Start a conversation/ })).toHaveAttribute("href", "/start-a-conversation");
   await expect(page.getByRole("link", { name: "Support the project" })).toHaveAttribute("href", "https://thirddegreeburnout.com/fueltheimpact");

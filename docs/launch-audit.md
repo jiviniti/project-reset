@@ -1,12 +1,12 @@
 # Project RESET launch audit
 
-Audit date: 7 September 2026
+Audit date: 8 September 2026
 
 Scope: participant check-in, questionnaire v3, KINEMA manual rewards, Continue the Conversation, security boundaries, build quality, responsive behavior, and visual alignment with the RESET brand system.
 
 ## Current assessment
 
-The implementation is suitable for final launch testing. Questionnaire v3 is active, the final participant copy is locked, the server-only KINEMA production settings are configured, and the two approved event windows are defined in a migration. A controlled redemption test and KINEMA activation coordination remain required before QR distribution.
+The implementation is suitable for final launch testing. Questionnaire v3 is active, the final participant copy is locked, the server-only KINEMA production settings are configured, and the two approved event windows are defined in a migration. The private KINEMA page and no-cost dummy redemption were verified on 8 September 2026. Final KINEMA scheduling and email-return-path checks remain required before QR distribution.
 
 ## Launch blockers
 
@@ -14,7 +14,7 @@ The implementation is suitable for final launch testing. Questionnaire v3 is act
 
 `202609050001_questionnaire_v3_commitment.sql` was applied to the target Supabase project on 5 September 2026. The deployed preview screening now reports questionnaire version 3 and includes the optional private commitment question.
 
-### 1. Live event records need approved windows
+### Completed: live event records and approved windows
 
 The Climate Week and Columbia screening records use the approved midnight New York boundaries. The implementation reserves these slugs:
 
@@ -30,7 +30,7 @@ The following Vercel production values were configured on 5 September 2026:
 - `KINEMA_CLIMATE_WEEK_NYC_2026_CODE`
 - `KINEMA_COLUMBIA_CLIMATE_SCHOOL_2026_CODE`
 
-The provider is enabled in Production, but no launch event route exists yet. After the approved windows are added, a controlled check-in must confirm that each route returns only its own code before either QR code is distributed.
+The provider is enabled in Production and both launch routes exist. A controlled check-in must still confirm that each route returns only its own code before either QR code is distributed.
 
 ### Completed: participant copy approval
 
@@ -44,7 +44,9 @@ The final acknowledgement is applied to `reset_data_use_v1_us` by `202609070001_
 
 - Confirm the Vercel `reset-submissions` firewall rule is configured and reconsider its threshold for many attendees sharing venue Wi-Fi.
 - Complete one controlled eligible check-in for each event and one premature or expired check-in.
-- Confirm the direct private KINEMA link opens the unlisted film page and that both codes work through manual checkout entry.
+- **Completed 8 September:** publish the KINEMA page privately, confirm the direct link opens it, and complete the no-cost dummy-code checkout with a participant test account. The free redemption appeared under Reports → Rentals.
+- Confirm KINEMA's post-redemption email provides a usable return path and that the redemption appears under Reports → Rentals.
+- Obtain written confirmation that KINEMA has scheduled the Climate Week shutdown for October 7 at 12:00 a.m. New York time and the Columbia shutdown for October 22 at 12:00 a.m.
 - Record who will monitor the KINEMA Reports page and who is authorized to email KINEMA to disable or raise a code cap.
 - Remember that KINEMA gives a redeemed rental 30 days to start and 48 hours to finish. Project RESET cannot revoke it earlier.
 - At the current caps, maximum platform delivery cost is $350 if all 350 redemptions are used.
@@ -108,15 +110,15 @@ The final acknowledgement is applied to `reset_data_use_v1_us` by `202609070001_
 
 - Reusable KINEMA codes can be copied before redemption. This is an accepted campaign risk; KINEMA account binding and DRM begin only after redemption.
 - Origin headers and rate limiting are defense in depth, not participant authentication. This is acceptable for a public check-in but should not be mistaken for identity verification.
-- Code shutdown and cap changes depend on KINEMA support rather than an application API.
+- Code shutdown and cap changes depend on KINEMA support rather than an application API. KINEMA has said separate scheduled shutdowns are available, but written scheduling confirmation is pending.
 
 ## Quality verification
 
 - TypeScript: passed
 - ESLint: passed
-- Unit and migration/security tests: 39 passed
+- Unit and migration/security tests: 44 passed
 - Production build: passed
-- Playwright journeys: 24 passed across mobile and desktop Chromium
+- Playwright journeys: 28 passed across mobile and desktop Chromium
 - Production dependency audit: zero known vulnerabilities
 - Visual QA: desktop and 390 px mobile layouts reviewed with no clipping or horizontal overflow
 
