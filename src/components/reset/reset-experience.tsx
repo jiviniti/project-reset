@@ -375,7 +375,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 {form.pathways.map((pathwayKey) => <fieldset className="practice-group" key={pathwayKey}><legend>{pathwayOptions.find((option) => option.key === pathwayKey)?.label}: what helps?</legend><div className="chips">{practicesByPathway[pathwayKey].map((option) => <Chip key={option.key} selected={form.practices.includes(option.key)} onClick={() => toggleList("practices", option.key)}>{option.label}</Chip>)}</div></fieldset>)}
                 <CustomTagField side="reset" input={resetTagInput} tags={form.resetCustomTags} onInput={setResetTagInput} onAdd={() => addCustomTag("reset")} onRemove={(tag) => removeCustomTag("reset", tag)} />
                 <label><span className="label-copy">Tell us about your <BrandedReset uppercase /> ritual (optional)</span><textarea rows={3} maxLength={1500} value={form.ritual} onChange={(event) => update("ritual", event.target.value)} /></label>
-                <button className="button button--primary" type="button" onClick={() => goToStep(3)}>Continue · {form.practices.length + form.resetCustomTags.length} selected</button>
+                <button className="button button--coral" type="button" onClick={() => goToStep(3)}>Continue · {form.practices.length + form.resetCustomTags.length} selected</button>
               </section>
             )}
 
@@ -402,7 +402,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 </div> : null}
                 <label className="check-row"><input required type="checkbox" checked={form.consent} onChange={(event) => update("consent", event.target.checked)} /><span><strong>(Required)</strong> {screening.policyText}</span></label>
                 <label className="check-row"><input type="checkbox" checked={form.futureCommunications} onChange={(event) => update("futureCommunications", event.target.checked)} /><span><strong>Optional:</strong> Keep me updated about Project <BrandedReset uppercase /> and future Virsa programs.</span></label>
-                <button className="button button--primary" type="submit" disabled={submissionStatus === "submitting"}>{submissionStatus === "submitting" ? <span>Saving your <BrandedReset uppercase className="branded-reset--single-color" />…</span> : "Finish"}</button>
+                <button className="button button--coral" type="submit" disabled={submissionStatus === "submitting"}>{submissionStatus === "submitting" ? <span>Saving your <BrandedReset uppercase className="branded-reset--single-color" />…</span> : "Finish"}</button>
                 <p className="error-message" role="alert">{errorMessage}</p>
                 <a className="donation-link" href={DONATION_URL} target="_blank" rel="noreferrer">Support the project</a>
               </form>
@@ -441,7 +441,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                     </div>
                     <p className="reward-warning">This code is not sent by email. Copy it or take a screenshot before leaving this page.</p>
                     <p className="reward-copy-status" aria-live="polite">{rewardCopyStatus}</p>
-                    <a className="button button--primary reward-card__action" href={submissionResult.rewardAccess.filmUrl} target="_blank" rel="noreferrer">Open the private film page <span aria-hidden="true">→</span></a>
+                    <a className="button button--coral reward-card__action" href={submissionResult.rewardAccess.filmUrl} target="_blank" rel="noreferrer">Open the private film page <span aria-hidden="true">→</span></a>
                     <button className="button button--secondary reward-card__action" type="button" onClick={() => void copyAccessDetails()}>Copy access details</button>
                     <p className="reward-terms">After signing into KINEMA, you have {submissionResult.rewardAccess.startWithinDays} days to begin watching and {submissionResult.rewardAccess.finishWithinHours} hours to finish once you start. The film access is tied to your KINEMA account.</p>
                   </div>
@@ -463,7 +463,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <p className="eyebrow">Project <BrandedReset uppercase /></p>
                 <h3 id="continue-conversation-heading">Continue the conversation.</h3>
                 <p>Browse reflective questions for a meal, walk, call, classroom, or gathering. Begin with whatever feels relevant today.</p>
-                <a className="button button--primary" href="/start-a-conversation">Start a conversation <span aria-hidden="true">→</span></a>
+                <a className="button button--coral" href="/start-a-conversation">Start a conversation <span aria-hidden="true">→</span></a>
                 <a className="success__support-link" href={DONATION_URL} target="_blank" rel="noreferrer">Support the project</a>
               </section>
               <ProjectResetFooter />
