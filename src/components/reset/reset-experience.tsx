@@ -263,7 +263,9 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
       "Project RESET film access",
       `Film link: ${access.filmUrl}`,
       `Promo code: ${access.promoCode}`,
-      "Sign in or create a KINEMA account, then enter the promo code manually at checkout for free film access.",
+      "Open the private film page and select the purple rental or WATCH button.",
+      "Sign in or create a KINEMA account. If KINEMA takes you elsewhere after sign-up, return to the private film link above.",
+      "At checkout, select Promo Code, enter the code, confirm the total is $0, and complete the rental for complimentary access.",
       ...(redemptionDeadline ? [`Redeem by: ${redemptionDeadline}`] : []),
       `You have ${access.startWithinDays} days to begin watching and ${access.finishWithinHours} hours to finish once you start.`,
       "After redemption, KINEMA sends a confirmation email with a way back to the film.",
@@ -457,11 +459,12 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 {submissionResult?.rewardAccess ? (
                   <div className="reward-card">
                     <h3 id="reset-access-heading">Ready to watch the film?</h3>
-                    <p>The button below opens the film’s direct, private KINEMA page. The film does not need to appear in KINEMA’s public catalogue.</p>
+                    <p>The button below opens the film’s direct, private KINEMA page. Your Project RESET code provides complimentary access.</p>
                     <ol className="reward-steps">
                       <li>Copy or screenshot your access code</li>
-                      <li>Select “Open the private film page” below</li>
-                      <li>Sign in or create a KINEMA account, then enter the code at checkout to unlock free access</li>
+                      <li>Open the private film page and select the purple rental or WATCH button</li>
+                      <li>Sign in or create a KINEMA account. If KINEMA takes you elsewhere after sign-up, return to the private film page</li>
+                      <li>At checkout, select Promo Code, enter your code, confirm the total is $0, and complete the rental</li>
                     </ol>
                     <div className="reward-code-row">
                       <code aria-label="KINEMA promo code">{submissionResult.rewardAccess.promoCode}</code>

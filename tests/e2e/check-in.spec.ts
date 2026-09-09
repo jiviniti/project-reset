@@ -97,10 +97,11 @@ test("completes the preview check-in and reaches the persisted success state", a
   await expect(page.getByRole("heading", { name: "Ready to watch the film?" })).toBeVisible();
   await expect(page.locator(".reward-steps li")).toHaveText([
     "Copy or screenshot your access code",
-    "Select “Open the private film page” below",
-    "Sign in or create a KINEMA account, then enter the code at checkout to unlock free access",
+    "Open the private film page and select the purple rental or WATCH button",
+    "Sign in or create a KINEMA account. If KINEMA takes you elsewhere after sign-up, return to the private film page",
+    "At checkout, select Promo Code, enter your code, confirm the total is $0, and complete the rental",
   ]);
-  await expect(page.getByText("The button below opens the film’s direct, private KINEMA page. The film does not need to appear in KINEMA’s public catalogue.", { exact: true })).toBeVisible();
+  await expect(page.getByText("The button below opens the film’s direct, private KINEMA page. Your Project RESET code provides complimentary access.", { exact: true })).toBeVisible();
   await expect(page.getByText("Team test only. Each completed checkout uses one limited test redemption.", { exact: true })).toBeVisible();
   await expect(page.getByText(/Redeem this code by/)).toHaveCount(0);
   await expect(page.getByText(/Project RESET does not email this code/)).toBeVisible();
@@ -124,6 +125,7 @@ test("completes the preview check-in and reaches the persisted success state", a
   await page.getByRole("button", { name: "Copy code" }).click();
   await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).toBe("EVENT_CODE");
   await page.getByRole("button", { name: "Copy access details" }).click();
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).toContain("confirm the total is $0");
   await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).not.toContain("Redeem by:");
   await expect(page.getByRole("link", { name: /Open the private film page/ })).toHaveAttribute("href", "https://kinema.com/films/private-film");
   await expect(page.getByRole("link", { name: /Start a conversation/ })).toHaveAttribute("href", "/start-a-conversation");
