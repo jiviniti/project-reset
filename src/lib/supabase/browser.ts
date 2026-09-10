@@ -1,6 +1,7 @@
 "use client";
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { parseSupabaseUrl } from "@/lib/config/trusted-urls";
 
 let browserClient: SupabaseClient | null | undefined;
 
@@ -15,7 +16,7 @@ export function createBrowserSupabaseClient(): SupabaseClient | null {
     return browserClient;
   }
 
-  browserClient = createClient(url, publishableKey, {
+  browserClient = createClient(parseSupabaseUrl(url), publishableKey, {
     auth: {
       persistSession: false,
       autoRefreshToken: false,

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 import { readFile } from "node:fs/promises";
 
 test.beforeEach(async ({ page }) => {
@@ -88,6 +88,21 @@ test("valid deep links add a question while invalid stored IDs are discarded", a
   await expect(page.getByRole("heading", { name: "Questions about Connection and isolation" })).toBeVisible();
   await expect(page.getByRole("button", { name: "2 questions saved" })).toBeVisible();
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem("project-reset:conversation-saved:v1") ?? "[]"))).toEqual(["food-first-meal", "connection-understood"]);
+});
+
+test("treats malicious query and local-storage values as inert data", async ({ page }) => {
+  await page.addInitScript(() => {
+    (window as typeof window & { __xss?: boolean }).__xss = false;
+    localStorage.setItem(
+      "project-reset:conversation-saved:v1",
+      JSON.stringify([`<img src=x onerror="window.__xss=true">`]),
+    );
+  });
+  await page.goto("/start-a-conversation?theme=%3Cimg%20src%3Dx%20onerror%3Dwindow.__xss%3Dtrue%3E&question=javascript%3Aalert(1)");
+  await expect(page.getByRole("heading", { name: "What feels worth exploring?" })).toBeVisible();
+  expect(await page.evaluate(() => (window as typeof window & { __xss?: boolean }).__xss)).toBe(false);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("project-reset:conversation-saved:v1") ?? "[]"))).toEqual([]);
+  await expect(page.locator("img[onerror]")).toHaveCount(0);
 });
 
 test("is noindex, uses legal safety copy and fits responsive viewports", async ({ page }) => {

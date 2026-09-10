@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { PROJECT_RESET_SIGNUP_URL } from "@/lib/campaign-links";
 import "./globals.css";
 
 const poppins = localFont({
@@ -29,7 +30,7 @@ const script = localFont({
   display: "swap",
 });
 
-const campaignUrl = process.env.NEXT_PUBLIC_PROJECT_RESET_SIGNUP_URL?.trim() || "https://projectreset.example/signup";
+const campaignUrl = PROJECT_RESET_SIGNUP_URL;
 const campaignOrigin = new URL(campaignUrl).origin;
 
 export const metadata: Metadata = {

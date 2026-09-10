@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { PROJECT_RESET_SIGNUP_URL } from "@/lib/campaign-links";
 
 const PATHWAY_COLORS: Record<string, string> = {
   nourish: "#458284",
@@ -53,7 +54,7 @@ function drawBrandLockup(context: CanvasRenderingContext2D, sans: string, script
 export function ShareCard({ firstName, pathways, practices }: ShareCardProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [status, setStatus] = useState("");
-  const signupUrl = process.env.NEXT_PUBLIC_PROJECT_RESET_SIGNUP_URL ?? "https://projectreset.example/signup";
+  const signupUrl = PROJECT_RESET_SIGNUP_URL;
   const accent = PATHWAY_COLORS[pathways[0]?.key] ?? "#de5240";
 
   useEffect(() => {

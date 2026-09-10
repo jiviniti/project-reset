@@ -25,6 +25,50 @@ describe("submission validation", () => {
     expect(() => submissionSchema.parse({ ...validPayload, participant: { firstName: "", email: "invalid" } })).toThrow();
   });
 
+  it("keeps SQL and XSS metacharacters as bounded text rather than identifiers", () => {
+    const hostileText = `<img src=x onerror="globalThis.__xss=true">'; drop table participants; --`;
+    const parsed = submissionSchema.parse({
+      ...validPayload,
+      participant: { firstName: hostileText, email: "security-test@example.org" },
+      demographics: { city: hostileText, occupation: hostileText },
+      answers: [
+        { questionKey: "burnout_custom_tags", text: hostileText },
+        { questionKey: "reset_custom_tags", text: hostileText },
+        { questionKey: "today_commitment", text: hostileText },
+      ],
+    });
+    expect(parsed.participant.firstName).toBe(hostileText);
+    expect(parsed.demographics.city).toBe(hostileText);
+    expect(parsed.answers.every((answer) => answer.text === hostileText)).toBe(true);
+    expect(() => submissionSchema.parse({
+      ...validPayload,
+      answers: [{ questionKey: "burnout_signs; drop_table", optionKeys: ["exhausted"] }],
+    })).toThrow();
+  });
+
+  it("rejects unsafe KINEMA URL schemes and lookalike hosts in API results", () => {
+    const result = {
+      submissionId: crypto.randomUUID(),
+      participationId: crypto.randomUUID(),
+      rewardDeliveryId: crypto.randomUUID(),
+      status: "completed",
+      replayed: false,
+      rewardAccess: {
+        provider: "kinema",
+        filmUrl: "javascript:alert(1)",
+        promoCode: "TEST",
+        accountRequired: true,
+        startWithinDays: 30,
+        finishWithinHours: 48,
+      },
+    };
+    expect(submissionResultSchema.safeParse(result).success).toBe(false);
+    expect(submissionResultSchema.safeParse({
+      ...result,
+      rewardAccess: { ...result.rewardAccess, filmUrl: "https://kinema.com.attacker.example/films/test" },
+    }).success).toBe(false);
+  });
+
   it("permits exactly one answer representation", () => {
     expect(() => submissionSchema.parse({ ...validPayload, answers: [{ questionKey: "burnout_signs", optionKeys: [], text: "both" }] })).toThrow();
   });

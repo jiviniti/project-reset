@@ -1,4 +1,6 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
+
+const HOSTILE_COMMITMENT = `Call a friend <img src=x onerror="window.__xss=true">'; drop table participants; --`;
 
 const aggregateSnapshot = {
   apiVersion: "1",
@@ -26,9 +28,12 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("opens the general check-in directly from the site root", async ({ page }) => {
-  await page.goto("/");
+  const response = await page.goto("/");
 
   await expect(page).toHaveURL(/\/$/);
+  expect(response?.headers()["content-security-policy"]).toContain("'strict-dynamic'");
+  expect(response?.headers()["x-frame-options"]).toBe("DENY");
+  expect(response?.headers()["x-content-type-options"]).toBe("nosniff");
   await expect(page.getByRole("heading", { name: "How do you reset?" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Start your RESET" })).toBeVisible();
   await expect(page.getByText("Every screening has its own RESET link.")).toHaveCount(0);
@@ -36,6 +41,7 @@ test("opens the general check-in directly from the site root", async ({ page }) 
 
 test("completes the preview check-in and reaches the persisted success state", async ({ page }) => {
   await page.addInitScript(() => {
+    (window as typeof window & { __xss?: boolean }).__xss = false;
     Object.defineProperty(navigator, "clipboard", {
       configurable: true,
       value: { writeText: async (value: string) => { (window as typeof window & { __copied?: string }).__copied = value; } },
@@ -50,7 +56,7 @@ test("completes the preview check-in and reaches the persisted success state", a
     expect(payload.answers.find((answer: { questionKey: string }) => answer.questionKey === "burnout_custom_tags")?.text).toBe("Doomscrolling   at 2 a.m.");
     expect(payload.answers.find((answer: { questionKey: string }) => answer.questionKey === "burnout_note")).toBeUndefined();
     expect(payload.answers.find((answer: { questionKey: string }) => answer.questionKey === "reset_custom_tags")?.text).toBe("Making ceramics");
-    expect(payload.answers.find((answer: { questionKey: string }) => answer.questionKey === "today_commitment")?.text).toBe("Call a friend after dinner");
+    expect(payload.answers.find((answer: { questionKey: string }) => answer.questionKey === "today_commitment")?.text).toBe(HOSTILE_COMMITMENT);
     await new Promise((resolve) => setTimeout(resolve, 250));
     await route.fulfill({
       status: 201,
@@ -83,7 +89,7 @@ test("completes the preview check-in and reaches the persisted success state", a
   await page.getByRole("button", { name: /Continue · 2 selected/ }).click();
   await page.getByLabel("Name or initials").fill("María-José-Alexandria");
   await page.getByLabel("Email (required)").fill("nivi@example.org");
-  await page.getByLabel(/What is one thing you will do today/).fill("Call a friend after dinner");
+  await page.getByLabel(/What is one thing you will do today/).fill(HOSTILE_COMMITMENT);
   await expect(page.getByText("(Required)", { exact: true })).toBeVisible();
   await expect(page.getByRole("checkbox", { name: "(Required) I understand that my responses will be securely stored and may be used for Project RESET research. Anything shared publicly will be de-identified or combined with other responses.", exact: true })).toBeVisible();
   await expect(page.getByText("Optional:", { exact: true })).toBeVisible();
@@ -105,7 +111,9 @@ test("completes the preview check-in and reaches the persisted success state", a
   await expect(page.getByText("Team test only. Each completed checkout uses one limited test redemption.", { exact: true })).toBeVisible();
   await expect(page.getByText(/Redeem this code by/)).toHaveCount(0);
   await expect(page.getByText(/Project RESET does not email this code/)).toBeVisible();
-  await expect(page.getByText("Call a friend after dinner")).toBeVisible();
+  await expect(page.getByText(HOSTILE_COMMITMENT)).toBeVisible();
+  expect(await page.evaluate(() => (window as typeof window & { __xss?: boolean }).__xss)).toBe(false);
+  await expect(page.locator("img[onerror]")).toHaveCount(0);
   await expect(page.getByText("The burnout landscape", { exact: true })).toBeVisible();
   await expect(page.getByText("The community RESET map", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Continue the conversation.", exact: true })).toBeVisible();

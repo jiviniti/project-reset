@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 test("renders every share-card direction at production dimensions", async ({ page }) => {
   await page.goto("/share-card-concepts");

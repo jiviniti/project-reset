@@ -37,4 +37,12 @@ describe("request guards", () => {
     const request = new Request("https://reset.example/api/v1/submissions", { method: "POST", body: JSON.stringify({ ok: true }) });
     await expect(readCappedJson(request)).resolves.toEqual({ ok: true });
   });
+
+  it("rejects malformed JSON", async () => {
+    const request = new Request("https://reset.example/api/v1/submissions", {
+      method: "POST",
+      body: '{"unfinished":',
+    });
+    await expect(readCappedJson(request)).rejects.toMatchObject({ code: "invalid_json", status: 400 });
+  });
 });

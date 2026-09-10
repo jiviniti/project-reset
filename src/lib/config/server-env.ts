@@ -1,13 +1,14 @@
 import "server-only";
 import { z } from "zod";
+import { kinemaFilmUrlSchema, supabaseUrlSchema } from "@/lib/config/trusted-urls";
 
 const serverEnvSchema = z.object({
-  SUPABASE_URL: z.string().url(),
+  SUPABASE_URL: supabaseUrlSchema,
   SUPABASE_SECRET_KEY: z.string().startsWith("sb_secret_"),
   ALLOWED_APP_ORIGINS: z.string().default(""),
   SUBMISSIONS_ENABLED: z.enum(["true", "false"]).default("false"),
   REWARD_PROVIDER: z.enum(["disabled", "kinema_manual"]).default("disabled"),
-  KINEMA_FILM_URL: z.string().url().optional(),
+  KINEMA_FILM_URL: kinemaFilmUrlSchema.optional(),
   KINEMA_TEST_CODE: z.string().trim().min(1).optional(),
   KINEMA_CLIMATE_WEEK_NYC_2026_CODE: z.string().trim().min(1).optional(),
   KINEMA_COLUMBIA_CLIMATE_SCHOOL_2026_CODE: z.string().trim().min(1).optional(),

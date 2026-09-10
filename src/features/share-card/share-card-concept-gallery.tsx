@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { PROJECT_RESET_SIGNUP_URL } from "@/lib/campaign-links";
 import {
   CARD_HEIGHT,
   CARD_WIDTH,
@@ -26,7 +27,7 @@ const DEFAULT_DATA: ConceptCardData = {
     { key: "rebalance", label: "Rebalance" },
   ],
   practices: ["More plant protein", "Home cooking", "Creative work"],
-  signupUrl: process.env.NEXT_PUBLIC_PROJECT_RESET_SIGNUP_URL ?? "https://projectreset.example/signup",
+  signupUrl: PROJECT_RESET_SIGNUP_URL,
 };
 
 const PRESETS: Array<{ label: string; data: Omit<ConceptCardData, "signupUrl"> }> = [

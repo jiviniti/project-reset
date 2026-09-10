@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { kinemaFilmUrlSchema } from "@/lib/config/trusted-urls";
 
 const stableKey = z.string().regex(/^[a-z0-9_]+$/).max(80);
 
@@ -67,7 +68,7 @@ export const submissionResultSchema = z.object({
   accessEndsAt: z.string().datetime({ offset: true }).nullable().optional().default(null),
   rewardAccess: z.object({
     provider: z.literal("kinema"),
-    filmUrl: z.string().url(),
+    filmUrl: kinemaFilmUrlSchema,
     promoCode: z.string().min(1),
     accountRequired: z.literal(true),
     startWithinDays: z.literal(30),

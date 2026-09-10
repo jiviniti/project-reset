@@ -5,7 +5,7 @@ import { FormEvent, useState } from "react";
 import { BrandedReset, PathwayStrip, ProjectResetFooter, ResetBrand } from "@/components/brand/reset-brand";
 import { Chip } from "@/components/ui/chip";
 import { IllustrativeDashboard } from "@/features/learning-lab/illustrative-dashboard";
-import { DONATION_URL } from "@/lib/campaign-links";
+import { DONATION_URL, TRAILER_URL } from "@/lib/campaign-links";
 import { submissionResultSchema } from "@/lib/validation/submission";
 import type { SubmissionResult } from "@/types/pathway";
 import type { ScreeningConfig } from "@/types/screening";
@@ -46,7 +46,6 @@ const initialForm: FormState = {
   commitment: "",
 };
 
-const TRAILER_URL = process.env.NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL?.trim() || "https://www.thirddegreeburnout.com/";
 const PREVIEW_EVENT_SLUG = "preview-event";
 
 function formatRedemptionDeadline(value: string | null | undefined) {
