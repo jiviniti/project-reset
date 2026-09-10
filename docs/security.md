@@ -1,6 +1,14 @@
 # Security
 
-Last verified: 5 September 2026
+Last verified: 10 September 2026
+
+## Browser response boundary
+
+- HTML responses receive a unique nonce and an enforced Content Security Policy. Scripts require that nonce; production never permits `unsafe-eval`.
+- The policy denies framing and plugins, restricts forms and base URLs to this application, and allowlists only the Project RESET Supabase HTTPS/WSS origin plus required image sources.
+- Global responses send `nosniff`, `DENY` framing, a strict-origin referrer policy, and disabled camera, microphone, and geolocation permissions.
+- KINEMA, campaign, trailer, donation, and Supabase environment URLs are validated as HTTPS with exact approved host rules. Credentials, unsafe schemes, malformed URLs, and lookalike hosts fail validation.
+- React text rendering remains the primary XSS defence. Participant text is never inserted with raw-HTML DOM APIs; CSP is defence in depth.
 
 ## Database boundary
 
@@ -67,6 +75,15 @@ Origin and `Sec-Fetch-Site` checks remain defence-in-depth rather than authentic
 - Preview WAF: 1,000 submission requests per IP per 60 seconds.
 
 The WAF threshold must be reviewed against venue networking, expected screening size and concentrated submission bursts before production.
+
+Repeated check-ins remain intentional. The launch does not enforce one response per normalized email and screening. Firewall monitoring, aggregate review, and KINEMA redemption caps are the approved abuse controls for this release.
+
+## Dependency and release assurance
+
+- Runtime and development dependencies are exact-version pinned; `package-lock.json` is authoritative.
+- CI runs clean installation, production dependency audit, lint, typecheck, unit/integration tests, build, and mobile/desktop Playwright checks.
+- Dependabot opens reviewed weekly update pull requests. Dependency changes never deploy automatically without the repository checks.
+- The incident and access-review procedure is maintained in `docs/security-operations.md`.
 
 ## Compliance statement
 

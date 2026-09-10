@@ -7,14 +7,14 @@ Milestone 1 was verified on 24 August 2026, Milestone 2 and the pre-Milestone-3 
 1. Apply the committed files in `supabase/migrations/` in filename order, including `202609050001_questionnaire_v3_commitment.sql`, `202609060001_launch_event_windows.sql`, and `202609070001_final_consent_policy.sql`, then apply preview seeds only when preparing a fresh preview project. `supabase/seed.sql` is a psql entry point and its `\ir` command is not accepted by the Dashboard SQL Editor.
 2. In Supabase **Data API → Settings**, add `api` to the exposed schemas and leave `private` and `aggregate` excluded. Do not use dashboard exposure toggles for server-only functions. The migration explicitly grants execution to `service_role`.
 3. Set the Vercel variables listed in `.env.example`. Only the Supabase URL, current publishable key and browser-visible campaign URLs may use `NEXT_PUBLIC_`; the secret key must remain server-only. `NEXT_PUBLIC_DONATE_URL` defaults to the approved Fuel the Impact page at `https://thirddegreeburnout.com/fueltheimpact`. `NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL` defaults to the approved film homepage `https://www.thirddegreeburnout.com/`.
-4. Deploy from the private GitHub repository.
+4. Deploy from the GitHub repository only after Security CI passes. Dependencies are exact-version pinned; do not replace them with `latest` ranges.
 5. Configure the `reset-submissions` Vercel WAF instrument for 1,000 requests/IP/60 seconds and 429 action.
 6. Complete `/s/preview-screening`, verify the record graph and cumulative snapshot, and run the two-window realtime check in `docs/handover.md`.
 
 ### Participant-path preview routes
 
 - `/` opens the ordinary non-event Learning Lab check-in directly. The former screening-selection interstitial has been removed.
-- `/s/preview-event` simulates an active event and returns `DEMO_CODE_NOT_VALID` with a generic KINEMA link. It never exposes a real promo code or the private film URL.
+- `/s/preview-event` normally returns `DEMO_CODE_NOT_VALID` with a generic KINEMA link. During the approved team test only, `KINEMA_TEST_CODE` and `KINEMA_FILM_URL` may provide the limited dummy redemption and private page while `DATASET_ENV=preview`. Remove the test code from every Vercel environment immediately after Nivi and Brian finish testing.
 - `/s/preview-expired-event` simulates an event whose access window has ended and shows the trailer pathway.
 - `/s/preview-screening` remains a compatibility and testing URL for the same ordinary non-event pathway and shows trailer access after check-in.
 
@@ -43,6 +43,15 @@ Closing timestamps are exclusive. The participant-facing deadline is therefore 1
 The production codes are already active. KINEMA advised leaving them active rather than issuing replacement codes. They remain server-only and are not returned by Project RESET before the relevant event window. After redemption, KINEMA sends its standard confirmation email with a way back to the film; Project RESET itself does not email the promo code.
 
 The preview WAF threshold is intentionally provisional and must be reviewed against expected audience size, venue networking and submission bursts before production.
+
+## Security release gate
+
+1. `npm audit --omit=dev` must report no high or critical production findings.
+2. Run lint, typecheck, all unit/integration tests, the production build, and Playwright before promotion.
+3. Deploy dependency patches separately from CSP or application-policy changes so either release can be diagnosed independently.
+4. Verify the production CSP, clickjacking, MIME, referrer and permissions headers after deployment.
+5. Test the Learning Lab, check-in submission, aggregate realtime refresh, KINEMA handoff, conversation tool, and PNG-card download with browser developer tools open. Treat CSP violations as a failed release gate.
+6. Follow `docs/security-operations.md` for monitoring, containment, credential rotation, access review, and recovery.
 
 ## Consent cutover
 

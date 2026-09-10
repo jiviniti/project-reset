@@ -1,0 +1,24 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Kolkata
+    open-pull-requests-limit: 5
+    groups:
+      next-runtime:
+        patterns:
+          - next
+          - eslint-config-next
+          - react
+          - react-dom
+      application-dependencies:
+        patterns:
+          - "@supabase/*"
+          - "@vercel/*"
+          - zod
+      development-tooling:
+        dependency-type: development
