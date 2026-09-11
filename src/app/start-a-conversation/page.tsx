@@ -4,7 +4,6 @@ import { ConversationStarter } from "@/features/conversation-starter/conversatio
 export const metadata: Metadata = {
   title: "Continue the Conversation · Project RESET",
   description: "Reflective questions inspired by Third Degree Burnout.",
-  robots: { index: false, follow: false },
 };
 
 export const dynamic = "force-dynamic";

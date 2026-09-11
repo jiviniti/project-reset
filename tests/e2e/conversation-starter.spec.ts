@@ -105,8 +105,9 @@ test("treats malicious query and local-storage values as inert data", async ({ p
   await expect(page.locator("img[onerror]")).toHaveCount(0);
 });
 
-test("is noindex, uses legal safety copy and fits responsive viewports", async ({ page }) => {
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+test("is indexable, uses legal safety copy and fits responsive viewports", async ({ page }) => {
+  await page.goto("/start-a-conversation");
+  await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
   await expect(page.getByText(/For educational purposes only; not therapy/)).toBeVisible();
   for (const width of [390, 430, 768, 1440]) {
     await page.setViewportSize({ width, height: 844 });

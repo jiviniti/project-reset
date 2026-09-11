@@ -11,7 +11,6 @@ vi.mock("@/lib/config/server-env", () => ({
     ALLOWED_APP_ORIGINS: "",
     SUBMISSIONS_ENABLED: "true",
     REWARD_PROVIDER: "disabled",
-    DATASET_ENV: "preview",
   }),
 }));
 

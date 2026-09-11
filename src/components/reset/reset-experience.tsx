@@ -46,8 +46,6 @@ const initialForm: FormState = {
   commitment: "",
 };
 
-const PREVIEW_EVENT_SLUG = "preview-event";
-
 function formatRedemptionDeadline(value: string | null | undefined) {
   if (!value) return null;
   const deadline = new Date(value);
@@ -171,8 +169,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
   const practiceOptions = question("reset_practices").options;
   const hasCommitmentQuestion = screening.questions.some((item) => item.key === "today_commitment");
   const visibleEmotions = showMoreEmotions ? emotionOptions : emotionOptions.slice(0, 10);
-  const isPreviewEvent = screening.slug === PREVIEW_EVENT_SLUG;
-  const redemptionDeadline = isPreviewEvent ? null : formatRedemptionDeadline(submissionResult?.accessEndsAt ?? screening.checkInClosesAt);
+  const redemptionDeadline = formatRedemptionDeadline(submissionResult?.accessEndsAt ?? screening.checkInClosesAt);
 
   const practicesByPathway = Object.fromEntries(
     pathwayOptions.map((pathway) => [
@@ -262,12 +259,11 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
       "Project RESET film access",
       `Film link: ${access.filmUrl}`,
       `Promo code: ${access.promoCode}`,
-      "Open the private film page and select the purple rental or WATCH button.",
+      "Open the private film page and select the purple rental button.",
       "Sign in or create a KINEMA account. If KINEMA takes you elsewhere after sign-up, return to the private film link above.",
       "At checkout, select Promo Code, enter the code, confirm the total is $0, and complete the rental for complimentary access.",
       ...(redemptionDeadline ? [`Redeem by: ${redemptionDeadline}`] : []),
       `You have ${access.startWithinDays} days to begin watching and ${access.finishWithinHours} hours to finish once you start.`,
-      "After redemption, KINEMA sends a confirmation email with a way back to the film.",
     ].join("\n");
     try {
       await navigator.clipboard.writeText(details);
@@ -447,34 +443,35 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <div className="success-burst" aria-hidden="true"><span /><span /><span /><span /><span /></div>
                 <p className="eyebrow">Your check-in is complete</p>
                 <h2>Thank you. Your <BrandedReset uppercase /> has been added to the picture.</h2>
+                {submissionResult?.rewardAccess ? <p className="success__access-guidance">Your film access is ready below. Keep your code and private film link close.</p> : null}
                 {form.commitment.trim() ? (
                   <blockquote className="commitment-echo"><span>You chose to carry forward</span>{form.commitment.trim()}</blockquote>
                 ) : null}
               </header>
 
-              <IllustrativeDashboard mode="post_submission" />
-
               <section className="success__reward" aria-labelledby="reset-access-heading">
                 {submissionResult?.rewardAccess ? (
                   <div className="reward-card">
-                    <h3 id="reset-access-heading">Ready to watch the film?</h3>
-                    <p>The button below opens the film’s direct, private KINEMA page. Your Project RESET code provides complimentary access.</p>
+                    <p className="eyebrow">Keep your access close</p>
+                    <h3 id="reset-access-heading">Your film access</h3>
+                    <p>Your code and private film link belong together. Copy the details or take a screenshot before opening KINEMA.</p>
                     <ol className="reward-steps">
-                      <li>Copy or screenshot your access code</li>
-                      <li>Open the private film page and select the purple rental or WATCH button</li>
+                      <li>Copy or screenshot your code and private film link</li>
+                      <li>Open the private film page and select the purple rental button</li>
                       <li>Sign in or create a KINEMA account. If KINEMA takes you elsewhere after sign-up, return to the private film page</li>
                       <li>At checkout, select Promo Code, enter your code, confirm the total is $0, and complete the rental</li>
                     </ol>
+                    <a className="reward-film-link" href={submissionResult.rewardAccess.filmUrl} target="_blank" rel="noopener noreferrer">{submissionResult.rewardAccess.filmUrl}</a>
                     <div className="reward-code-row">
                       <code aria-label="KINEMA promo code">{submissionResult.rewardAccess.promoCode}</code>
                       <button type="button" onClick={() => void copyPromoCode()}>Copy code</button>
                     </div>
-                    {isPreviewEvent ? <p className="reward-warning">Team test only. Each completed checkout uses one limited test redemption.</p> : null}
                     {redemptionDeadline ? <p className="reward-warning">Redeem this code by {redemptionDeadline}.</p> : null}
-                    <p className="reward-warning">Project RESET does not email this code, so copy it or take a screenshot before leaving this page. After redemption, KINEMA sends a confirmation email with a way back to the film.</p>
+                    <p className="reward-warning">Project RESET does not email this code. Copy the complete access details or take a screenshot before leaving this page.</p>
                     <p className="reward-copy-status" aria-live="polite">{rewardCopyStatus}</p>
-                    <a className="button button--coral reward-card__action" href={submissionResult.rewardAccess.filmUrl} target="_blank" rel="noreferrer">Open the private film page <span aria-hidden="true">→</span></a>
-                    <button className="button button--secondary reward-card__action" type="button" onClick={() => void copyAccessDetails()}>Copy access details</button>
+                    <button className="button button--secondary reward-card__action" type="button" onClick={() => void copyAccessDetails()}>Copy my access details</button>
+                    <p className="reward-new-tab-note">KINEMA opens in a new tab. Keep this RESET page open so you can return and continue the conversation.</p>
+                    <a className="button button--coral reward-card__action" href={submissionResult.rewardAccess.filmUrl} target="_blank" rel="noopener noreferrer">Open the private film page <span aria-hidden="true">→</span></a>
                     <p className="reward-terms">After signing into KINEMA, you have {submissionResult.rewardAccess.startWithinDays} days to begin watching and {submissionResult.rewardAccess.finishWithinHours} hours to finish once you start. The film access is tied to your KINEMA account.</p>
                   </div>
                 ) : (submissionResult?.rewardType ?? screening.rewardType) === "film_access" ? (
@@ -486,7 +483,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                   <div className="reward-card">
                     <h3 id="reset-access-heading">Watch the trailer.</h3>
                     <p>{(submissionResult?.eventWindowStatus ?? screening.eventWindowStatus) === "event_expired" ? "This event’s film-access window has ended, but you can still watch the trailer. " : ""}Visit the film’s website to continue.</p>
-                    <a className="button button--coral reward-card__action" href={TRAILER_URL} target="_blank" rel="noreferrer">Watch the Trailer <span aria-hidden="true">→</span></a>
+                    <a className="button button--coral reward-card__action" href={TRAILER_URL} target="_blank" rel="noopener noreferrer">Watch the Trailer <span aria-hidden="true">→</span></a>
                   </div>
                 )}
               </section>
@@ -498,6 +495,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <a className="button button--coral" href="/start-a-conversation">Start a conversation <span aria-hidden="true">→</span></a>
                 <a className="success__support-link" href={DONATION_URL} target="_blank" rel="noreferrer">Support the project</a>
               </section>
+              <IllustrativeDashboard mode="post_submission" />
               <ProjectResetFooter />
             </div>
           </section>

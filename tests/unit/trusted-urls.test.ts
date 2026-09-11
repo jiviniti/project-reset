@@ -15,6 +15,8 @@ const unsafeUrls = [
 
 describe("trusted URL policy", () => {
   it("accepts only approved HTTPS campaign hosts", () => {
+    expect(campaignUrlSchema.parse("https://reset.thirddegreeburnout.com/"))
+      .toBe("https://reset.thirddegreeburnout.com/");
     expect(campaignUrlSchema.parse("https://reset.thirddegreeburnout.com/start-a-conversation"))
       .toBe("https://reset.thirddegreeburnout.com/start-a-conversation");
     expect(campaignUrlSchema.parse("https://thirddegreeburnout.com/fueltheimpact"))
@@ -25,7 +27,8 @@ describe("trusted URL policy", () => {
   });
 
   it("accepts only KINEMA film pages", () => {
-    expect(kinemaFilmUrlSchema.safeParse("https://kinema.com/films/third-degree-burnout").success).toBe(true);
+    expect(kinemaFilmUrlSchema.parse("https://kinema.com/films/third-degree-burnout-a-survivors-guide-1mdwu9"))
+      .toBe("https://kinema.com/films/third-degree-burnout-a-survivors-guide-1mdwu9");
     for (const value of [
       ...unsafeUrls,
       "https://kinema.com/",

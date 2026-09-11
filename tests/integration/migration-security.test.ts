@@ -35,6 +35,14 @@ const finalConsentPolicyMigration = readFileSync(
   resolve("supabase/migrations/202609070001_final_consent_policy.sql"),
   "utf8",
 ).toLowerCase();
+const productionCutoverMigration = readFileSync(
+  resolve("supabase/migrations/202609110001_production_cutover.sql"),
+  "utf8",
+).toLowerCase();
+const productionResetScript = readFileSync(
+  resolve("supabase/scripts/reset_production_data.sql"),
+  "utf8",
+).toLowerCase();
 
 describe("database security migration", () => {
   it("uses only invoker functions", () => {
@@ -139,6 +147,24 @@ describe("database security migration", () => {
     expect(finalConsentPolicyMigration).toContain("securely stored");
     expect(finalConsentPolicyMigration).toContain("de-identified or combined with other responses");
     expect(finalConsentPolicyMigration).not.toContain("insert into private.policy_versions");
+  });
+
+  it("promotes the canonical production pathway and closes public preview records", () => {
+    expect(productionCutoverMigration).toContain("'project-reset'");
+    expect(productionCutoverMigration).toContain("'project reset learning lab'");
+    expect(productionCutoverMigration).toContain("version = 3");
+    expect(productionCutoverMigration).toContain("'non_event'");
+    expect(productionCutoverMigration).toContain("status = 'closed'");
+    expect(productionCutoverMigration).toContain("'preview-screening', 'preview-event', 'preview-expired-event'");
+  });
+
+  it("keeps the empty-production reset destructive, guarded, and verification-driven", () => {
+    expect(productionResetScript).toContain("app.confirm_production_reset");
+    expect(productionResetScript).toContain("truncate table private.participants cascade");
+    expect(productionResetScript).toContain("scope_type = 'seeded_baseline'");
+    expect(productionResetScript).toContain("aggregate.rebuild_observed_v1()");
+    expect(productionResetScript).toContain("production reset verification failed");
+    expect(productionResetScript).toContain("slug = 'project-reset'");
   });
 
   it("derives cumulative observed values from screening scopes and seeded values from one baseline", () => {
