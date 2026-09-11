@@ -39,6 +39,10 @@ const productionCutoverMigration = readFileSync(
   resolve("supabase/migrations/202609110001_production_cutover.sql"),
   "utf8",
 ).toLowerCase();
+const teamRehearsalMigration = readFileSync(
+  resolve("supabase/migrations/202609110002_restore_team_rehearsal.sql"),
+  "utf8",
+).toLowerCase();
 const productionResetScript = readFileSync(
   resolve("supabase/scripts/reset_production_data.sql"),
   "utf8",
@@ -156,6 +160,14 @@ describe("database security migration", () => {
     expect(productionCutoverMigration).toContain("'non_event'");
     expect(productionCutoverMigration).toContain("status = 'closed'");
     expect(productionCutoverMigration).toContain("'preview-screening', 'preview-event', 'preview-expired-event'");
+  });
+
+  it("restores only the time-bounded team rehearsal screening", () => {
+    expect(teamRehearsalMigration).toContain("'preview-event'");
+    expect(teamRehearsalMigration).toContain("version = 3");
+    expect(teamRehearsalMigration).toContain("'2026-09-22 04:00:00+00'");
+    expect(teamRehearsalMigration).toContain("'preview-screening', 'preview-expired-event'");
+    expect(teamRehearsalMigration).not.toContain("kinema_test_code");
   });
 
   it("keeps the empty-production reset destructive, guarded, and verification-driven", () => {

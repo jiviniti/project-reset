@@ -6,9 +6,14 @@ import type { ScreeningConfig } from "@/types/screening";
 
 const RETIRED_PREVIEW_SLUGS = new Set([
   "preview-screening",
-  "preview-event",
   "preview-expired-event",
 ]);
+const TEAM_REHEARSAL_SLUG = "preview-event";
+export const TEAM_REHEARSAL_CLOSES_AT = Date.parse("2026-09-22T04:00:00.000Z");
+
+export function isTeamRehearsalAvailable(now = Date.now()): boolean {
+  return Boolean(process.env.KINEMA_TEST_CODE?.trim()) && now < TEAM_REHEARSAL_CLOSES_AT;
+}
 
 function normalizeScreeningConfig(data: ScreeningConfig): ScreeningConfig {
   return {
@@ -24,6 +29,7 @@ function normalizeScreeningConfig(data: ScreeningConfig): ScreeningConfig {
 
 export async function getScreeningConfig(slug: string): Promise<ScreeningConfig | null> {
   if (RETIRED_PREVIEW_SLUGS.has(slug)) return null;
+  if (slug === TEAM_REHEARSAL_SLUG && !isTeamRehearsalAvailable()) return null;
 
   if (process.env.E2E_USE_TEST_FIXTURE === "true") {
     return automatedTestScreenings[slug] ?? null;

@@ -10,7 +10,7 @@ Last updated: 11 September 2026
 4. Apply `supabase/migrations/202609110001_production_cutover.sql`.
 5. If deletion was approved, run `supabase/scripts/reset_production_data.sql` exactly as documented in that file and inspect its verification result before committing the SQL session.
 6. Deploy the application through the protected `main` branch. Configure only the real production URLs and server-only event codes; do not configure `E2E_USE_TEST_FIXTURE`.
-7. Verify `/`, both event paths, `/start-a-conversation`, and `GET /api/v1/aggregates`. Verify all three former `preview-*` paths and `/share-card-concepts` return 404.
+7. Verify `/`, both event paths, `/start-a-conversation`, and `GET /api/v1/aggregates`. While `KINEMA_TEST_CODE` is configured, verify `/s/preview-event` uses the production journey; the other former preview paths and `/share-card-concepts` must return 404.
 8. Re-enable submissions only after the empty or genuine-response state is correct. Let the team add genuine pre-launch responses, then verify the observed totals again.
 9. Record KINEMA-controlled code shutdowns, legal/privacy content, and on-screen delivery approval as external launch dependencies if still pending.
 
@@ -39,7 +39,9 @@ where screening.slug in (
 order by screening.slug;
 ```
 
-Expected: the three production rows use questionnaire v3; `project-reset` is active and non-event; the two approved event rows are active and event-based; all former preview rows are closed.
+Expected: the three production rows and `preview-event` use questionnaire v3; `project-reset` is active and non-event; the two approved event rows are active and event-based. The temporary `preview-event` row is active only through `2026-09-22 04:00:00Z`; the other former preview rows remain closed.
+
+The controlled rehearsal route is unindexed and fails closed when `KINEMA_TEST_CODE` is absent. Removing that Vercel variable and closing the `preview-event` screening retires it immediately. Team members should submit genuine responses because rehearsal submissions use the normal production aggregate path.
 
 Observed-only public-picture check:
 
