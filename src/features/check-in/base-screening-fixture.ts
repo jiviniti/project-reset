@@ -1,12 +1,8 @@
 import type { ScreeningConfig } from "@/types/screening";
 
-export const PREVIEW_SCREENING_SLUG = "preview-screening";
-export const PREVIEW_EVENT_SCREENING_SLUG = "preview-event";
-export const PREVIEW_EXPIRED_EVENT_SCREENING_SLUG = "preview-expired-event";
-
-export const previewScreeningConfig: ScreeningConfig = {
-  slug: PREVIEW_SCREENING_SLUG,
-  name: "Project RESET Preview Screening",
+export const baseAutomatedTestScreeningConfig: ScreeningConfig = {
+  slug: "project-reset",
+  name: "Project RESET Learning Lab",
   institution: "The Virsa Foundation",
   eventDate: null,
   questionnaireKey: "reset-v1",
@@ -157,25 +153,4 @@ export const previewScreeningConfig: ScreeningConfig = {
       options: [],
     },
   ],
-};
-
-export const previewEventScreeningConfig: ScreeningConfig = {
-  ...previewScreeningConfig,
-  slug: PREVIEW_EVENT_SCREENING_SLUG,
-  name: "Project RESET Preview Event",
-  entryPathway: "event",
-  rewardType: "film_access",
-  eventWindowStatus: "active_event",
-  checkInOpensAt: "2026-08-01T00:00:00.000Z",
-  checkInClosesAt: "2026-09-30T23:59:59.000Z",
-  accessEndsAt: "2026-10-07T23:59:59.000Z",
-};
-
-export const previewExpiredEventScreeningConfig: ScreeningConfig = {
-  ...previewScreeningConfig,
-  slug: PREVIEW_EXPIRED_EVENT_SCREENING_SLUG,
-  name: "Project RESET Expired Preview Event",
-  eventWindowStatus: "event_expired",
-  checkInOpensAt: "2026-08-01T00:00:00.000Z",
-  checkInClosesAt: "2026-08-02T23:59:59.000Z",
 };

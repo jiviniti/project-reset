@@ -1,6 +1,67 @@
 # Handover and verification
 
-Last updated: 2 September 2026
+Last updated: 11 September 2026
+
+## Production closure checklist
+
+1. Obtain Nivi's written approval before deleting any internal or seeded data.
+2. Set `SUBMISSIONS_ENABLED=false`, redeploy, and verify a submission returns 503.
+3. Take and verify a restorable Supabase backup.
+4. Apply `supabase/migrations/202609110001_production_cutover.sql`.
+5. If deletion was approved, run `supabase/scripts/reset_production_data.sql` exactly as documented in that file and inspect its verification result before committing the SQL session.
+6. Deploy the application through the protected `main` branch. Configure only the real production URLs and server-only event codes; do not configure `E2E_USE_TEST_FIXTURE`.
+7. Verify `/`, both event paths, `/start-a-conversation`, and `GET /api/v1/aggregates`. Verify all three former `preview-*` paths and `/share-card-concepts` return 404.
+8. Re-enable submissions only after the empty or genuine-response state is correct. Let the team add genuine pre-launch responses, then verify the observed totals again.
+9. Record KINEMA-controlled code shutdowns, legal/privacy content, and on-screen delivery approval as external launch dependencies if still pending.
+
+Production screening check:
+
+```sql
+select
+  screening.slug,
+  screening.name,
+  screening.status,
+  screening.pathway_type,
+  questionnaire.version as questionnaire_version,
+  screening.check_in_opens_at,
+  screening.check_in_closes_at
+from private.screenings screening
+join private.questionnaire_versions questionnaire
+  on questionnaire.id = screening.questionnaire_version_id
+where screening.slug in (
+  'project-reset',
+  'climate-week-nyc-2026',
+  'columbia-climate-school-2026',
+  'preview-screening',
+  'preview-event',
+  'preview-expired-event'
+)
+order by screening.slug;
+```
+
+Expected: the three production rows use questionnaire v3; `project-reset` is active and non-event; the two approved event rows are active and event-based; all former preview rows are closed.
+
+Observed-only public-picture check:
+
+```sql
+select api.get_public_aggregates_v1();
+```
+
+Use the returned `observed` values for operational reporting. The frontend deliberately ignores `seeded` and `combined`, even before the approved cleanup is executed.
+
+### Suggested event wording
+
+Moderator/on-screen wording for the check-in QR:
+
+> Take 90 seconds to add your RESET to the community picture. Complete the check-in to receive complimentary film access. Keep your code and private film link close, and keep the RESET page open when KINEMA launches in a new tab.
+
+Moderator/on-screen wording for the separate conversation QR:
+
+> Continue the Conversation. Choose a question that feels worth exploring, then turn to a partner or carry it into your next meal, walk, call, classroom, or gathering.
+
+This is copy guidance only. Designed slides, video, and presentation collateral are separate work.
+
+The sections below preserve earlier rollout history. They are not the current production procedure.
 
 ## Questionnaire v2 and brand-polish rollout
 

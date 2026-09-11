@@ -40,6 +40,9 @@ This runbook covers Project RESET launch operations. Never paste passwords, OTPs
 - Confirm Supabase backup availability and perform a documented restoration rehearsal before deleting pre-launch data.
 - Participant retention and deletion periods remain pending Legal/Foundation approval. Until approved, do not promise an unimplemented automated deletion schedule.
 
-## Temporary KINEMA test code
+## KINEMA production configuration
 
-The limited dummy code may remain configured only while Nivi and Brian are completing the controlled team test. Afterwards, remove `KINEMA_TEST_CODE` from every Vercel environment, redeploy, and verify `/s/preview-event` returns the harmless placeholder rather than the private film URL or a usable code.
+- The application supports only the two server-held production code variables documented in `.env.example`; temporary-code runtime support has been removed.
+- Never configure `E2E_USE_TEST_FIXTURE` in Vercel.
+- Verify all retired `preview-*` paths return 404 after every production deployment.
+- A production code is returned only after a completed, database-eligible submission on its exact allowlisted event slug.

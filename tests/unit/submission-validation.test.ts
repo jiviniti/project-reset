@@ -4,7 +4,7 @@ import { normalizeEmail, submissionResultSchema, submissionSchema } from "../../
 const validPayload = {
   apiVersion: "1",
   idempotencyKey: "b7de8ec9-842c-4663-88e0-9d3677df8709",
-  screeningSlug: "preview-screening",
+  screeningSlug: "project-reset",
   participant: { firstName: "Nivi", email: "nivi@example.org" },
   demographics: {},
   consent: { dataUseAccepted: true, policyVersion: "reset_data_use_v1" },

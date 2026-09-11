@@ -9,8 +9,7 @@ const env: ServerEnv = {
   ALLOWED_APP_ORIGINS: "",
   SUBMISSIONS_ENABLED: "true",
   REWARD_PROVIDER: "kinema_manual",
-  DATASET_ENV: "preview",
-  KINEMA_FILM_URL: "https://kinema.com/films/private-film",
+  KINEMA_FILM_URL: "https://kinema.com/films/third-degree-burnout-a-survivors-guide-1mdwu9",
   KINEMA_CLIMATE_WEEK_NYC_2026_CODE: "CLIMATE_CODE",
   KINEMA_COLUMBIA_CLIMATE_SCHOOL_2026_CODE: "COLUMBIA_CODE",
 };
@@ -33,31 +32,10 @@ describe("KINEMA manual reward access", () => {
     expect(resolveKinemaRewardAccess("columbia-climate-school-2026", activeEvent, env)?.promoCode).toBe("COLUMBIA_CODE");
   });
 
-  it("returns harmless placeholder access for the active preview event", () => {
-    expect(resolveKinemaRewardAccess("preview-event", activeEvent, env)).toEqual({
-      provider: "kinema",
-      filmUrl: "https://kinema.com/",
-      promoCode: "DEMO_CODE_NOT_VALID",
-      accountRequired: true,
-      startWithinDays: 30,
-      finishWithinHours: 48,
-    });
-    expect(resolveKinemaRewardAccess("preview-event", activeEvent, { ...env, DATASET_ENV: "production" })).toBeUndefined();
-  });
-
-  it("uses the private film and limited test code only when the preview test override is configured", () => {
-    expect(resolveKinemaRewardAccess("preview-event", activeEvent, { ...env, KINEMA_TEST_CODE: "LIMITED_TEST_CODE" })).toEqual({
-      provider: "kinema",
-      filmUrl: "https://kinema.com/films/private-film",
-      promoCode: "LIMITED_TEST_CODE",
-      accountRequired: true,
-      startWithinDays: 30,
-      finishWithinHours: 48,
-    });
-  });
-
-  it("fails closed when the preview test code has no private film URL", () => {
-    expect(() => resolveKinemaRewardAccess("preview-event", activeEvent, { ...env, KINEMA_TEST_CODE: "LIMITED_TEST_CODE", KINEMA_FILM_URL: undefined })).toThrow("kinema_test_reward_not_configured");
+  it("never exposes a production code for an unapproved screening slug", () => {
+    expect(resolveKinemaRewardAccess("project-reset", activeEvent, env)).toBeUndefined();
+    expect(resolveKinemaRewardAccess("preview-event", activeEvent, env)).toBeUndefined();
+    expect(resolveKinemaRewardAccess("lookalike-climate-week", activeEvent, env)).toBeUndefined();
   });
 
   it("does not expose access for trailer pathways or disabled delivery", () => {
@@ -67,5 +45,12 @@ describe("KINEMA manual reward access", () => {
 
   it("fails closed when an eligible event is missing provider configuration", () => {
     expect(() => resolveKinemaRewardAccess("climate-week-nyc-2026", activeEvent, { ...env, KINEMA_FILM_URL: undefined })).toThrow("kinema_reward_not_configured");
+  });
+
+  it("uses the permanent private film URL for both approved events", () => {
+    expect(resolveKinemaRewardAccess("climate-week-nyc-2026", activeEvent, env)?.filmUrl)
+      .toBe("https://kinema.com/films/third-degree-burnout-a-survivors-guide-1mdwu9");
+    expect(resolveKinemaRewardAccess("columbia-climate-school-2026", activeEvent, env)?.filmUrl)
+      .toBe("https://kinema.com/films/third-degree-burnout-a-survivors-guide-1mdwu9");
   });
 });

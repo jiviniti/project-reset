@@ -1,6 +1,6 @@
 # Architecture
 
-Last verified: 7 September 2026
+Last verified: 11 September 2026
 
 Project RESET is a screening-aware Next.js application deployed on Vercel. Participants complete the RESET Check-In without a Supabase Auth account. Browser submissions go only to `POST /api/v1/submissions`; raw identity and research records remain in the non-exposed Supabase `private` schema.
 
@@ -60,7 +60,7 @@ The active React implementation follows the latest prototype supplied on 25 Augu
 1. burnout signs plus optional private custom tags/free text;
 2. RESET pathways/practices plus optional private custom tags/ritual;
 3. final-step PII, optional demographics, an optional private commitment, data-use consent and false-by-default future-communications preference;
-4. persisted thank-you state, Learning Lab, film/trailer reward and conversation-tool entry.
+4. persisted thank-you state, film/trailer access, conversation-tool entry, then the observed community picture.
 
 The header action reads “Support the project.” Product copy uses U.S. English. Branded campaign references use the constructed lowercase `reset.` lockup when layout permits and `RESET` otherwise. SMS selection remains deferred because reward delivery is outside this pass.
 
@@ -72,10 +72,10 @@ Questionnaire version 3 copies version 2 and adds the optional private `today_co
 
 The launch acknowledgement is stored under `reset_data_use_v1_us`. Its test-era wording was corrected in place before public collection because all earlier records were internal team tests. Once real participant collection begins, this row is immutable in practice: a material wording change requires a new policy-version row and new submissions must reference that new identifier.
 
-The share-card renderer remains available only in the internal concept route. The active participant journey does not create or request a personalized card.
+The former share-card concept route is not deployed. The active participant journey does not create or request a personalized card. Eligible event participants instead receive a non-downloadable film-access card containing the direct KINEMA link, their server-returned event code, deadline, recovery copy, and safe new-tab handoff.
 
 ## Active, supporting and deferred boundaries
 
 - **Active core:** check-in, private submission, cumulative safe aggregates, revision invalidation, public visualization, manual KINEMA reward handoff and conversation-tool entry.
-- **Supporting:** canonical seeded baseline, rebuild/backfill function, preview seed, security tests and production-cleanup guard.
-- **Deferred:** automated KINEMA API/email/SMS delivery, personalized Learning Lab persistence, conversation analytics, public screening/cohort views, custom domain and production cutover.
+- **Supporting:** aggregate rebuild/backfill function, historical seed assets, security tests and the approval-gated production-cleanup guard.
+- **Deferred:** automated KINEMA API/email/SMS delivery, personalized Learning Lab persistence, conversation analytics, and public screening/cohort views.

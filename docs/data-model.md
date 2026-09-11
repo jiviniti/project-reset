@@ -1,6 +1,6 @@
 # Data model
 
-Last verified: 7 September 2026
+Last verified: 11 September 2026
 
 ## Raw research model
 
@@ -34,7 +34,7 @@ Rituals, explanatory answers and participant-created tags are private text answe
 
 ### Questionnaire version 3
 
-Version 3 copies the complete version-2 questionnaire and adds optional text question `today_commitment`, limited to 500 characters. Preview screenings and any already-provisioned launch screening rows move to v3. Versions 1 and 2 and their responses remain unchanged. The commitment has no entry in `aggregate.metric_definitions`, so it is private and absent from public snapshots.
+Version 3 copies the complete version-2 questionnaire and adds optional text question `today_commitment`, limited to 500 characters. The canonical `project-reset` screening and both launch event rows use v3. Former preview screening rows are closed by the production-cutover migration. Versions 1 and 2 and their responses remain unchanged. The commitment has no entry in `aggregate.metric_definitions`, so it is private and absent from public snapshots.
 
 ### Participant-created tag representation
 
@@ -88,7 +88,7 @@ Public small-scope/cohort views, if approved later, have a minimum observed cell
 
 ## Public contract
 
-The cumulative snapshot contains only:
+The cumulative snapshot retains seeded, observed, and combined fields for API compatibility. The production Learning Lab deliberately renders only `observed` totals and metric counts. The snapshot contains only:
 
 - snapshot and revision metadata;
 - minimum-cell-size metadata;

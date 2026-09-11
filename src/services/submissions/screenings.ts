@@ -1,15 +1,14 @@
 import "server-only";
 import { hasServerDatabaseConfig } from "@/lib/config/server-env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import {
-  PREVIEW_EVENT_SCREENING_SLUG,
-  PREVIEW_EXPIRED_EVENT_SCREENING_SLUG,
-  PREVIEW_SCREENING_SLUG,
-  previewEventScreeningConfig,
-  previewExpiredEventScreeningConfig,
-  previewScreeningConfig,
-} from "@/features/check-in/preview-config";
+import { automatedTestScreenings } from "@/features/check-in/production-test-config";
 import type { ScreeningConfig } from "@/types/screening";
+
+const RETIRED_PREVIEW_SLUGS = new Set([
+  "preview-screening",
+  "preview-event",
+  "preview-expired-event",
+]);
 
 function normalizeScreeningConfig(data: ScreeningConfig): ScreeningConfig {
   return {
@@ -24,13 +23,10 @@ function normalizeScreeningConfig(data: ScreeningConfig): ScreeningConfig {
 }
 
 export async function getScreeningConfig(slug: string): Promise<ScreeningConfig | null> {
-  const previewFixture = {
-    [PREVIEW_SCREENING_SLUG]: previewScreeningConfig,
-    [PREVIEW_EVENT_SCREENING_SLUG]: previewEventScreeningConfig,
-    [PREVIEW_EXPIRED_EVENT_SCREENING_SLUG]: previewExpiredEventScreeningConfig,
-  }[slug];
-  if (previewFixture && (process.env.E2E_USE_PREVIEW_FIXTURE === "true" || process.env.NODE_ENV !== "production")) {
-    return previewFixture;
+  if (RETIRED_PREVIEW_SLUGS.has(slug)) return null;
+
+  if (process.env.E2E_USE_TEST_FIXTURE === "true") {
+    return automatedTestScreenings[slug] ?? null;
   }
   if (!hasServerDatabaseConfig()) {
     return null;

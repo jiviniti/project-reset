@@ -9,5 +9,5 @@ export const TRAILER_URL = parseCampaignUrl(
 );
 
 export const PROJECT_RESET_SIGNUP_URL = parseCampaignUrl(
-  process.env.NEXT_PUBLIC_PROJECT_RESET_SIGNUP_URL?.trim() || "https://projectreset.example/signup",
+  process.env.NEXT_PUBLIC_PROJECT_RESET_SIGNUP_URL?.trim() || "https://reset.thirddegreeburnout.com/",
 );
