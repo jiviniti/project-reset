@@ -443,11 +443,17 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <div className="success-burst" aria-hidden="true"><span /><span /><span /><span /><span /></div>
                 <p className="eyebrow">Your check-in is complete</p>
                 <h2>Thank you. Your <BrandedReset uppercase /> has been added to the picture.</h2>
-                {submissionResult?.rewardAccess ? <p className="success__access-guidance">Your film access is ready below. Keep your code and private film link close.</p> : null}
+                <p className="success__access-guidance">
+                  {submissionResult?.rewardAccess
+                    ? "Your film code awaits below."
+                    : "Your trailer awaits below."}
+                </p>
                 {form.commitment.trim() ? (
                   <blockquote className="commitment-echo"><span>You chose to carry forward</span>{form.commitment.trim()}</blockquote>
                 ) : null}
               </header>
+
+              <IllustrativeDashboard mode="post_submission" />
 
               <section className="success__reward" aria-labelledby="reset-access-heading">
                 {submissionResult?.rewardAccess ? (
@@ -486,16 +492,16 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                     <a className="button button--coral reward-card__action" href={TRAILER_URL} target="_blank" rel="noopener noreferrer">Watch the Trailer <span aria-hidden="true">→</span></a>
                   </div>
                 )}
+                <p className="reward-conversation-nudge">One more way to carry your <BrandedReset uppercase /> forward awaits below: choose a question and start a conversation.</p>
               </section>
 
               <section className="success__conversation" aria-labelledby="continue-conversation-heading">
                 <p className="eyebrow">Project <BrandedReset uppercase /></p>
                 <h3 id="continue-conversation-heading">Continue the conversation.</h3>
                 <p>Browse reflective questions for a meal, walk, call, classroom, or gathering. Begin with whatever feels relevant today.</p>
-                <a className="button button--coral" href="/start-a-conversation">Start a conversation <span aria-hidden="true">→</span></a>
+                <a className="button button--coral" href="/start-a-conversation" target="_blank" rel="noopener noreferrer">Start a conversation <span aria-hidden="true">→</span></a>
                 <a className="success__support-link" href={DONATION_URL} target="_blank" rel="noreferrer">Support the project</a>
               </section>
-              <IllustrativeDashboard mode="post_submission" />
               <ProjectResetFooter />
             </div>
           </section>

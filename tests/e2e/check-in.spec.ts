@@ -133,7 +133,7 @@ test("completes a production event check-in and keeps film access recoverable", 
   await expect(savingButton.locator(".branded-reset b")).toHaveCSS("color", "rgb(255, 255, 255)");
   await expect(page.getByRole("heading", { name: "Thank you. Your RESET has been added to the picture." })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Your film access" })).toBeVisible();
-  await expect(page.getByText("Your film access is ready below. Keep your code and private film link close.", { exact: true })).toBeVisible();
+  await expect(page.getByText("Your film code awaits below.", { exact: true })).toBeVisible();
   await expect(page.getByText("Your code and private film link belong together. Copy the details or take a screenshot before opening KINEMA.", { exact: true })).toBeVisible();
   await expect(page.locator(".reward-steps li")).toHaveText([
     "Copy or screenshot your code and private film link",
@@ -160,10 +160,10 @@ test("completes a production event check-in and keeps film access recoverable", 
   await expect(page.getByRole("button", { name: /Start your RESET/ })).toHaveCount(0);
   const sequence = await page.locator(".dashboard--post-submission .dashboard__section--dark, .dashboard--post-submission .dashboard__section--light, .success__reward, .success__conversation").evaluateAll((elements) => elements.map((element) => element.className));
   expect(sequence).toEqual([
-    "success__reward",
-    "success__conversation",
     "dashboard__section dashboard__section--dark",
     "dashboard__section dashboard__section--light",
+    "success__reward",
+    "success__conversation",
   ]);
   await expect(page.locator(".success > .pathway-strip")).toHaveCount(1);
   await page.getByRole("button", { name: "Copy code" }).click();
@@ -175,6 +175,8 @@ test("completes a production event check-in and keeps film access recoverable", 
   await expect(page.getByRole("link", { name: /Open the private film page/ })).toHaveAttribute("target", "_blank");
   await expect(page.getByRole("link", { name: /Open the private film page/ })).toHaveAttribute("rel", "noopener noreferrer");
   await expect(page.getByRole("link", { name: /Start a conversation/ })).toHaveAttribute("href", "/start-a-conversation");
+  await expect(page.getByRole("link", { name: /Start a conversation/ })).toHaveAttribute("target", "_blank");
+  await expect(page.getByRole("link", { name: /Start a conversation/ })).toHaveAttribute("rel", "noopener noreferrer");
   await expect(page.getByRole("link", { name: "Support the project" })).toHaveAttribute("href", "https://thirddegreeburnout.com/fueltheimpact");
   const mobileWidths = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
   expect(mobileWidths.scroll).toBeLessThanOrEqual(mobileWidths.client);

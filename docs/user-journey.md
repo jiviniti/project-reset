@@ -44,16 +44,16 @@ The final page deliberately follows this hierarchy:
 
 ```text
 saved confirmation + gentle celebration
-  → KINEMA film access or trailer access
-  → Continue the Conversation questions
   → Burnout Landscape
   → Community RESET Map
+  → KINEMA film access or trailer access
+  → Continue the Conversation questions (new tab)
   → partner attribution
 ```
 
 If a commitment was entered, it is echoed from local form state on the success page. It is never placed in a public visualization or URL.
 
-Eligible event participants receive a manually entered KINEMA code and the permanent direct link to the private film page in one on-screen access card. A private KINEMA page does not need to be listed in the public catalogue. Participants copy the complete details or take a screenshot, open KINEMA in a new tab, create or sign in to KINEMA, and enter the code at checkout for free access. The success page states the route-specific redemption deadline and remains available in the original tab so participants can return to Continue the Conversation. Project RESET does not email the code. Participants then have 30 days to start and 48 hours to finish after starting. KINEMA controls DRM, caps, reports, fees, email behavior and code shutdown.
+Eligible event participants receive a manually entered KINEMA code and the permanent direct link to the private film page in one on-screen access card. A private KINEMA page does not need to be listed in the public catalogue. Participants first see the Burnout Landscape and Community RESET Map, then copy the complete details or take a screenshot, open KINEMA in a new tab, create or sign in to KINEMA, and enter the code at checkout for free access. The success page states the route-specific redemption deadline and remains available in the original tab. Continue the Conversation also opens in a new tab so the completed RESET page is preserved. Project RESET does not email the code. Participants then have 30 days to start and 48 hours to finish after starting. KINEMA controls DRM, caps, reports, fees, email behavior and code shutdown.
 
 The former share-card concept route is retired. The KINEMA access card is deliberately an on-screen copy/screenshot surface; it does not create a downloadable or natively shareable asset containing a reusable code.
 
