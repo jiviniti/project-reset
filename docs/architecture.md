@@ -60,7 +60,7 @@ The active React implementation follows the latest prototype supplied on 25 Augu
 1. burnout signs plus optional private custom tags/free text;
 2. RESET pathways/practices plus optional private custom tags/ritual;
 3. final-step PII, optional demographics, an optional private commitment, data-use consent and false-by-default future-communications preference;
-4. persisted thank-you state, film/trailer access, conversation-tool entry, then the observed community picture.
+4. persisted thank-you state, the observed community picture, film/trailer access, then conversation-tool entry in a new tab.
 
 The header action reads “Support the project.” Product copy uses U.S. English. Branded campaign references use the constructed lowercase `reset.` lockup when layout permits and `RESET` otherwise. SMS selection remains deferred because reward delivery is outside this pass.
 

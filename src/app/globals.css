@@ -193,6 +193,7 @@ legend, .field-group-label { margin: 9px 0 7px; color: #756d68; font-family: var
 .reward-warning { margin-top: 10px; padding: 10px 11px; color: var(--burgundy) !important; border-left: 3px solid var(--coral); background: #fff; font-weight: 600; }
 .reward-new-tab-note { margin-top: 14px; color: var(--burgundy) !important; font-weight: 600; }
 .reward-terms { margin-top: 14px; padding-top: 13px; border-top: 1px solid #e2cfc4; }
+.reward-conversation-nudge { margin: 22px 0 0; padding: 16px 0 0; color: var(--burgundy); border-top: 1px solid #e2cfc4; font-size: .72rem; font-weight: 600; line-height: 1.55; }
 .success__conversation { padding: 42px 24px; color: var(--ink); border-top: 1px solid var(--ink); background: var(--white); text-align: left; }
 .success__conversation h3 { margin: 7px 0 10px; font-size: 1.35rem; font-weight: 600; }
 .success__conversation > p:not(.eyebrow) { margin: 0; color: #665f5a; font-size: .72rem; line-height: 1.6; }
