@@ -6,6 +6,7 @@ import type { ScreeningConfig } from "@/types/screening";
 export const PROJECT_RESET_SCREENING_SLUG = "project-reset";
 export const CLIMATE_WEEK_SCREENING_SLUG = "climate-week-nyc-2026";
 export const COLUMBIA_SCREENING_SLUG = "columbia-climate-school-2026";
+export const PREVIEW_EVENT_SCREENING_SLUG = "preview-event";
 
 const projectResetScreeningConfig: ScreeningConfig = {
   ...baseAutomatedTestScreeningConfig,
@@ -38,8 +39,21 @@ const columbiaScreeningConfig: ScreeningConfig = {
   accessEndsAt: "2026-10-22T04:00:00.000Z",
 };
 
+const teamRehearsalScreeningConfig: ScreeningConfig = {
+  ...projectResetScreeningConfig,
+  slug: PREVIEW_EVENT_SCREENING_SLUG,
+  name: "Project RESET Learning Lab",
+  entryPathway: "event",
+  rewardType: "film_access",
+  eventWindowStatus: "active_event",
+  checkInOpensAt: "2026-09-11T00:00:00.000Z",
+  checkInClosesAt: "2026-09-22T04:00:00.000Z",
+  accessEndsAt: "2026-09-22T04:00:00.000Z",
+};
+
 export const automatedTestScreenings: Record<string, ScreeningConfig> = {
   [PROJECT_RESET_SCREENING_SLUG]: projectResetScreeningConfig,
   [CLIMATE_WEEK_SCREENING_SLUG]: climateWeekScreeningConfig,
   [COLUMBIA_SCREENING_SLUG]: columbiaScreeningConfig,
+  [PREVIEW_EVENT_SCREENING_SLUG]: teamRehearsalScreeningConfig,
 };

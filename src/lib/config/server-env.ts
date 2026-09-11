@@ -9,6 +9,7 @@ const serverEnvSchema = z.object({
   SUBMISSIONS_ENABLED: z.enum(["true", "false"]).default("false"),
   REWARD_PROVIDER: z.enum(["disabled", "kinema_manual"]).default("disabled"),
   KINEMA_FILM_URL: kinemaFilmUrlSchema.optional(),
+  KINEMA_TEST_CODE: z.string().trim().min(1).optional(),
   KINEMA_CLIMATE_WEEK_NYC_2026_CODE: z.string().trim().min(1).optional(),
   KINEMA_COLUMBIA_CLIMATE_SCHOOL_2026_CODE: z.string().trim().min(1).optional(),
 });
@@ -23,6 +24,7 @@ export function getServerEnv(): ServerEnv {
     SUBMISSIONS_ENABLED: process.env.SUBMISSIONS_ENABLED,
     REWARD_PROVIDER: process.env.REWARD_PROVIDER,
     KINEMA_FILM_URL: process.env.KINEMA_FILM_URL,
+    KINEMA_TEST_CODE: process.env.KINEMA_TEST_CODE,
     KINEMA_CLIMATE_WEEK_NYC_2026_CODE: process.env.KINEMA_CLIMATE_WEEK_NYC_2026_CODE,
     KINEMA_COLUMBIA_CLIMATE_SCHOOL_2026_CODE: process.env.KINEMA_COLUMBIA_CLIMATE_SCHOOL_2026_CODE,
   });

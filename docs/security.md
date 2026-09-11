@@ -61,6 +61,7 @@ Origin and `Sec-Fetch-Site` checks remain defence-in-depth rather than authentic
 - Expired or not-yet-open event links fall back to trailer access while preserving screening attribution.
 - The committed decision is returned to the UI and stored privately. It is absent from the public aggregate API and realtime resource.
 - KINEMA URL and promo codes use non-public environment-variable names and are appended only after a committed `active_event / film_access` result for an allowlisted slug.
+- The temporary `preview-event` slug is allowlisted only when its server-only `KINEMA_TEST_CODE` is configured and its database window is active; the route is unindexed and closes at `2026-09-22 04:00:00Z`.
 - Codes are absent from screening configuration, aggregate responses, logs and client bundles. They become visible to the eligible participant after submission and are therefore reusable bearer values until KINEMA disables them or their cap is reached.
 - Redemption requires manual code entry. The resulting rental is tied to the participant's KINEMA account and protected by KINEMA DRM.
 

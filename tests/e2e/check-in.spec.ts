@@ -292,10 +292,61 @@ test("shows intentional Learning Lab empty states", async ({ page }) => {
   await expect(page.getByText(/\b(?:illustrative|demo|preview)\b/i)).toHaveCount(0);
 });
 
-test("retires preview and concept routes", async ({ page }) => {
+test("serves the controlled rehearsal route without test-era language", async ({ page }) => {
+  await page.route("**/api/v1/submissions", async (route) => {
+    expect(route.request().postDataJSON().screeningSlug).toBe("preview-event");
+    await route.fulfill({
+      status: 201,
+      contentType: "application/json",
+      body: JSON.stringify({
+        submissionId: crypto.randomUUID(),
+        participationId: crypto.randomUUID(),
+        rewardDeliveryId: crypto.randomUUID(),
+        status: "completed",
+        replayed: false,
+        entryPathway: "event",
+        rewardType: "film_access",
+        eventWindowStatus: "active_event",
+        accessEndsAt: "2026-09-22T04:00:00.000Z",
+        rewardAccess: {
+          provider: "kinema",
+          filmUrl: "https://kinema.com/films/third-degree-burnout-a-survivors-guide-1mdwu9",
+          promoCode: "TEAM_REHEARSAL_CODE",
+          accountRequired: true,
+          startWithinDays: 30,
+          finishWithinHours: 48,
+        },
+      }),
+    });
+  });
+
+  const response = await page.goto("/s/preview-event");
+  expect(response?.status()).toBe(200);
+  await expect(page.getByRole("heading", { name: "How do you reset?" })).toBeVisible();
+  await expect(page.getByText("About 90 seconds · Public results are anonymous · Film access follows")).toBeVisible();
+  await expect(page.getByText(/\b(?:test|preview|demo|placeholder|illustrative)\b/i)).toHaveCount(0);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+
+  await page.getByRole("button", { name: "Start your RESET" }).click();
+  await page.getByRole("button", { name: /Continue · 0 selected/ }).click();
+  await page.getByRole("button", { name: /Continue · 0 selected/ }).click();
+  await page.getByLabel("Name or initials").fill("Team member");
+  await page.getByLabel("Email (required)").fill("team-member@example.org");
+  await page.getByLabel(/I understand that my responses/).check();
+  await page.getByRole("button", { name: "Finish", exact: true }).click();
+
+  await expect(page.getByRole("heading", { name: "Your film access" })).toBeVisible();
+  await expect(page.getByLabel("KINEMA promo code")).toHaveText("TEAM_REHEARSAL_CODE");
+  await expect(page.getByText(/Redeem this code by/)).toBeVisible();
+  await expect(page.getByRole("button", { name: "Copy code" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Copy my access details" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Open the private film page/ })).toHaveAttribute("target", "_blank");
+  await expect(page.getByRole("link", { name: /Start a conversation/ })).toHaveAttribute("target", "_blank");
+});
+
+test("keeps the other preview and concept routes retired", async ({ page }) => {
   for (const path of [
     "/s/preview-screening",
-    "/s/preview-event",
     "/s/preview-expired-event",
     "/share-card-concepts",
   ]) {

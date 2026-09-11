@@ -10,6 +10,7 @@ const env: ServerEnv = {
   SUBMISSIONS_ENABLED: "true",
   REWARD_PROVIDER: "kinema_manual",
   KINEMA_FILM_URL: "https://kinema.com/films/third-degree-burnout-a-survivors-guide-1mdwu9",
+  KINEMA_TEST_CODE: "TEAM_REHEARSAL_CODE",
   KINEMA_CLIMATE_WEEK_NYC_2026_CODE: "CLIMATE_CODE",
   KINEMA_COLUMBIA_CLIMATE_SCHOOL_2026_CODE: "COLUMBIA_CODE",
 };
@@ -28,14 +29,18 @@ const activeEvent: SubmissionResult = {
 
 describe("KINEMA manual reward access", () => {
   it("maps each approved event slug to its server-only code", () => {
+    expect(resolveKinemaRewardAccess("preview-event", activeEvent, env)?.promoCode).toBe("TEAM_REHEARSAL_CODE");
     expect(resolveKinemaRewardAccess("climate-week-nyc-2026", activeEvent, env)?.promoCode).toBe("CLIMATE_CODE");
     expect(resolveKinemaRewardAccess("columbia-climate-school-2026", activeEvent, env)?.promoCode).toBe("COLUMBIA_CODE");
   });
 
   it("never exposes a production code for an unapproved screening slug", () => {
     expect(resolveKinemaRewardAccess("project-reset", activeEvent, env)).toBeUndefined();
-    expect(resolveKinemaRewardAccess("preview-event", activeEvent, env)).toBeUndefined();
     expect(resolveKinemaRewardAccess("lookalike-climate-week", activeEvent, env)).toBeUndefined();
+  });
+
+  it("fails closed when the rehearsal code is absent", () => {
+    expect(resolveKinemaRewardAccess("preview-event", activeEvent, { ...env, KINEMA_TEST_CODE: undefined })).toBeUndefined();
   });
 
   it("does not expose access for trailer pathways or disabled delivery", () => {

@@ -16,9 +16,10 @@ Milestone 1 was verified on 24 August 2026, Milestone 2 and the pre-Milestone-3 
 - `/` uses the canonical `project-reset` non-event Learning Lab screening and provides trailer access.
 - `/s/climate-week-nyc-2026` is the Climate Week production pathway.
 - `/s/columbia-climate-school-2026` is the Columbia Climate School production pathway.
+- `/s/preview-event` is an unindexed, time-bounded team rehearsal pathway through midnight New York time at the start of September 22, 2026. It returns 404 unless the server-only `KINEMA_TEST_CODE` exists.
 - `/start-a-conversation` is the public Continue the Conversation route.
 
-The former `preview-*` screening paths and `/share-card-concepts` are retired and must return 404. Automated browser fixtures are enabled only by `E2E_USE_TEST_FIXTURE=true`; never configure that variable in Vercel.
+The other former `preview-*` screening paths and `/share-card-concepts` are retired and must return 404. Automated browser fixtures are enabled only by `E2E_USE_TEST_FIXTURE=true`; never configure that variable in Vercel.
 
 ## KINEMA manual reward activation
 
@@ -28,7 +29,7 @@ The former `preview-*` screening paths and `/share-card-concepts` are retired an
 4. Confirm expired and not-yet-open routes return trailer access and never include `rewardAccess`.
 5. Monitor redemption counts in KINEMA Reports. KINEMA charges $1 per redemption; the current combined cap is 350.
 6. In the KINEMA Filmmaker Dashboard, enable TVOD/rentals, set rental availability to cover both event windows, and publish the film page as **Private**. Add `https://reset.thirddegreeburnout.com/start-a-conversation` as the post-film engagement link.
-7. Run one controlled checkout with KINEMA's no-cost, limited-use dummy code. Use a participant test account, confirm the price becomes zero, verify the confirmation email and return path, and confirm the redemption appears under Reports → Rentals. Never place the dummy code in application configuration or documentation.
+7. For the temporary team rehearsal only, store KINEMA's no-cost, limited-use dummy code in the server-only `KINEMA_TEST_CODE` variable. Never place its value in source, documentation, logs, or a `NEXT_PUBLIC_` variable. Remove it after rehearsal or at the September 22 cutoff.
 8. Obtain written confirmation from KINEMA that the two production-code shutdowns are scheduled separately. The application cannot revoke a copied code or an already redeemed rental. A redeemed rental allows 30 days to start and 48 hours to finish once started.
 
 Controlled KINEMA verification completed on 8 September 2026: TVOD/rentals were enabled, the film page was published privately, the no-cost dummy code unlocked the film, and the redemption appeared in Reports → Rentals. Verification of the standard confirmation email's return link remains outstanding.
