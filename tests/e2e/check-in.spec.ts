@@ -103,7 +103,8 @@ test("completes a production event check-in and keeps film access recoverable", 
   await expect(page.getByRole("link", { name: "Support the project" })).toHaveAttribute("href", "https://thirddegreeburnout.com/fueltheimpact");
   await expect(page.locator("h1 .branded-reset b")).toHaveCSS("color", "rgb(250, 135, 87)");
   await expect(page.getByRole("button", { name: "Start your RESET" }).locator(".branded-reset b")).toHaveCSS("color", "rgb(255, 255, 255)");
-  await expect(page.getByText("About 90 seconds · Public results are anonymous · Film access follows")).toBeVisible();
+  await expect(page.getByText("Participate in the RESET to receive complimentary access to the film and explore reflective prompts in Continue the Conversation.")).toBeVisible();
+  await expect(page.getByText("Takes 90 seconds · Public results are anonymous")).toBeVisible();
   await page.getByRole("button", { name: "Start your RESET" }).click();
   await page.getByRole("button", { name: "Exhausted" }).click();
   await expect(page.getByLabel("Add a burnout tag")).toHaveCount(0);
@@ -195,7 +196,8 @@ test("an upcoming event link remains a trailer check-in before opening", async (
   });
 
   await page.goto("/s/columbia-climate-school-2026");
-  await expect(page.getByText("About 90 seconds · Public results are anonymous · Trailer access follows")).toBeVisible();
+  await expect(page.getByText("Participate in the RESET to watch the film trailer and explore reflective prompts in Continue the Conversation.")).toBeVisible();
+  await expect(page.getByText("Takes 90 seconds · Public results are anonymous")).toBeVisible();
   await expect(page.getByText(/film access for this event is not active yet/i)).toBeVisible();
   await page.getByRole("button", { name: "Start your RESET" }).click();
   await page.getByRole("button", { name: /Continue · 0 selected/ }).click();
@@ -323,7 +325,8 @@ test("serves the controlled rehearsal route without test-era language", async ({
   const response = await page.goto("/s/preview-event");
   expect(response?.status()).toBe(200);
   await expect(page.getByRole("heading", { name: "How do you reset?" })).toBeVisible();
-  await expect(page.getByText("About 90 seconds · Public results are anonymous · Film access follows")).toBeVisible();
+  await expect(page.getByText("Participate in the RESET to receive complimentary access to the film and explore reflective prompts in Continue the Conversation.")).toBeVisible();
+  await expect(page.getByText("Takes 90 seconds · Public results are anonymous")).toBeVisible();
   await expect(page.getByText(/\b(?:test|preview|demo|placeholder|illustrative)\b/i)).toHaveCount(0);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
 
