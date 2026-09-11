@@ -363,8 +363,15 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
               {screening.eventWindowStatus === "event_not_started" ? (
                 <p className="pathway-notice">Film access for this event is not active yet. You can still complete your <BrandedReset uppercase /> through the trailer pathway.</p>
               ) : null}
+              <p className="hero__meta">
+                <strong>
+                  <span>Participate in the <BrandedReset /> to {screening.rewardType === "film_access" ? "receive complimentary access to the film" : "watch the film trailer"} and explore reflective prompts in Continue the Conversation.</span>
+                </strong>
+              </p>
               <button type="button" className="button button--coral" onClick={start}><span>Start your <BrandedReset uppercase className="branded-reset--single-color" /></span><span aria-hidden="true">→</span></button>
-              <p className="hero__meta">About 90 seconds · Public results are anonymous · {screening.rewardType === "film_access" ? "Film access follows" : "Trailer access follows"}</p>
+              <p className="hero__meta">
+                <span>Takes 90 seconds · Public results are anonymous</span>
+              </p>
               <button type="button" className="text-button" onClick={() => setView("lab")}>Explore the Learning Lab <span aria-hidden="true">→</span></button>
             </div>
             <ProjectResetFooter showDataNote={false} />
