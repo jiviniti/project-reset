@@ -35,8 +35,30 @@ test("opens the general check-in directly from the site root", async ({ page }) 
   expect(response?.headers()["x-frame-options"]).toBe("DENY");
   expect(response?.headers()["x-content-type-options"]).toBe("nosniff");
   await expect(page.getByRole("heading", { name: "How do you reset?" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Start your RESET" })).toBeVisible();
+  const startButton = page.getByRole("button", { name: "Start your reset" });
+  await expect(startButton).toBeVisible();
+  await expect(startButton).toHaveCSS("color", "rgb(255, 255, 255)");
+  await expect(startButton.locator(".branded-reset > span")).toHaveCSS("color", "rgb(255, 255, 255)");
+  await expect(startButton.locator(".branded-reset b")).toHaveCSS("color", "rgb(251, 204, 100)");
+  await expect(page.getByRole("link", { name: "Support the project" })).toHaveCSS("color", "rgb(255, 255, 255)");
+  await expect(page.getByText("Public Learning Lab results are aggregated and de-identified.")).toBeVisible();
+  await expect(page.getByText("Project RESET is currently in beta. Our privacy policy is being finalized.")).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Privacy update" })).toHaveAttribute("href", "/privacy");
   await expect(page.getByText("Every screening has its own RESET link.")).toHaveCount(0);
+});
+
+test("serves the unindexed interim privacy update", async ({ page }) => {
+  const response = await page.goto("/privacy");
+
+  expect(response?.status()).toBe(200);
+  await expect(page.getByRole("heading", { name: "Project RESET is currently in beta." })).toBeVisible();
+  await expect(page.getByText("Our privacy policy is being finalized.", { exact: true })).toBeVisible();
+  await expect(page.getByText("Public Learning Lab results are aggregated and de-identified.", { exact: true })).toBeVisible();
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+  const returnLink = page.getByRole("link", { name: "Return to Project reset" });
+  await expect(returnLink).toHaveAttribute("href", "/");
+  await expect(returnLink.locator(".branded-reset > span")).toHaveCSS("color", "rgb(255, 255, 255)");
+  await expect(returnLink.locator(".branded-reset b")).toHaveCSS("color", "rgb(251, 204, 100)");
 });
 
 test("submits the site root against the canonical project-reset screening", async ({ page }) => {
@@ -61,7 +83,7 @@ test("submits the site root against the canonical project-reset screening", asyn
   });
 
   await page.goto("/");
-  await page.getByRole("button", { name: "Start your RESET" }).click();
+  await page.getByRole("button", { name: "Start your reset" }).click();
   await page.getByRole("button", { name: /Continue · 0 selected/ }).click();
   await page.getByRole("button", { name: /Continue · 0 selected/ }).click();
   await page.getByLabel("Name or initials").fill("Guest");
@@ -102,10 +124,11 @@ test("completes a production event check-in and keeps film access recoverable", 
   await expect(page.getByRole("heading", { name: "How do you reset?" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Support the project" })).toHaveAttribute("href", "https://thirddegreeburnout.com/fueltheimpact");
   await expect(page.locator("h1 .branded-reset b")).toHaveCSS("color", "rgb(250, 135, 87)");
-  await expect(page.getByRole("button", { name: "Start your RESET" }).locator(".branded-reset b")).toHaveCSS("color", "rgb(255, 255, 255)");
-  await expect(page.getByText("Participate in the RESET to receive complimentary access to the film and explore reflective prompts in Continue the Conversation.")).toBeVisible();
-  await expect(page.getByText("Takes 90 seconds · Public results are anonymous")).toBeVisible();
-  await page.getByRole("button", { name: "Start your RESET" }).click();
+  await expect(page.getByRole("button", { name: "Start your reset" }).locator(".branded-reset b")).toHaveCSS("color", "rgb(251, 204, 100)");
+  await expect(page.getByText("Complete the reset check-in to unlock complimentary film access and questions to keep the conversation going.")).toBeVisible();
+  await expect(page.getByText("Public Learning Lab results are aggregated and de-identified.")).toBeVisible();
+  await expect(page.getByText("Project RESET is currently in beta. Our privacy policy is being finalized.")).toBeVisible();
+  await page.getByRole("button", { name: "Start your reset" }).click();
   await page.getByRole("button", { name: "Exhausted" }).click();
   await expect(page.getByLabel("Add a burnout tag")).toHaveCount(0);
   await page.getByRole("button", { name: /Something else.*Add your own/ }).click();
@@ -129,21 +152,20 @@ test("completes a production event check-in and keeps film access recoverable", 
   await expect(page.getByRole("link", { name: "Support the project" })).toHaveAttribute("href", "https://thirddegreeburnout.com/fueltheimpact");
   await page.getByLabel(/I understand that my responses/).check();
   await page.getByRole("button", { name: "Finish", exact: true }).click();
-  const savingButton = page.getByRole("button", { name: /Saving your RESET/ });
+  const savingButton = page.getByRole("button", { name: /Saving your reset/ });
   await expect(savingButton).toBeVisible();
-  await expect(savingButton.locator(".branded-reset b")).toHaveCSS("color", "rgb(255, 255, 255)");
-  await expect(page.getByRole("heading", { name: "Thank you. Your RESET has been added to the picture." })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Your film access" })).toBeVisible();
-  await expect(page.getByText("Your film code awaits below.", { exact: true })).toBeVisible();
-  await expect(page.getByText("Your code and private film link belong together. Copy the details or take a screenshot before opening KINEMA.", { exact: true })).toBeVisible();
+  await expect(savingButton.locator(".branded-reset b")).toHaveCSS("color", "rgb(251, 204, 100)");
+  await expect(page.getByRole("heading", { name: "YOUR reset HAS BEEN ADDED TO THE PICTURE" })).toBeVisible();
+  await expect(page.getByText("UNLOCK ACCESS TO THE FILM", { exact: true })).toBeVisible();
+  await expect(page.getByText("CONTINUE THE CONVERSATION", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Simple Steps to Access the Film" })).toBeVisible();
   await expect(page.locator(".reward-steps li")).toHaveText([
     "Copy or screenshot your code and private film link",
-    "Open the private film page and select the purple rental button",
-    "Sign in or create a KINEMA account. If KINEMA takes you elsewhere after sign-up, return to the private film page",
-    "At checkout, select Promo Code, enter your code, confirm the total is $0, and complete the rental",
+    "Open the Private Film Page and select the purple Rental button",
+    "Create or sign in to your KINEMA account",
+    "At checkout, select Promo Code and enter your code to unlock free access",
   ]);
-  await expect(page.getByText("Keep your access close", { exact: true })).toBeVisible();
-  await expect(page.getByText(/Redeem this code by/)).toBeVisible();
+  await expect(page.getByText(/Use this code by/)).toBeVisible();
   await expect(page.getByText(/Project RESET does not email this code/)).toBeVisible();
   await expect(page.getByText("KINEMA opens in a new tab. Keep this RESET page open so you can return and continue the conversation.", { exact: true })).toBeVisible();
   await expect(page.getByText(/30 days to begin watching and 48 hours to finish/)).toBeVisible();
@@ -153,12 +175,13 @@ test("completes a production event check-in and keeps film access recoverable", 
   await expect(page.locator("img[onerror]")).toHaveCount(0);
   await expect(page.getByText("The burnout landscape", { exact: true })).toBeVisible();
   await expect(page.getByText("The community RESET map", { exact: true })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Continue the conversation.", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Continue the Conversation", exact: true })).toBeVisible();
+  await expect(page.getByText("Explore questions for reflection—on your own or with others.", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Every answer changes the picture." })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "The picture in numbers." })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Where we begin again." })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Take the Check-In" })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: /Start your RESET/ })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /Start your reset/ })).toHaveCount(0);
   const sequence = await page.locator(".dashboard--post-submission .dashboard__section--dark, .dashboard--post-submission .dashboard__section--light, .success__reward, .success__conversation").evaluateAll((elements) => elements.map((element) => element.className));
   expect(sequence).toEqual([
     "dashboard__section dashboard__section--dark",
@@ -170,8 +193,8 @@ test("completes a production event check-in and keeps film access recoverable", 
   await page.getByRole("button", { name: "Copy code" }).click();
   await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).toBe("EVENT_CODE");
   await page.getByRole("button", { name: "Copy my access details" }).click();
-  await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).toContain("confirm the total is $0");
-  await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).toContain("Redeem by:");
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).toContain("unlock free access");
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { __copied?: string }).__copied)).toContain("Use by:");
   await expect(page.getByRole("link", { name: /Open the private film page/ })).toHaveAttribute("href", "https://kinema.com/films/third-degree-burnout-a-survivors-guide-1mdwu9");
   await expect(page.getByRole("link", { name: /Open the private film page/ })).toHaveAttribute("target", "_blank");
   await expect(page.getByRole("link", { name: /Open the private film page/ })).toHaveAttribute("rel", "noopener noreferrer");
@@ -196,10 +219,10 @@ test("an upcoming event link remains a trailer check-in before opening", async (
   });
 
   await page.goto("/s/columbia-climate-school-2026");
-  await expect(page.getByText("Participate in the RESET to watch the film trailer and explore reflective prompts in Continue the Conversation.")).toBeVisible();
-  await expect(page.getByText("Takes 90 seconds · Public results are anonymous")).toBeVisible();
+  await expect(page.getByText("Complete the reset check-in to watch the film trailer and discover questions to keep the conversation going.")).toBeVisible();
+  await expect(page.getByText("Project RESET is currently in beta. Our privacy policy is being finalized.")).toBeVisible();
   await expect(page.getByText(/film access for this event is not active yet/i)).toBeVisible();
-  await page.getByRole("button", { name: "Start your RESET" }).click();
+  await page.getByRole("button", { name: "Start your reset" }).click();
   await page.getByRole("button", { name: /Continue · 0 selected/ }).click();
   await page.getByRole("button", { name: /Continue · 0 selected/ }).click();
   await expect(page.getByRole("heading", { name: "Complete your check-in" })).toBeVisible();
@@ -220,6 +243,10 @@ test("renders the cumulative community word map from the safe endpoint", async (
   await expect(page.locator("[data-revision='4']")).toBeVisible();
   await expect(page.getByText("check-ins shared", { exact: true })).toBeVisible();
   await expect(page.getByText(/\b(?:illustrative|demo|preview)\b/i)).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Continue the Conversation", exact: true })).toBeVisible();
+  const learningLabButton = page.getByRole("button", { name: "Start your reset" });
+  await expect(learningLabButton.locator(".branded-reset > span")).toHaveCSS("color", "rgb(29, 29, 29)");
+  await expect(learningLabButton.locator(".branded-reset b")).toHaveCSS("color", "rgb(222, 82, 64)");
   const interfaceFont = await page.getByRole("heading", { name: "Every answer changes the picture." }).evaluate((element) => getComputedStyle(element).fontFamily.toLowerCase());
   const cloudFont = await page.getByLabel(/Exhausted: 1 check-in/).evaluate((element) => ({ family: getComputedStyle(element).fontFamily.toLowerCase(), style: getComputedStyle(element).fontStyle }));
   expect(interfaceFont).toContain("poppins");
@@ -230,7 +257,7 @@ test("renders the cumulative community word map from the safe endpoint", async (
 
 test("shows the approved v2 practice language and hides the retired option", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Start your RESET" }).click();
+  await page.getByRole("button", { name: "Start your reset" }).click();
   await expect(page.getByRole("button", { name: "Show more options" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Compassion fatigue", exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "Show more options" }).click();
@@ -325,12 +352,12 @@ test("serves the controlled rehearsal route without test-era language", async ({
   const response = await page.goto("/s/preview-event");
   expect(response?.status()).toBe(200);
   await expect(page.getByRole("heading", { name: "How do you reset?" })).toBeVisible();
-  await expect(page.getByText("Participate in the RESET to receive complimentary access to the film and explore reflective prompts in Continue the Conversation.")).toBeVisible();
-  await expect(page.getByText("Takes 90 seconds · Public results are anonymous")).toBeVisible();
+  await expect(page.getByText("Complete the reset check-in to unlock complimentary film access and questions to keep the conversation going.")).toBeVisible();
+  await expect(page.getByText("Project RESET is currently in beta. Our privacy policy is being finalized.")).toBeVisible();
   await expect(page.getByText(/\b(?:test|preview|demo|placeholder|illustrative)\b/i)).toHaveCount(0);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
 
-  await page.getByRole("button", { name: "Start your RESET" }).click();
+  await page.getByRole("button", { name: "Start your reset" }).click();
   await page.getByRole("button", { name: /Continue · 0 selected/ }).click();
   await page.getByRole("button", { name: /Continue · 0 selected/ }).click();
   await page.getByLabel("Name or initials").fill("Team member");
@@ -338,9 +365,9 @@ test("serves the controlled rehearsal route without test-era language", async ({
   await page.getByLabel(/I understand that my responses/).check();
   await page.getByRole("button", { name: "Finish", exact: true }).click();
 
-  await expect(page.getByRole("heading", { name: "Your film access" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Simple Steps to Access the Film" })).toBeVisible();
   await expect(page.getByLabel("KINEMA promo code")).toHaveText("TEAM_REHEARSAL_CODE");
-  await expect(page.getByText(/Redeem this code by/)).toBeVisible();
+  await expect(page.getByText(/Use this code by/)).toBeVisible();
   await expect(page.getByRole("button", { name: "Copy code" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Copy my access details" })).toBeVisible();
   await expect(page.getByRole("link", { name: /Open the private film page/ })).toHaveAttribute("target", "_blank");
