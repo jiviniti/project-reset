@@ -37,16 +37,14 @@ export function ProjectResetFooter({ showDataNote = true }: { showDataNote?: boo
 
 export function BrandedReset({
   uppercase = false,
-  className = "",
   period = false,
 }: {
   uppercase?: boolean;
-  className?: string;
   period?: boolean;
 }) {
   const label = uppercase ? "RESET" : "reset";
   return (
-    <span className={`branded-reset ${className}`.trim()} aria-label={label}>
+    <span className="branded-reset" aria-label={label}>
       <span aria-hidden="true"><b>{uppercase ? "RE" : "re"}</b>{uppercase ? "SET" : "set"}{period ? <b className="branded-reset__period">.</b> : null}</span>
     </span>
   );

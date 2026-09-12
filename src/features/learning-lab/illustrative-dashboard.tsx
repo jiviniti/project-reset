@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties }
 import { BrandedReset, ProjectResetFooter, ResetBrand } from "@/components/brand/reset-brand";
 import { publicAggregateSnapshotSchema, type PublicAggregateMetric, type PublicAggregateSnapshot } from "@/lib/validation/aggregate";
 import { subscribeToAggregateRevision } from "@/services/aggregates/realtime";
+import { DONATION_URL } from "@/lib/campaign-links";
 
 type LoadState = "loading" | "ready" | "stale";
 type MetricCategory = "emotions" | "practices";
@@ -157,7 +158,14 @@ export function IllustrativeDashboard({
 
       <section className="dashboard__section dashboard__section--coral dashboard__cta">
         <p className="script-line">Your answer belongs here.</p><h2>Add your <BrandedReset uppercase period /> </h2><p>The picture grows because people choose to share.</p>
-        <button type="button" className="button button--light" onClick={onContribute}><span>Start your <BrandedReset uppercase /></span><span aria-hidden="true">→</span></button>
+        <button type="button" className="button button--light" onClick={onContribute}><span>Start your <BrandedReset /></span><span aria-hidden="true">→</span></button>
+      </section>
+
+      <section className="success__conversation" aria-labelledby="learning-lab-conversation-heading">
+        <h3 id="learning-lab-conversation-heading">Continue the Conversation</h3>
+        <p>Explore questions for reflection—on your own or with others.</p>
+        <a className="button button--coral" href="/start-a-conversation" target="_blank" rel="noopener noreferrer">Start a conversation <span aria-hidden="true">→</span></a>
+        <a className="success__support-link" href={DONATION_URL} target="_blank" rel="noreferrer">Support the project</a>
       </section>
 
       <ProjectResetFooter />

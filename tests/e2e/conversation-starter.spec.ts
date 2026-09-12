@@ -62,7 +62,10 @@ test("copies, downloads and clears the saved list", async ({ page }) => {
   });
   await page.goto("/start-a-conversation?theme=food&question=food-first-meal");
   await page.getByRole("button", { name: "1 question saved" }).click();
-  await page.getByRole("button", { name: "Copy my questions" }).click();
+  const copyButton = page.getByRole("button", { name: "Copy my questions" });
+  await expect(copyButton).toHaveCSS("color", "rgb(255, 255, 255)");
+  await expect(copyButton).toHaveCSS("background-color", "rgb(222, 82, 64)");
+  await copyButton.click();
   const copied = await page.evaluate(() => sessionStorage.getItem("copied-questions"));
   expect(copied).toContain("1. Food, memory, and care");
   expect(copied).toContain("What is the first meal you can remember");
