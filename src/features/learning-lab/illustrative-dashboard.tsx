@@ -87,7 +87,7 @@ export function IllustrativeDashboard({
   }, [scheduleRefresh]);
 
   if (!snapshot) {
-    return <div className="dashboard dashboard--loading"><section className="dashboard__section dashboard__section--dark"><p className="eyebrow eyebrow--orange">The community picture</p><h2>{loadState === "loading" ? <>Gathering every <BrandedReset uppercase />…</> : "The picture is taking a moment."}</h2><p>{loadState === "stale" ? "Please try again. The check-in remains available." : "Building the cumulative view."}</p>{loadState === "stale" && <button type="button" className="button button--light" onClick={() => void refresh()}>Try again</button>}</section></div>;
+    return <div className="dashboard dashboard--loading"><section className="dashboard__section dashboard__section--dark"><p className="eyebrow eyebrow--accent">The community picture</p><h2>{loadState === "loading" ? <>Gathering every <BrandedReset />…</> : "The picture is taking a moment."}</h2><p>{loadState === "stale" ? "Please try again. The check-in remains available." : "Building the cumulative view."}</p>{loadState === "stale" && <button type="button" className="button button--light" onClick={() => void refresh()}>Try again</button>}</section></div>;
   }
 
   const total = snapshot.totals.observed;
@@ -103,7 +103,7 @@ export function IllustrativeDashboard({
       <div className="dashboard dashboard--post-submission" data-revision={snapshot.revision}>
         <section className="dashboard__section dashboard__section--dark">
           <p className="section-number">01</p>
-          <p className="eyebrow eyebrow--orange">The burnout landscape</p>
+          <p className="eyebrow eyebrow--accent">The burnout landscape</p>
           <h2>This is what it feels like.</h2>
           <p>Larger words are shared more often.</p>
           <WordCloud metrics={snapshot.metrics.emotions} category="emotions" emptyMessage="The picture starts with what we choose to share." />
@@ -111,7 +111,7 @@ export function IllustrativeDashboard({
 
         <section className="dashboard__section dashboard__section--light">
           <p className="section-number">02</p>
-          <p className="eyebrow">The community <BrandedReset uppercase /> map</p>
+          <p className="eyebrow">The community <BrandedReset /> map</p>
           <h2>What brings us back.</h2>
           <p>Together, our choices create a map of what helps.</p>
           <WordCloud metrics={snapshot.metrics.practices} category="practices" emptyMessage="Every RESET shared here will help this map grow." />
@@ -127,19 +127,19 @@ export function IllustrativeDashboard({
         <button type="button" onClick={onContribute}>Take the Check-In</button>
       </header>
       <section className="dashboard__intro">
-        <ResetBrand light />
-        <p className="eyebrow eyebrow--orange">The Learning Lab</p>
+        <ResetBrand />
+        <p className="eyebrow eyebrow--accent">The Learning Lab</p>
         <h2>Every answer changes the picture.</h2>
         <p>A living portrait of how burnout shows up and the practices helping a community find its way back.</p>
       </section>
 
       <section className="dashboard__section dashboard__section--dark">
-        <p className="section-number">01</p><p className="eyebrow eyebrow--orange">The burnout landscape</p><h2>This is what it feels like.</h2><p>Larger words are shared more often.</p>
+        <p className="section-number">01</p><p className="eyebrow eyebrow--accent">The burnout landscape</p><h2>This is what it feels like.</h2><p>Larger words are shared more often.</p>
         <WordCloud metrics={snapshot.metrics.emotions} category="emotions" emptyMessage="The picture starts with what we choose to share." />
       </section>
 
       <section className="dashboard__section dashboard__section--light">
-        <p className="section-number">02</p><p className="eyebrow">The community <BrandedReset uppercase /> map</p><h2>What brings us back.</h2><p>Together, our choices create a map of what helps.</p>
+        <p className="section-number">02</p><p className="eyebrow">The community <BrandedReset /> map</p><h2>What brings us back.</h2><p>Together, our choices create a map of what helps.</p>
         <WordCloud metrics={snapshot.metrics.practices} category="practices" emptyMessage="Every RESET shared here will help this map grow." />
       </section>
 
@@ -157,7 +157,7 @@ export function IllustrativeDashboard({
       </section>
 
       <section className="dashboard__section dashboard__section--coral dashboard__cta">
-        <p className="script-line">Your answer belongs here.</p><h2>Add your <BrandedReset uppercase period /> </h2><p>The picture grows because people choose to share.</p>
+        <p className="script-line">Your answer belongs here.</p><h2>Add your <BrandedReset period /> </h2><p>The picture grows because people choose to share.</p>
         <button type="button" className="button button--light" onClick={onContribute}><span>Start your <BrandedReset /></span><span aria-hidden="true">→</span></button>
       </section>
 

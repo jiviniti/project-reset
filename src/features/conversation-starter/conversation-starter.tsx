@@ -209,7 +209,7 @@ export function ConversationStarter() {
       {savedPromptIds.length > 0 && !savedPanelVisible ? <button type="button" className={styles.savedIndicator} onClick={viewSavedQuestions}>{savedPromptIds.length} {savedPromptIds.length === 1 ? "question" : "questions"} saved</button> : null}
       <div className={styles.shell}>
         <header className={styles.hero}>
-          <div className={styles.heroTop}><ResetBrand light /><FilmLockup /></div>
+          <div className={styles.heroTop}><ResetBrand /><FilmLockup /></div>
           <div className={styles.heroBody}>
             <div className={styles.heroCopy}><p className={styles.eyebrow}>A conversation worth making room for</p><h1>Continue the conversation.</h1><p>Questions to help you reflect, connect, and see things differently - on your own or with others.</p></div>
             <div className={styles.collage} aria-hidden="true" />
@@ -247,7 +247,7 @@ export function ConversationStarter() {
           <section id="saved-questions" ref={savedPanelRef} className={styles.savedPanel} aria-labelledby="saved-questions-heading">
             <p className={styles.eyebrow}>Keep what stayed with you</p>
             <h2 id="saved-questions-heading" tabIndex={-1}>My saved questions</h2>
-            <p>Saved on this browser and device only. Your choices are not sent to Project <BrandedReset uppercase />.</p>
+            <p>Saved on this browser and device only. Your choices are not sent to Project <BrandedReset />.</p>
             <ol>{savedPrompts.map((prompt, index) => <li key={prompt.id}><div className={styles.savedQuestionMeta}><span>{String(index + 1).padStart(2, "0")}</span><small>{CONVERSATION_THEMES[prompt.theme].label}</small><button type="button" onClick={() => toggleSaved(prompt.id)}>Remove</button></div><p>{prompt.question}</p></li>)}</ol>
             <div className={styles.savedActions}><button className={styles.primaryButton} type="button" onClick={() => void copySavedQuestions()}>Copy my questions</button><button className={styles.secondaryButton} type="button" onClick={() => void downloadSavedQuestions()}>Create and Save my question card</button></div>
             {!confirmClear ? <button className={styles.clearButton} type="button" onClick={() => setConfirmClear(true)}>Clear saved questions</button> : <div className={styles.clearConfirmation} role="group" aria-label="Confirm clearing saved questions"><p>Remove all saved questions from this device?</p><button type="button" onClick={() => { setSavedPromptIds([]); setConfirmClear(false); setSaveStatus("All saved questions were cleared."); }}>Yes, clear all</button><button type="button" onClick={() => setConfirmClear(false)}>Keep my questions</button></div>}

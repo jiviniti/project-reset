@@ -51,12 +51,15 @@ test("serves the unindexed interim privacy update", async ({ page }) => {
   const response = await page.goto("/privacy");
 
   expect(response?.status()).toBe(200);
-  await expect(page.getByRole("heading", { name: "Project RESET is currently in beta." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Project reset is currently in beta." })).toBeVisible();
   await expect(page.getByText("Our privacy policy is being finalized.", { exact: true })).toBeVisible();
   await expect(page.getByText("Public Learning Lab results are aggregated and de-identified.", { exact: true })).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
   const returnLink = page.getByRole("link", { name: "Return to Project reset" });
   await expect(returnLink).toHaveAttribute("href", "/");
+  await expect(returnLink.locator(":scope > span")).toHaveCount(2);
+  await expect(returnLink.locator(":scope > span").last()).toHaveText("→");
+  await expect(returnLink.locator(".branded-reset")).toHaveCSS("font-weight", "600");
   await expect(returnLink.locator(".branded-reset > span")).toHaveCSS("color", "rgb(255, 255, 255)");
   await expect(returnLink.locator(".branded-reset b")).toHaveCSS("color", "rgb(251, 204, 100)");
 });
@@ -135,6 +138,9 @@ test("completes a production event check-in and keeps film access recoverable", 
   await page.getByLabel("Add a burnout tag").fill("  Doomscrolling   at 2 a.m.  ");
   await page.getByRole("button", { name: /Add “Doomscrolling/ }).click();
   await page.getByRole("button", { name: /Continue · 2 selected/ }).click();
+  const resetMapLabel = page.getByText("02 · Your RESET map", { exact: true });
+  await expect(resetMapLabel).toBeVisible();
+  await expect(resetMapLabel.locator(".branded-reset b")).toHaveCSS("color", "rgb(222, 82, 64)");
   await page.getByRole("button", { name: /Restore/ }).click();
   await expect(page.getByRole("button", { name: "Less social media", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Sleeping", exact: true }).click();
@@ -174,7 +180,7 @@ test("completes a production event check-in and keeps film access recoverable", 
   expect(await page.evaluate(() => (window as typeof window & { __xss?: boolean }).__xss)).toBe(false);
   await expect(page.locator("img[onerror]")).toHaveCount(0);
   await expect(page.getByText("The burnout landscape", { exact: true })).toBeVisible();
-  await expect(page.getByText("The community RESET map", { exact: true })).toBeVisible();
+  await expect(page.getByText("The community reset map", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Continue the Conversation", exact: true })).toBeVisible();
   await expect(page.getByText("Explore questions for reflection—on your own or with others.", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Every answer changes the picture." })).toHaveCount(0);

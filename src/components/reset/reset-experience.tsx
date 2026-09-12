@@ -351,7 +351,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <em>A Survivor’s Guide</em>
                 </div>
               </div>
-              <p className="eyebrow eyebrow--orange">The Learning Lab</p>
+              <p className="eyebrow eyebrow--accent">The Learning Lab</p>
               <h1>How do you <BrandedReset />?</h1>
               <p className="hero__lede">The film asks big questions. Project <BrandedReset /> invites you into them, before and beyond the screen.</p>
               <p>Created by JIVINITI in partnership with Picture Motion, this living Learning Lab explores what burnout feels like and what helps us <BrandedReset />.</p>
@@ -359,10 +359,10 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 <Image src="/images/reset-collage.avif" alt="A collage of everyday movement, nourishment, rest, nature, and community" width={900} height={500} priority className="hero__image" />
               </div>
               {screening.eventWindowStatus === "event_expired" ? (
-                <p className="pathway-notice">This event’s film-access window has ended. You can still start your <BrandedReset uppercase /> and watch the trailer.</p>
+                <p className="pathway-notice">This event’s film-access window has ended. You can still start your <BrandedReset /> and watch the trailer.</p>
               ) : null}
               {screening.eventWindowStatus === "event_not_started" ? (
-                <p className="pathway-notice">Film access for this event is not active yet. You can still complete your <BrandedReset uppercase /> through the trailer pathway.</p>
+                <p className="pathway-notice">Film access for this event is not active yet. You can still complete your <BrandedReset /> through the trailer pathway.</p>
               ) : null}
               <p className="hero__outcome">Complete the <BrandedReset /> check-in to {screening.rewardType === "film_access" ? "unlock complimentary film access and questions" : "watch the film trailer and discover questions"} to keep the conversation going.</p>
               <button type="button" className="button button--coral" onClick={start}><span>Start your <BrandedReset /></span><span aria-hidden="true">→</span></button>
@@ -383,7 +383,7 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
 
             {step === 1 && (
               <section className="step step--dark">
-                <p className="eyebrow eyebrow--orange">01 · The burnout landscape</p>
+                <p className="eyebrow eyebrow--accent">01 · The burnout landscape</p>
                 <h2>How does burnout show up for you?</h2>
                 <p>Choose as many as feel true.</p>
                 <div className="chips">{visibleEmotions.map((option) => <Chip tone="dark" key={option.key} selected={form.emotions.includes(option.key)} onClick={() => toggleList("emotions", option.key)}>{option.label}</Chip>)}</div>
@@ -405,14 +405,14 @@ export function ResetExperience({ screening }: { screening: ScreeningConfig }) {
                 })}</div>
                 {form.pathways.map((pathwayKey) => <fieldset className="practice-group" key={pathwayKey}><legend>{pathwayOptions.find((option) => option.key === pathwayKey)?.label}: what helps?</legend><div className="chips">{practicesByPathway[pathwayKey].map((option) => <Chip key={option.key} selected={form.practices.includes(option.key)} onClick={() => toggleList("practices", option.key)}>{option.label}</Chip>)}</div></fieldset>)}
                 <CustomTagField side="reset" input={resetTagInput} tags={form.resetCustomTags} onInput={setResetTagInput} onAdd={() => addCustomTag("reset")} onRemove={(tag) => removeCustomTag("reset", tag)} />
-                <label><span className="label-copy">Tell us about your <BrandedReset uppercase /> ritual (optional)</span><textarea rows={3} maxLength={1500} value={form.ritual} onChange={(event) => update("ritual", event.target.value)} /></label>
+                <label><span className="label-copy">Tell us about your <BrandedReset /> ritual (optional)</span><textarea rows={3} maxLength={1500} value={form.ritual} onChange={(event) => update("ritual", event.target.value)} /></label>
                 <button className="button button--coral" type="button" onClick={() => goToStep(3)}>Continue · {form.practices.length + form.resetCustomTags.length} selected</button>
               </section>
             )}
 
             {step === 3 && (
               <form className="step step--light" onSubmit={submitFinalStep}>
-                <p className="eyebrow eyebrow--orange">03 · Your details</p>
+                <p className="eyebrow eyebrow--accent">03 · Your details</p>
                 <h2>Complete your check-in</h2>
                 <p>Add your details to finish your <BrandedReset /> and receive {screening.rewardType === "film_access" ? "film" : "trailer"} access.</p>
                 <label>Name or initials<input required autoComplete="given-name" maxLength={80} value={form.firstName} onChange={(event) => update("firstName", event.target.value)} /></label>

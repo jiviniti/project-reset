@@ -50,7 +50,7 @@
 .filmLockup strong,
 .filmLockup span {
   display: block;
-  font-family: var(--ui);
+  font-family: var(--font-ui);
   font-style: normal;
 }
 
@@ -296,7 +296,7 @@
   border: 1px solid var(--kalika);
   background: transparent;
   cursor: pointer;
-  font: 600 .68rem/1.2 var(--ui);
+  font: 600 .68rem/1.2 var(--font-ui);
 }
 .showThemesButton:hover { color: var(--shweta); background: var(--kalika); }
 
@@ -461,7 +461,7 @@
   border: 1px solid var(--kalika);
   background: transparent;
   cursor: pointer;
-  font: 600 .62rem/1.2 var(--ui);
+  font: 600 .62rem/1.2 var(--font-ui);
 }
 .libraryHeading > button:hover { color: var(--shweta); background: var(--kalika); }
 
@@ -474,7 +474,7 @@
   border: 1px solid var(--kalika);
   background: transparent;
   cursor: pointer;
-  font: 600 .68rem/1.2 var(--ui);
+  font: 600 .68rem/1.2 var(--font-ui);
 }
 
 .bottomThemeButton:hover { color: var(--shweta); background: var(--kalika); }
@@ -524,7 +524,7 @@
   border: 0;
   background: transparent;
   cursor: pointer;
-  font: 600 .7rem/1.3 var(--ui);
+  font: 600 .7rem/1.3 var(--font-ui);
   text-decoration: underline;
   text-underline-offset: 4px;
 }
@@ -542,7 +542,7 @@
   border-top: 1px solid var(--pavitra);
   background: transparent;
   cursor: pointer;
-  font: 600 .7rem/1.2 var(--ui);
+  font: 600 .7rem/1.2 var(--font-ui);
 }
 .saveButton:hover { color: var(--sindoor); border-color: var(--sindoor); }
 .saveButton[aria-pressed="true"] { color: var(--mrida); border-color: var(--mrida); }
@@ -566,7 +566,7 @@
   border-radius: 999px;
   background: var(--kalika);
   cursor: pointer;
-  font: 700 .68rem/1.2 var(--ui);
+  font: 700 .68rem/1.2 var(--font-ui);
 }
 
 .savedIndicator:focus-visible { outline: 3px solid #1769e0; outline-offset: 3px; }
@@ -589,15 +589,15 @@
 .savedQuestionMeta > span { color: var(--sindoor); font-size: .66rem; font-weight: 700; letter-spacing: .1em; }
 .savedPanel li small { color: #656565; font-size: .54rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .savedPanel li p { max-width: 520px; margin: 15px 0 0 52px; color: var(--kalika); font-size: 1rem; font-weight: 600; line-height: 1.4; }
-.savedPanel li button { padding: 5px 0; color: var(--mrida); border: 0; background: transparent; cursor: pointer; font: 600 .61rem/1.2 var(--ui); text-decoration: underline; text-underline-offset: 4px; }
+.savedPanel li button { padding: 5px 0; color: var(--mrida); border: 0; background: transparent; cursor: pointer; font: 600 .61rem/1.2 var(--font-ui); text-decoration: underline; text-underline-offset: 4px; }
 .savedActions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 28px; }
 .savedPanel .primaryButton { color: var(--shweta); border-color: var(--sindoor); background: var(--sindoor); }
 .savedPanel .secondaryButton { color: var(--kalika); border-color: var(--kalika); }
 .savedPanel .secondaryButton:hover { color: var(--shweta); background: var(--kalika); }
-.clearButton { margin-top: 20px; padding: 6px 0; color: var(--mrida); border: 0; background: transparent; cursor: pointer; font: 600 .62rem/1.2 var(--ui); text-decoration: underline; text-underline-offset: 4px; }
+.clearButton { margin-top: 20px; padding: 6px 0; color: var(--mrida); border: 0; background: transparent; cursor: pointer; font: 600 .62rem/1.2 var(--font-ui); text-decoration: underline; text-underline-offset: 4px; }
 .clearConfirmation { display: flex; align-items: center; gap: 12px; margin-top: 20px; padding: 16px; border: 1px solid var(--kalika); }
 .clearConfirmation p { margin: 0 auto 0 0; font-size: .68rem; }
-.clearConfirmation button { min-height: 38px; padding: 8px 12px; color: var(--kalika); border: 1px solid var(--kalika); background: transparent; cursor: pointer; font: 600 .61rem/1.2 var(--ui); }
+.clearConfirmation button { min-height: 38px; padding: 8px 12px; color: var(--kalika); border: 1px solid var(--kalika); background: transparent; cursor: pointer; font: 600 .61rem/1.2 var(--font-ui); }
 .saveStatus { min-height: 0; margin: 0; padding: 0 28px; color: var(--mrida); background: var(--shweta); font-size: .64rem; line-height: 1.5; text-align: center; }
 .saveStatus:not(:empty) { padding-block: 14px; }
 
