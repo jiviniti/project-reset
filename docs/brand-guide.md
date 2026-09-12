@@ -61,8 +61,8 @@ Pathway colors identify actual pathways. Do not assign them decoratively to unre
 
 - The branded mark is lowercase `reset.`
 - On a light ground, use the approved two-tone mark.
-- On Sindoor, `re` and the period use Marigold Light.
-- On Kalika, `re` and the period use Connect Sevantika.
+- On Sindoor, `re` and the period use Marigold Light while `set` uses Shweta.
+- On Kalika, `re` and the period use Connect Sevantika while `set` uses Shweta.
 - Use a one-color mark only for small or single-color applications.
 - Never stack, letterspace, distort, or freely recolor the wordmark.
 - Maintain clear space equal to the height of the `r` on all sides.
@@ -76,8 +76,9 @@ The two-color treatment is an identity device, not a requirement for every writt
 
 - Use the two-color treatment for the primary lockup, prominent display moments, and approved campaign artwork.
 - Prefer ordinary `RESET` or grammatical `reset` in body copy, labels, legal text, and compact controls.
-- When a control background cannot provide contrast for both wordmark colors, use a one-color treatment. The current Sindoor primary CTA uses Shweta throughout.
-- The wider use of the two-color treatment in the current review build remains an editorial decision for Foundation approval.
+- The current Sindoor primary CTA uses the approved two-color treatment: Marigold Light for `re` and the period, and Shweta for `set`.
+- One-color treatment is reserved for print, embroidery, engraving, or genuinely constrained applications.
+- The wider use of the inline two-color treatment in the product is an approved Foundation editorial direction.
 
 The documentary title is always bold Poppins capitals and larger than its qualifier:
 

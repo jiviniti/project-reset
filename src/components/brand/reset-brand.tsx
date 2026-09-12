@@ -1,8 +1,8 @@
 import Image from "next/image";
 
-export function ResetBrand({ light = false }: { light?: boolean }) {
+export function ResetBrand() {
   return (
-    <div className={`reset-brand${light ? " reset-brand--light" : ""}`} aria-label="Project RESET">
+    <div className="reset-brand" aria-label="Project RESET">
       <span className="reset-brand__project">Project</span>
       <span className="reset-brand__word"><b>re</b>set<b>.</b></span>
       <span className="reset-brand__tagline">Choose Better. Together.</span>
@@ -44,7 +44,7 @@ export function BrandedReset({
 }) {
   const label = uppercase ? "RESET" : "reset";
   return (
-    <span className="branded-reset" aria-label={label}>
+    <span className={`branded-reset${uppercase ? " branded-reset--uppercase" : ""}`} aria-label={label}>
       <span aria-hidden="true"><b>{uppercase ? "RE" : "re"}</b>{uppercase ? "SET" : "set"}{period ? <b className="branded-reset__period">.</b> : null}</span>
     </span>
   );
