@@ -157,7 +157,7 @@ export function IllustrativeDashboard({
       </section>
 
       <section className="dashboard__section dashboard__section--coral dashboard__cta">
-        <p className="script-line">Your answer belongs here.</p><h2>Add your <BrandedReset period /> </h2><p>The picture grows because people choose to share.</p>
+        <p className="script-line">Your answer belongs here.</p><h2>Add your <BrandedReset period /> </h2><p className="dashboard__cta-copy">The picture grows because people choose to share.</p>
         <button type="button" className="button button--light" onClick={onContribute}><span>Start your <BrandedReset /></span><span aria-hidden="true">→</span></button>
       </section>
 

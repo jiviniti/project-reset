@@ -248,7 +248,8 @@ legend, .field-group-label { margin: 9px 0 7px; color: #756d68; font-family: var
 .pathway-bloom > span::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--bloom-color); transform: scale(var(--bloom-scale)); animation: bloom 1s cubic-bezier(.2,.7,.3,1) both; }
 .pathway-bloom strong { position: relative; z-index: 1; color: white; font-size: 1.35rem; font-weight: 500; }
 .pathway-bloom b { color: var(--mrida); font-size: .72rem; font-weight: 600; text-transform: uppercase; }
-.dashboard__cta .script-line { margin-bottom: 8px; color: var(--kalika) !important; font-family: var(--font-editorial); font-style: italic; }
+.dashboard__cta .script-line { margin-bottom: 8px; color: var(--shweta) !important; font-family: var(--font-editorial); font-style: italic; }
+.dashboard__section.dashboard__section--coral > p.dashboard__cta-copy { color: var(--shweta); opacity: 1; }
 .dashboard__cta a { display: inline-block; margin-top: 18px; color: var(--kalika); font-size: .68rem; }
 .dashboard__footer { padding: 30px 24px; background: var(--shweta); }
 .privacy-page { color: var(--kalika); background: var(--shweta); }
