@@ -21,7 +21,7 @@ const climateWeekScreeningConfig: ScreeningConfig = {
   entryPathway: "event",
   rewardType: "film_access",
   eventWindowStatus: "active_event",
-  checkInOpensAt: "2026-09-22T04:00:00.000Z",
+  checkInOpensAt: "2026-09-17T04:00:00.000Z",
   checkInClosesAt: "2026-10-07T04:00:00.000Z",
   accessEndsAt: "2026-10-07T04:00:00.000Z",
 };

@@ -1,8 +1,8 @@
 # Continue the Conversation
 
-Last updated: 7 September 2026
+Last updated: 17 September 2026
 
-Status: Foundation-approved participant copy, still `noindex` until the production-domain launch. It replaces the share card in the post-check-in journey; the share-card concept route remains available only for internal review.
+Status: Foundation-approved public participant experience. It replaces the share card in the post-check-in journey; the share-card concept route is retired from the deployed application.
 
 ## Experience
 
@@ -14,13 +14,13 @@ Selecting a theme reveals all six primary questions together. Context and a deep
 
 ## Data boundary
 
-- The route is `/start-a-conversation` and is linked after the Learning Lab and film/trailer reward.
+- The public route is `/start-a-conversation` and is linked after the Learning Lab and film/trailer reward.
 - It makes no API, Supabase, analytics or KINEMA requests.
 - Participants can save any number of questions across themes. Only stable prompt IDs are retained in versioned browser `localStorage`.
 - Saved questions can be copied as plain text or saved as `project-reset-saved-questions.png`. A successful image save confirms, “Your question card has been saved to your device.” No social-sharing flow is used.
 - It contains no answer fields and records nothing participants say.
 - Deep links contain only allowlisted `theme` and `question` identifiers.
 - The prompt bank remains 60 typed, versioned prompts across 10 themes.
-- Search indexing remains disabled until the production-domain launch is approved.
+- The production route does not carry the event-route `noindex` restriction. Event-specific check-in routes remain unindexed.
 
 The safety copy identifies the page as a conversation guide rather than therapy or crisis support. KINEMA may also link to the same generic route after viewing the film.

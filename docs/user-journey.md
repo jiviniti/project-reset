@@ -6,7 +6,7 @@ Last updated: 11 September 2026
 
 Project RESET is a participatory educational product rather than a single survey or content page. Its current journey moves through five connected modes:
 
-1. The check-in creates a brief moment of personal reflection and contributes an anonymous response to the shared picture.
+1. The check-in creates a brief moment of personal reflection and contributes approved selections to an aggregated, de-identified shared picture.
 2. The Burnout Landscape and Community RESET Map turn individual selections into collective meaning.
 3. Film or trailer access carries participants into the documentary's deeper narrative.
 4. Continue the Conversation helps that reflection travel into conversations with friends, families, classmates, colleagues and communities.

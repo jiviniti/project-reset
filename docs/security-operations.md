@@ -1,6 +1,6 @@
 # Security operations
 
-Last verified: 10 September 2026
+Last reconciled with source: 17 September 2026
 
 This runbook covers Project RESET launch operations. Never paste passwords, OTPs, API keys, database credentials, or KINEMA promo codes into this file, tickets, or chat.
 
@@ -8,12 +8,12 @@ This runbook covers Project RESET launch operations. Never paste passwords, OTPs
 
 | Decision or action | Primary owner | Backup / escalation |
 |---|---|---|
-| Disable or re-enable application submissions | Shashank, through the server-only Vercel `SUBMISSIONS_ENABLED` variable | Nivi / Virsa Vercel owner |
-| Roll back a Vercel deployment | Shashank | Nivi / Virsa Vercel owner |
-| Rotate the Supabase secret key and update Vercel | Nivi / Virsa Supabase owner, coordinated by Shashank | Supabase support |
+| Disable or re-enable application submissions | Designated Virsa/Vercel application operator, through the server-only `SUBMISSIONS_ENABLED` variable | Foundation owner / retained technical support |
+| Roll back a Vercel deployment | Designated Virsa/Vercel application operator | Foundation owner / retained technical support |
+| Rotate the Supabase secret key and update Vercel | Virsa Supabase owner, coordinated with the application operator | Supabase support |
 | Approve deletion, restoration, or export of participant data | Nivi / The Virsa Foundation | Legal counsel |
 | Disable, extend, or raise the cap of a KINEMA promo code | KINEMA support after Project RESET approval | Brian / Picture Motion campaigns liaison |
-| Participant-facing incident communication | Nivi | Brian and Shashank |
+| Participant-facing incident communication | Nivi / The Virsa Foundation | Brian / Picture Motion and retained technical support |
 
 ## Launch monitoring
 
@@ -42,7 +42,7 @@ This runbook covers Project RESET launch operations. Never paste passwords, OTPs
 
 ## KINEMA production configuration
 
-- The application supports only the two server-held production code variables documented in `.env.example`; temporary-code runtime support has been removed.
+- The application supports the two server-held production codes plus the temporary server-only `KINEMA_TEST_CODE` rehearsal code documented in `.env.example`. The rehearsal code is restricted to `preview-event`, and the route fails closed when the variable is absent or after `2026-09-22 04:00:00Z`.
 - Never configure `E2E_USE_TEST_FIXTURE` in Vercel.
-- Verify all retired `preview-*` paths return 404 after every production deployment.
+- Verify `preview-screening` and `preview-expired-event` return 404 after every production deployment. Verify `preview-event` returns 404 after its cutoff or as soon as the rehearsal variable is removed and the screening is closed.
 - A production code is returned only after a completed, database-eligible submission on its exact allowlisted event slug.
