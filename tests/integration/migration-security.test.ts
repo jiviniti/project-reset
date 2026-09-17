@@ -43,6 +43,10 @@ const teamRehearsalMigration = readFileSync(
   resolve("supabase/migrations/202609110002_restore_team_rehearsal.sql"),
   "utf8",
 ).toLowerCase();
+const climateWeekEarlyActivationMigration = readFileSync(
+  resolve("supabase/migrations/202609170001_activate_climate_week_early.sql"),
+  "utf8",
+).toLowerCase();
 const productionResetScript = readFileSync(
   resolve("supabase/scripts/reset_production_data.sql"),
   "utf8",
@@ -168,6 +172,14 @@ describe("database security migration", () => {
     expect(teamRehearsalMigration).toContain("'2026-09-22 04:00:00+00'");
     expect(teamRehearsalMigration).toContain("'preview-screening', 'preview-expired-event'");
     expect(teamRehearsalMigration).not.toContain("kinema_test_code");
+  });
+
+  it("opens only Climate Week early without extending its closing boundary", () => {
+    expect(climateWeekEarlyActivationMigration).toContain("where slug = 'climate-week-nyc-2026'");
+    expect(climateWeekEarlyActivationMigration).toContain("'2026-09-17 04:00:00+00'");
+    expect(climateWeekEarlyActivationMigration).toContain("check_in_closes_at = '2026-10-07 04:00:00+00'");
+    expect(climateWeekEarlyActivationMigration).toContain("film_access_ends_at = '2026-10-07 04:00:00+00'");
+    expect(climateWeekEarlyActivationMigration).not.toContain("columbia-climate-school-2026");
   });
 
   it("keeps the empty-production reset destructive, guarded, and verification-driven", () => {

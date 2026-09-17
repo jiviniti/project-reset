@@ -1,5 +1,7 @@
 # Deployment
 
+Last reconciled with the production specification: 17 September 2026
+
 ## Production release
 
 Milestone 1 was verified on 24 August 2026, Milestone 2 and the pre-Milestone-3 product/visual reconciliation on 25 August 2026 at [project-reset-psi.vercel.app](https://project-reset-psi.vercel.app/). Questionnaire version 3 was rolled out and verified there on 5 September 2026.
@@ -9,7 +11,7 @@ Milestone 1 was verified on 24 August 2026, Milestone 2 and the pre-Milestone-3 
 3. Set the Vercel variables listed in `.env.example`. Only the Supabase URL, current publishable key and browser-visible campaign URLs may use `NEXT_PUBLIC_`; the secret key must remain server-only. `NEXT_PUBLIC_DONATE_URL` defaults to the approved Fuel the Impact page at `https://thirddegreeburnout.com/fueltheimpact`. `NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL` defaults to the approved film homepage `https://www.thirddegreeburnout.com/`.
 4. Deploy from the GitHub repository only after Security CI passes. Dependencies are exact-version pinned; do not replace them with `latest` ranges.
 5. Configure the `reset-submissions` Vercel WAF instrument for 1,000 requests/IP/60 seconds and 429 action.
-6. Complete `/`, verify it submits with the `project-reset` slug, verify the cumulative snapshot, and run the two-window realtime check in `docs/handover.md`.
+6. Complete `/`, verify it submits with the `project-reset` slug, verify the cumulative snapshot and realtime refresh, then follow the production-route checks in `docs/handover.md`.
 
 ### Participant routes
 
@@ -34,9 +36,9 @@ The other former `preview-*` screening paths and `/share-card-concepts` are reti
 
 Controlled KINEMA verification completed on 8 September 2026: TVOD/rentals were enabled, the film page was published privately, the no-cost dummy code unlocked the film, and the redemption appeared in Reports → Rentals. Verification of the standard confirmation email's return link remains outstanding.
 
-The launch windows are configured by `202609060001_launch_event_windows.sql`:
+The launch windows are configured by `202609060001_launch_event_windows.sql`, with the approved early Climate Week activation applied by `202609170001_activate_climate_week_early.sql`:
 
-- Climate Week NYC: September 22 through October 7, 2026, closing at midnight New York time on October 7.
+- Climate Week NYC: active from September 17 through October 7, 2026, closing at midnight New York time on October 7.
 - Columbia Climate School: October 7 through October 22, 2026, closing at midnight New York time on October 22.
 
 Closing timestamps are exclusive. The participant-facing deadline is therefore 11:59 p.m. New York time on October 6 for Climate Week and October 21 for Columbia. At each closing time the application returns to trailer access, but a code copied earlier remains redeemable until KINEMA disables it. KINEMA has confirmed that each code can be shut down separately; written confirmation that both shutdowns are scheduled is still required. Never reuse either code for another event.
@@ -58,6 +60,8 @@ The WAF threshold must be reviewed against expected audience size, venue network
 
 `202609070001_final_consent_policy.sql` replaces the test-era wording in `reset_data_use_v1_us` with the Foundation-approved launch statement. This in-place correction is permitted only because all existing submissions are internal pre-launch tests. Once public participant collection starts, do not edit this row again. Publish every material future wording change under a new policy-version identifier and point only new screenings or submissions to it.
 
-## Production data preparation
+## Production data state and cleanup recovery
 
-The custom domain is active. Before public collection, obtain written Foundation approval for the dataset policy. If the approved direction is an empty live dataset followed by genuine team submissions, disable writes, verify a restorable backup, then run `supabase/scripts/reset_production_data.sql` in one SQL session using its explicit confirmation guard. The script removes internal responses and the seeded aggregate baseline, rebuilds observed aggregates, verifies every research/aggregate count is zero, and increments the public revision. Re-enable submissions only after the application and empty-state response have been verified. The older `prepare_production.sql` deliberately preserves seeded data and is not the launch-cleanup script.
+The custom domain is active. The owner reports that the approved internal/illustrative cleanup was completed and that genuine team responses now form the production Learning Lab. Verify that state with query 13 in `docs/database-reporting.md`; the repository alone cannot prove the current live row counts or backup status.
+
+`supabase/scripts/reset_production_data.sql` is retained as a guarded historical/recovery tool, not a routine command. It removes participant/research records and the seeded aggregate baseline. Never rerun it against a populated production database without new written Foundation approval, disabled submissions, and a verified restorable backup. The older `prepare_production.sql` preserves seeded data and is not the production-cleanup script.

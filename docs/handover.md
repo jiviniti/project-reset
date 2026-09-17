@@ -1,359 +1,340 @@
-# Handover and verification
+# Project RESET operational handover
 
-Last updated: 11 September 2026
+Status: Phase 1 production handover
 
-## Production closure checklist
+Prepared for: The Virsa Foundation
 
-1. Obtain Nivi's written approval before deleting any internal or seeded data.
-2. Set `SUBMISSIONS_ENABLED=false`, redeploy, and verify a submission returns 503.
-3. Take and verify a restorable Supabase backup.
-4. Apply `supabase/migrations/202609110001_production_cutover.sql`.
-5. If deletion was approved, run `supabase/scripts/reset_production_data.sql` exactly as documented in that file and inspect its verification result before committing the SQL session.
-6. Deploy the application through the protected `main` branch. Configure only the real production URLs and server-only event codes; do not configure `E2E_USE_TEST_FIXTURE`.
-7. Verify `/`, both event paths, `/start-a-conversation`, and `GET /api/v1/aggregates`. While `KINEMA_TEST_CODE` is configured, verify `/s/preview-event` uses the production journey; the other former preview paths and `/share-card-concepts` must return 404.
-8. Re-enable submissions only after the empty or genuine-response state is correct. Let the team add genuine pre-launch responses, then verify the observed totals again.
-9. Record KINEMA-controlled code shutdowns, legal/privacy content, and on-screen delivery approval as external launch dependencies if still pending.
+Updated: 17 September 2026
 
-Production screening check:
+This is the primary owner-facing guide to Project RESET. It explains what is live, where each responsibility sits, how to monitor and report on the system, and where to find deeper technical detail. It contains no credentials, promo codes, participant records, or other secrets.
 
-```sql
-select
-  screening.slug,
-  screening.name,
-  screening.status,
-  screening.pathway_type,
-  questionnaire.version as questionnaire_version,
-  screening.check_in_opens_at,
-  screening.check_in_closes_at
-from private.screenings screening
-join private.questionnaire_versions questionnaire
-  on questionnaire.id = screening.questionnaire_version_id
-where screening.slug in (
-  'project-reset',
-  'climate-week-nyc-2026',
-  'columbia-climate-school-2026',
-  'preview-screening',
-  'preview-event',
-  'preview-expired-event'
-)
-order by screening.slug;
-```
+## 1. What has been delivered
 
-Expected: the three production rows and `preview-event` use questionnaire v3; `project-reset` is active and non-event; the two approved event rows are active and event-based. The temporary `preview-event` row is active only through `2026-09-22 04:00:00Z`; the other former preview rows remain closed.
+Phase 1 includes:
 
-The controlled rehearsal route is unindexed and fails closed when `KINEMA_TEST_CODE` is absent. Removing that Vercel variable and closing the `preview-event` screening retires it immediately. Team members should submit genuine responses because rehearsal submissions use the normal production aggregate path.
+- a general Project RESET check-in and Learning Lab;
+- two event-attributed check-in pathways;
+- a temporary team rehearsal pathway that closes automatically;
+- private participant submission through the application server;
+- cumulative, de-identified public Learning Lab aggregates;
+- server-controlled KINEMA film access for eligible event participants;
+- trailer access outside an eligible film-access window;
+- the Continue the Conversation reflection tool;
+- event slides and QR assets delivered separately;
+- deployment, security, reporting, and incident-response documentation.
 
-Observed-only public-picture check:
+The system intentionally does not include a participant email system, an administrative reporting dashboard, automatic KINEMA integration, or conversation analytics. These remain possible Phase 2 work.
 
-```sql
-select api.get_public_aggregates_v1();
-```
+## 2. Production links and pathway behavior
 
-Use the returned `observed` values for operational reporting. The frontend deliberately ignores `seeded` and `combined`, even before the approved cleanup is executed.
+| Experience | Production link | Current behavior |
+| --- | --- | --- |
+| General Learning Lab | <https://reset.thirddegreeburnout.com/> | Check-in, public community picture, and trailer access |
+| Climate Week NYC | <https://reset.thirddegreeburnout.com/s/climate-week-nyc-2026> | Film access from 17 September through 6 October 2026 |
+| Columbia Climate School | <https://reset.thirddegreeburnout.com/s/columbia-climate-school-2026> | Film access from 7 October through 21 October 2026 |
+| Continue the Conversation | <https://reset.thirddegreeburnout.com/start-a-conversation> | Local reflection tool that opens independently of a check-in |
+| Privacy update | <https://reset.thirddegreeburnout.com/privacy> | Interim beta and de-identification statement pending final legal copy |
+| Team rehearsal | <https://reset.thirddegreeburnout.com/s/preview-event> | Temporary, unindexed pathway; available only while its server-side code and database window remain active |
 
-### Suggested event wording
+Event closing timestamps are exclusive and use New York time. Climate Week stops issuing film access at 12:00 a.m. on 7 October. Columbia stops at 12:00 a.m. on 22 October. After a window closes, the same route continues to accept check-ins but returns to trailer access.
 
-Moderator/on-screen wording for the check-in QR:
+The event URL alone does not expose a promo code. Film access is returned only after an eligible check-in has been committed successfully.
 
-> Take 90 seconds to add your RESET to the community picture. Complete the check-in to receive complimentary film access. Keep your code and private film link close, and keep the RESET page open when KINEMA launches in a new tab.
+For the complete journey, see [user-journey.md](user-journey.md).
 
-Moderator/on-screen wording for the separate conversation QR:
+## 3. Participant journey
 
-> Continue the Conversation. Choose a question that feels worth exploring, then turn to a partner or carry it into your next meal, walk, call, classroom, or gathering.
+Every participant follows the same basic sequence:
 
-This is copy guidance only. Designed slides, video, and presentation collateral are separate work.
+1. Open the general or event-specific route.
+2. Review the pathway benefit and interim privacy notice where applicable.
+3. Complete the reset check-in.
+4. Provide the required identity and consent fields.
+5. Optionally provide demographics and communications consent.
+6. Submit the response through the protected server route.
+7. View the check-in confirmation, Burnout Landscape, and Community RESET Map.
+8. Receive film access when the event window is active, or trailer access otherwise.
+9. Open KINEMA and Continue the Conversation in new tabs so the completed RESET page remains available.
 
-The sections below preserve earlier rollout history. They are not the current production procedure.
+Names, email addresses, demographics, free-text answers, custom tags, consent records, and record identifiers are never displayed in the public Learning Lab.
 
-## Questionnaire v2 and brand-polish rollout
+Repeated check-ins are permitted. One person may therefore create more than one participation record, and a participation count must not be described as a unique-person count.
 
-1. Disable preview submissions before changing the active questionnaire.
-2. Apply `supabase/migrations/202608310001_questionnaire_v2_brand_polish.sql`. It publishes v2, switches preview screenings, updates the public aggregate allowlist, rebuilds observed counts, and preserves v1 history.
-3. Do **not** reapply preview seed files to a populated preview database; they are intended for fresh/reset preview setup.
-4. Run `supabase/tests/aggregate_milestone2.sql` inside its rollback transaction.
-5. Deploy the frontend and verify `/s/preview-screening` reports questionnaire version 2, revised practices, both new practices, and no Fruit & veg option.
-6. Re-enable submissions only after the application and database versions match.
+## 4. System architecture and ownership
 
-Verification queries:
+The production system is divided across four platforms:
 
-```sql
-select key as questionnaire_key, version, status, published_at
-from private.questionnaire_versions
-where key = 'reset-v1'
-order by version;
+| Platform | Responsibility | Primary owner action |
+| --- | --- | --- |
+| GitHub | Source code, migrations, documentation, and change history | Review changes and preserve the protected release workflow |
+| Vercel | Next.js application, production domain, server runtime, logs, firewall, and environment variables | Monitor deployments and runtime errors; manage server-only configuration |
+| Supabase | Private submissions, consent, screening configuration, aggregate state, and reporting queries | Run approved read-only reports and control reviewed database changes |
+| KINEMA | Film account, rental checkout, promo-code acceptance, DRM, viewing window, email, and redemption reports | Monitor redemptions and manage code availability with KINEMA |
 
-select s.slug, qv.version as questionnaire_version
-from private.screenings s
-join private.questionnaire_versions qv on qv.id = s.questionnaire_version_id
-where s.slug in ('preview-screening', 'preview-event', 'preview-expired-event')
-order by s.slug;
-
-select category, metric_key, label, is_active
-from aggregate.metric_definitions
-where metric_key in ('fruit_veg', 'less_social_media', 'in_person_meetings')
-order by metric_key;
-```
-
-Expected: both questionnaire versions remain published; preview routes use v2; `fruit_veg` is inactive; both new metrics are active.
-
-## Event/non-event pathway rollout
-
-1. Set `SUBMISSIONS_ENABLED=false` in the Vercel preview environment and redeploy.
-2. Apply `supabase/migrations/202608290001_event_non_event_pathways.sql` in Supabase SQL Editor.
-3. Reapply `supabase/seed/001_preview.sql`; it explicitly keeps `preview-screening` on the non-event pathway.
-4. Run `supabase/tests/pathway_foundation.sql`. It creates active and expired event submissions inside a transaction and rolls all writes back.
-5. Add `NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL` in Vercel only after Nivi confirms the final trailer destination. It is browser-safe configuration, not a secret.
-6. Redeploy, verify `/s/preview-screening` promises trailer access, then re-enable preview submissions.
-
-To configure a real event after its dates are approved:
-
-```sql
-update private.screenings
-set pathway_type = 'event',
-    check_in_opens_at = '2026-09-15T00:00:00Z',
-    check_in_closes_at = '2026-09-23T00:00:00Z',
-    film_access_ends_at = '2026-09-25T00:00:00Z',
-    updated_at = now()
-where slug = 'replace-with-approved-event-slug';
-
-select api.get_screening_v1('replace-with-approved-event-slug');
-```
-
-The returned `entryPathway`, `rewardType` and `eventWindowStatus` must match the current window. Do not put event URLs into `NEXT_PUBLIC_PROJECT_RESET_SIGNUP_URL`; that share-card destination must remain a canonical non-event route.
-
-## Milestone 2 preview rollout
-
-1. Disable preview submissions in Vercel with `SUBMISSIONS_ENABLED=false`.
-2. In Supabase SQL Editor, apply these files in order:
-   - `supabase/migrations/202608250003_aggregate_model.sql`
-   - `supabase/migrations/202608250004_submission_aggregate_hook.sql`
-   - `supabase/migrations/202608250005_fix_revision_safe_update.sql`
-   - `supabase/migrations/202608250006_us_english_policy.sql`
-3. Apply `supabase/seed/002_aggregate_baseline.sql`. Dashboard SQL Editor does not support the `\ir` command in `supabase/seed.sql`.
-4. Run `supabase/tests/aggregate_milestone2.sql`. It performs test submissions inside a transaction and rolls them back.
-5. Add Vercel browser-safe variables:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
-6. Keep `SUPABASE_SECRET_KEY` server-only. Never substitute the publishable key for it.
-7. Deploy the preview, verify the aggregate endpoint and realtime, then re-enable preview submissions.
-
-## Verify the public aggregate snapshot
-
-Open:
+Representative request flow:
 
 ```text
-https://project-reset-psi.vercel.app/api/v1/aggregates
+Participant browser
+  -> reset.thirddegreeburnout.com
+  -> Next.js server validates the request
+  -> Supabase records the private participation and updates safe aggregates
+  -> server appends KINEMA access only for an eligible committed event response
+  -> browser displays the completion journey and public aggregate picture
 ```
 
-Confirm:
+The browser never receives a Supabase secret, production promo code before eligibility, or direct permission to read private records.
 
-- `scope` is `cumulative`;
-- seeded, observed and combined totals are separate;
-- only emotions, pathways and practices appear;
-- no participant, screening, free-text, demographic or consent data appears.
+See [architecture.md](architecture.md) and [infrastructure.md](infrastructure.md) for the complete boundary map.
 
-In SQL Editor, compare the server snapshot:
+## 5. Data model and privacy boundary
 
-```sql
-select api.get_public_aggregates_v1();
-```
+### Private source data
 
-## Verify counts and seeded/observed separation
+Private records include:
 
-```sql
-select
-  scope.scope_type,
-  scope.scope_key,
-  total.data_origin,
-  total.count
-from aggregate.submission_totals total
-join aggregate.scopes scope on scope.id = total.scope_id
-order by scope.scope_type, scope.scope_key, total.data_origin;
+- participant name and email;
+- optional city, age band, and occupation;
+- selected responses and free-text answers;
+- selected and participant-created tags;
+- consent version and acceptance timestamp;
+- optional communications preference;
+- screening, pathway, event-window, and reward outcome;
+- idempotency and operational metadata.
 
-select
-  definition.category,
-  definition.metric_key,
-  count.data_origin,
-  sum(count.count) as total
-from aggregate.metric_counts count
-join aggregate.metric_definitions definition on definition.id = count.metric_definition_id
-join aggregate.scopes scope on scope.id = count.scope_id
-where scope.include_in_cumulative
-group by definition.category, definition.metric_key, count.data_origin
-order by definition.category, definition.metric_key, count.data_origin;
-```
+These records are retained in Supabase's private schema and are not browser-readable.
 
-There must be exactly one `seeded_baseline` scope. Observed totals must exist only on screening/cohort scopes; cumulative public computation uses screening scopes only.
+### Public aggregate data
 
-## Verify realtime and browser-role security
+The public interface receives only approved cumulative values such as:
 
-```sql
-select schemaname, tablename
-from pg_publication_tables
-where pubname = 'supabase_realtime'
-order by schemaname, tablename;
+- total observed check-ins;
+- allowlisted burnout and RESET practice counts;
+- selected aggregate percentages;
+- aggregate revision and snapshot metadata.
 
-select
-  has_table_privilege('anon', 'public.aggregate_revision', 'select') as anon_select,
-  has_table_privilege('anon', 'public.aggregate_revision', 'insert') as anon_insert,
-  has_table_privilege('anon', 'public.aggregate_revision', 'update') as anon_update,
-  has_table_privilege('anon', 'public.aggregate_revision', 'delete') as anon_delete;
+The public interface is aggregated and de-identified. The private source records are not anonymous because the application stores required identity fields.
 
-select
-  p.proname,
-  p.prosecdef as security_definer,
-  has_function_privilege('service_role', p.oid, 'execute') as server_execute,
-  has_function_privilege('anon', p.oid, 'execute') as anon_execute,
-  has_function_privilege('authenticated', p.oid, 'execute') as authenticated_execute
-from pg_proc p
-join pg_namespace n on n.oid = p.pronamespace
-where n.nspname in ('api', 'aggregate')
-order by n.nspname, p.proname;
-```
+### Consent and policy versions
 
-Expected:
+Consent language is versioned. Do not overwrite a policy version that participants have already accepted. If counsel approves materially different consent language, create a new version and review whether any collection, retention, deletion, or participant-rights behavior must also change.
 
-- `public.aggregate_revision` is the only Project RESET realtime table;
-- `anon_select = true` and all mutation columns are false;
-- all application functions show `security_definer = false`;
-- server execution is true only where granted;
-- browser execution is false.
+The current `/privacy` page is an interim beta notice, not the final privacy policy. Static approved policy copy can replace it directly. Functional legal requirements require technical review before implementation.
 
-Open the Learning Lab in two browser windows. Submit a new response in one. The other must update without a page reload. Its network log should show an aggregate-revision event followed by `GET /api/v1/aggregates`, with no raw response payload.
+See [data-model.md](data-model.md), [security.md](security.md), and [security-operations.md](security-operations.md).
 
-## Rebuild/recovery
+## 6. Learning Lab and public aggregates
 
-Disable submissions first, then run:
+Every successful submission updates an approved observed aggregate within the same database transaction as the private participation record. This prevents the public picture from drifting away from the accepted source data during normal operation.
 
-```sql
-select aggregate.rebuild_observed_v1();
-```
+The production interface renders observed values only. Compatibility fields may remain in the API response but are not the public display source.
 
-This clears and rebuilds observed aggregate rows and processed-response markers from committed raw responses, preserves seeded rows, and increments the revision once.
+Participant-created terms are not automatically promoted into public word clouds. New terms require an approved curation or allowlisting decision.
 
-## Verify a raw test submission
+The public aggregate response is intentionally PII-free. It must never be expanded casually to include participant-level, cohort-level, demographic, or small-cell detail.
 
-Use a preview-only email and complete `/s/preview-screening`, then follow the private-record queries retained from Milestone 1. Do not paste identity or free text into tickets, chat or documentation.
+See [architecture.md](architecture.md), [data-model.md](data-model.md), and [database-reporting.md](database-reporting.md).
 
-## Hosted verification record
+## 7. Reporting with Supabase
 
-Verified on 25 August 2026 at `project-reset-psi.vercel.app`:
+Phase 1 uses reviewed, read-only SQL rather than an additional reporting dashboard. The complete query library is in [database-reporting.md](database-reporting.md).
 
-- the browser bundle contained the intended public Supabase URL and publishable key, with no secret key;
-- the public aggregate endpoint returned the allowlisted cumulative snapshot;
-- one synthetic preview submission committed and increased observed responses from four to five;
-- an already-open visualization received a PII-free revision update and moved from revision 3 to revision 4 without a page reload;
-- the observed total remained five during the notification-only refresh;
-- `202608250005_fix_revision_safe_update.sql` corrected Supabase API safe-update rejection by targeting the singleton revision row explicitly.
+### Safe reporting workflow
 
-## Product and visual reconciliation verification
+1. Sign in to the correct Supabase project.
+2. Open SQL Editor.
+3. Start a new query rather than editing an old operational query in place.
+4. Use an approved `SELECT` query from the reporting guide.
+5. Confirm the requested event slug, time zone, and definition of a completed check-in.
+6. Run the query.
+7. Review the result for private information before downloading or sharing it.
+8. Export only when there is an approved purpose and recipient.
 
-The latest approved file was confirmed byte-identical to `reference/prototype/Project RESET Learning Lab Prototype.html`; see `docs/prototype-reconciliation.md` for its checksum and screen audit.
+Do not run AI-generated `INSERT`, `UPDATE`, `DELETE`, `ALTER`, `DROP`, `TRUNCATE`, policy, permission, or schema statements. AI can help draft a read-only report, but a human must verify its tables, joins, filters, privacy risk, and interpretation.
 
-Verified locally on 25 August 2026:
+### Core reporting definitions
 
-- lint, TypeScript and production build completed without errors;
-- 28 Vitest unit/integration assertions passed;
-- four Playwright journeys passed across iPhone 13 and desktop Chromium;
-- custom burnout and RESET tags retained trimmed literal wording in the final payload;
-- a long, punctuated non-ASCII first name rendered into a valid 1080×1350 canvas card;
-- the card excluded PII beyond first name, burnout answers, free text, demographics and custom tags;
-- required 390px, larger-mobile, tablet and desktop layouts were visually inspected;
-- focus styling, sticky progress, wrapped custom-tag suggestions, scroll-to-stage behavior and reduced-motion CSS were checked;
-- the aggregate SQL regression passed inside a rollback, including private custom-tag persistence, safe public output, idempotency, failed-submission rollback, seeded/observed separation, screening/cumulative totals, grants/RLS and realtime publication boundaries;
-- `202608250006_us_english_policy.sql` was applied to the preview database without altering the previous policy record.
+- A completed check-in is a participation with an associated response.
+- A participation count is not a unique-person count.
+- Film access means the application recorded an eligible `active_event / film_access` outcome.
+- Film access does not prove that KINEMA accepted the code, that the participant redeemed it, or that the film was watched.
+- KINEMA Reports is the source of truth for redemption and viewing activity.
+- New York event reporting should use `America/New_York` for local dates and times.
 
-The exact paid “Debora Celina Script” font remains an optional Foundation-supplied dependency. The approved prototype’s embedded Petit Formal Script substitute is used in the current build.
+### Using the documentation with an AI assistant
 
-### Font roles
+Provide the AI assistant with this guide, [data-model.md](data-model.md), and [database-reporting.md](database-reporting.md). Instruct it to:
 
-- **Poppins:** all normal interface copy, headings, labels, navigation, controls, buttons, metadata artwork, and share-card sans-serif text.
-- **Petit Formal Script:** intentional script/italic brand accents and the share-card accent line.
-- **EB Garamond:** word-cloud words only, including their intentional roman/italic variation. This is an approved exception to the single-interface-font rule.
-- **Manrope:** retained only as an unused repository asset for provenance; it is not loaded by the application.
+- generate one read-only `SELECT` query;
+- use only documented tables and columns;
+- define the reporting unit and date boundary;
+- use `America/New_York` where event-local time matters;
+- suppress or avoid participant-level and small-cell output;
+- state assumptions and privacy risks;
+- never invent a relationship or field;
+- never produce a mutating query unless a separately authorized technical workflow requires it.
 
-Hosted reconciliation verification on 25 August 2026:
+## 8. Deployment and rollback
 
-- commit `4dac975` deployed successfully to `https://project-reset-psi.vercel.app/s/preview-screening`;
-- the new RESET hero, final-step PII order, private-tag composer, U.S.-English acknowledgement and Learning Lab composition were present;
-- the safe endpoint returned revision 5 with seeded 4,283, observed 6 and combined 4,289, containing only approved totals and metric categories;
-- an already-open Learning Lab moved from five to six observed check-ins without a page reload after the independent revision 4 → 5 update;
-- no hosted submission was made during this reconciliation audit. The source of the sixth preview response was not inferred; all preview records remain subject to the documented production-cleanup requirement.
+The normal application release path is:
 
-Foundation-feedback verification on 26 August 2026:
+1. Create a focused branch.
+2. Make and review the change.
+3. Run the relevant checks.
+4. Open a pull request.
+5. Review the GitHub checks and Vercel Preview.
+6. Merge through the protected production branch.
+7. Verify the production routes, domain, logs, and key participant journey.
 
-- the Learning Lab’s top check-in action remained fixed at the top of the 390px viewport after scrolling to the footer;
-- the mobile layout had no horizontal overflow, and the desktop artifact remained centered at its approved 390px measure;
-- the final stage showed explicit required labels for name/initials and email, a separate optional-demographics explanation, and no noninteractive delivery-method control;
-- the JIVINITI footer mark rendered dark against the cream background and the partner lockup was tightened;
-- the observed-check-in callout was absent while the illustrative-preview label and safe aggregate data remained intact;
-- the participant and Learning Lab Playwright journeys passed on mobile and desktop Chromium.
+Database migrations are separate from application deployments. A Vercel rollback restores application code but does not undo a Supabase migration. Database changes require a specifically reviewed recovery plan or verified backup restoration.
 
-Hosted pathway/journey verification on 30 August 2026:
+If submissions must be stopped without taking down the informational application, set the server-only `SUBMISSIONS_ENABLED` value to false and redeploy. Re-enable it only after the issue is understood and a complete check-in path has been verified.
 
-- `202608290001_event_non_event_pathways.sql` was applied to the isolated Project RESET preview database;
-- `preview-screening` resolves to `non_event`, `trailer_access`, and `non_event` window status;
-- the resolver is executable by `service_role` and not by `anon` or `authenticated`; `anon` cannot read private participations;
-- one clearly synthetic submission (`deployment-qa-559086a@example.invalid`) committed as `non_event / trailer_access / web / available` and increased the preview observed aggregate once;
-- commit `559086a` deployed through the existing Git integration and was verified at `https://project-reset-psi.vercel.app/s/preview-screening`;
-- the hosted success page rendered the earlier full inline Learning Lab, contained no restart controls, retained the card, and its skip anchor reached the card; this was subsequently superseded by Nivi’s request for a condensed results → access → card sequence;
-- `preview-event` and `preview-expired-event` are demonstration-only screening routes, not approved production events.
+Do not expose or copy production secret values into documents, tickets, chat, screenshots, or client-side environment variables.
 
-Post-submission hierarchy deployment on 31 August 2026:
+See [deployment.md](deployment.md), [infrastructure.md](infrastructure.md), and [security-operations.md](security-operations.md).
 
-- Nivi’s approved final sequence is now community visualization → film/trailer access → personal RESET card;
-- the post-submission view contains only the Burnout Landscape and Community RESET Map, while the standalone Learning Lab retains its full introduction, statistics, pathway view, campaign actions and footer;
-- the non-event and expired-event trailer CTA uses `https://www.thirddegreeburnout.com/` by default and remains configurable with `NEXT_PUBLIC_PROJECT_RESET_TRAILER_URL`;
-- one clearly synthetic visual-QA submission (`visual-qa-20260831@example.invalid`) was written to the preview dataset while checking the active-event flow at 390px;
-- commit `af517ea` deployed successfully through Vercel’s Git integration; all three preview routes and the safe aggregate endpoint returned HTTP 200 after deployment;
-- no database migration, RLS policy, grant, aggregate contract or submission transaction changed in this frontend-only pass.
+## 9. KINEMA boundary
 
-Brand, questionnaire-v2 and share-card application verification on 31 August 2026:
+Project RESET determines whether a completed check-in is eligible for film access and displays the server-held event code and private film link. KINEMA controls everything after that boundary, including:
 
-- lint, TypeScript, 31 Vitest assertions and the optimized Next.js production build passed;
-- all 14 Playwright journeys passed across iPhone 13 and desktop Chromium, including image-first native share, cancellation, unsupported sharing, PNG fallback, v2 labels, retired-option omission and generic Open Graph output;
-- the exported card canvas remained exactly 1080×1350 and a long punctuated non-ASCII name rendered without clipping;
-- visual inspection at 390px, 430px, 768px and 1440px found no horizontal overflow; the artifact is edge-to-edge on mobile and centered at 390px on tablet/desktop;
-- Poppins was verified on normal interface headings while the word cloud retained EB Garamond and its intentional italic variation;
-- the 1200×630 Open Graph image returned `image/png` and contained only generic campaign/film content;
-- the hosted questionnaire-v2 migration was deliberately deferred until a guarded rollout.
+- account creation and sign-in;
+- promo-code acceptance or rejection;
+- checkout and rental ownership;
+- CAPTCHA behavior;
+- DRM and playback;
+- confirmation email;
+- the 30-day period to begin watching;
+- the 48-hour period to finish after starting;
+- redemption caps, shutdowns, and reports.
 
-Questionnaire-v2 hosted rollout on 2 September 2026:
+The application cannot revoke a code that has already been copied or a rental that has already been redeemed. If a code is exposed or abused, contact KINEMA to disable it and follow the incident process.
 
-- commit `b3c5728` temporarily disabled the submission route during the database change; the hosted route returned `503 submissions_disabled` before migration;
-- migration `202608310001_questionnaire_v2_brand_polish.sql` ran as one explicit transaction and rebuilt 32 observed responses at revision 32;
-- the rollback-safe `supabase/tests/aggregate_milestone2.sql` suite completed without an exception and returned no rows after its final rollback;
-- `/s/preview-screening` reported questionnaire version 2 with the revised labels, `less_social_media` and `in_person_meetings`, while omitting inactive `fruit_veg`;
-- `/api/v1/aggregates` retained separate seeded (4,283), observed (32) and combined (4,315) totals, exposed the revised allowlisted labels, omitted `fruit_veg`, and contained no participant data or free text;
-- commit `07ad991` removed the temporary submission guard only after these database and hosted-read checks passed; an intentionally invalid hosted request then returned `422 validation_failed` rather than the maintenance `503`, confirming writes were re-enabled without creating participant data. The normal environment-controlled submission guard remains in force.
+Do not share production promo codes in handover documents or general team messages.
 
-## Manual owner actions
+## 10. Event-day monitoring and incident response
 
-- Review the illustrative seeded-baseline wording with the Foundation before production.
-- Confirm whether the Foundation owns/licences “Debora Celina Script” if exact script-typeface parity is required.
-- Retain the preview-only dataset warning: the synthetic test response and all other preview research records must be removed before any production cutover.
-- Confirm whether name/initials and email are required for every check-in or whether an anonymous/no-reward submission path is desired.
-- Supply the final consumer wording for the identity and film-access stage.
-- Supply the exact copyright owner and approved copyright phrase before a site-wide footer is introduced.
-- Confirm that native device sharing plus PNG download is the intended share-card scope; direct posting destinations cannot be guaranteed by a web application.
+### Before participants arrive
 
-## Questionnaire v3, KINEMA handoff and conversation-library update — 5 September 2026
+- Verify the exact production URL and printed QR code.
+- Complete one controlled check-in without publishing the promo code.
+- Confirm that submissions are enabled.
+- Confirm the correct film or trailer outcome for the route.
+- Confirm the aggregate endpoint and Continue the Conversation route load.
+- Review Vercel and Supabase operational status.
+- Confirm who is monitoring KINEMA Reports and who may contact KINEMA.
 
-- Apply `supabase/migrations/202609050001_questionnaire_v3_commitment.sql` before testing new submissions. It preserves v1/v2 and moves preview and any existing launch screening rows to v3.
-- The active success journey is now confirmation, two Learning Lab visualizations, film/trailer access, then Continue the Conversation. The share-card concept gallery remains available separately.
-- Manual KINEMA delivery uses server-only `KINEMA_FILM_URL`, `KINEMA_CLIMATE_WEEK_NYC_2026_CODE`, and `KINEMA_COLUMBIA_CLIMATE_SCHOOL_2026_CODE` with `REWARD_PROVIDER=kinema_manual`.
-- The launch screenings use approved, exclusive New York-time windows. The application cannot revoke a KINEMA rental or schedule promo-code shutdown.
-- The conversation tool is a browseable 60-question library with four featured themes, all-theme reveal, stable deep-link compatibility and no answer collection.
+### During the event
 
-## Stakeholder launch-readiness update — 7 September 2026
+- Watch Vercel logs for repeated errors or rate limits.
+- Check aggregate volume for plausible growth.
+- Compare application film-access outcomes with KINEMA redemption activity.
+- Do not tighten firewall rules or make speculative production changes during an active event unless responding to a verified incident.
 
-- Apply `supabase/migrations/202609060001_launch_event_windows.sql` after its database tests pass. It provisions the Climate Week and Columbia version-3 routes with exclusive 15-day New York-time windows.
-- KINEMA advised retaining the two already-active production codes. Project RESET exposes neither code before its application window. KINEMA must separately disable the Climate Week code at the October 7 close and the Columbia code at the October 22 close; written scheduling confirmation is pending.
-- Continue the Conversation is served at `/start-a-conversation`; `/take-it-to-the-table` permanently redirects there for compatibility. The tool saves multiple prompt IDs locally, supports removal across themes, and offers plain-text copy and image download instead of social sharing.
-- The Foundation-approved launch consent is applied by `202609070001_final_consent_policy.sql`. It updates `reset_data_use_v1_us` in place because all earlier records are internal pre-launch tests; every material post-launch wording change must create a new policy version.
-- The conversation companion now uses the locked participant copy, repeats “Choose another theme” after the sixth question, and labels its image action “Create and Save my question card.” The success message confirms that the card was saved to the device.
-- The KINEMA card explains that its button opens the direct private film page even while the title is absent from the public catalogue. The support CTA links to the approved Fuel the Impact page and remains configurable through `NEXT_PUBLIC_DONATE_URL`.
-- On 8 September 2026, the private KINEMA page, free dummy-code checkout, and Reports → Rentals record were verified. The production availability range, post-film engagement link, confirmation-email return path, and written code-shutdown schedule remain operational checks.
-- An unlisted `/privacy` route remains blocked only on the Legal-approved privacy-page content and destination.
+### First-response table
 
-The production custom domain is active. Dataset cleanup remains approval-controlled because the current preparation script preserves the illustrative baseline. Automated KINEMA API delivery is not part of this launch implementation; KINEMA sends its own confirmation after redemption.
+| Symptom | First action | Escalation |
+| --- | --- | --- |
+| Submissions fail or spike unexpectedly | Disable submissions and inspect Vercel and Supabase | Application operator and Supabase owner |
+| Application release is faulty | Restore the previous verified Vercel deployment | Vercel operator |
+| Database state may be damaged | Stop writes and review a recovery plan | Supabase owner and retained technical support |
+| Promo code is exposed | Ask KINEMA to disable it | Foundation, Picture Motion, and KINEMA |
+| High 429 rate at venue | Review the expected attendance and firewall rule | Vercel operator |
+| Learning Lab appears stale | Check submission success, aggregate revision, and reconciliation | Application operator |
+
+Never delete participant records during an incident. Preserve logs and timestamps and record the incident, affected route, containment action, owner, and resolution.
+
+## 11. Access and ownership checklist
+
+### GitHub and Vercel
+
+- [ ] The Foundation owner can access the GitHub repository.
+- [ ] The Foundation owner can access Vercel deployments and logs.
+- [ ] The production domain points to the intended production deployment.
+- [ ] Branch protection and required checks are understood.
+- [ ] Firewall configuration and the emergency submission switch are understood.
+- [ ] Server-only production variables remain secret and present where required.
+
+### Supabase
+
+- [ ] The Foundation owner can access the project and SQL Editor.
+- [ ] Production screening configuration has been reviewed.
+- [ ] The read-only reporting workflow is understood.
+- [ ] Aggregate reconciliation checks are understood.
+- [ ] Backup and restoration responsibilities have an assigned owner.
+
+### KINEMA
+
+- [ ] The correct owner can access KINEMA Reports and configuration.
+- [ ] Film availability covers the approved event windows.
+- [ ] Promo-code caps and shutdown times are confirmed.
+- [ ] The escalation path for code or playback issues is known.
+
+### Documentation
+
+- [ ] This handover guide has been received.
+- [ ] The reporting guide and data model have been received.
+- [ ] The deployment, security, and incident runbooks have been received.
+- [ ] The final approved privacy text has an owner and follow-up date.
+- [ ] Any retained post-Phase 1 support arrangement is documented separately.
+
+## 12. Remaining and deferred work
+
+### External or pending
+
+- final counsel-approved privacy-policy text;
+- any functional legal requirements created by that policy;
+- KINEMA availability, caps, shutdowns, email, account, and viewing behavior;
+- event operations and moderation owned by the Foundation and its partners.
+
+### Potential Phase 2 work
+
+- participant email or SMS delivery;
+- authenticated reporting dashboard;
+- approved participant-level research workflow;
+- retention, deletion, access, correction, or portability workflows;
+- deeper KINEMA integration;
+- conversation analytics;
+- richer cohort reporting with an approved privacy model;
+- participant or event enforcement beyond the current operational controls.
+
+These items are not part of the completed Phase 1 application unless separately scoped and approved.
+
+## 13. Quick-answer reference
+
+| Question | Answer | Deeper reference |
+| --- | --- | --- |
+| Where are completed check-ins stored? | In private Supabase records written through the application server | [data-model.md](data-model.md) |
+| Are results anonymous? | No. Public results are aggregated and de-identified; private source records retain required identity fields | [security.md](security.md) |
+| What opens a film-access pathway? | The screening record, database time, and server-held code configuration | [user-journey.md](user-journey.md) |
+| How are completed check-ins counted? | Participation records with an associated response | [database-reporting.md](database-reporting.md) |
+| How is redemption or viewing confirmed? | KINEMA Reports | Section 9 of this guide |
+| How is a faulty release reversed? | Restore the prior verified Vercel deployment | [deployment.md](deployment.md) |
+| How are writes stopped in an incident? | Disable submissions with the server-only environment switch and redeploy | [security-operations.md](security-operations.md) |
+| Can Continue the Conversation save answers? | No. Saved prompts remain local to the participant's device | [conversation-tool.md](conversation-tool.md) |
+
+## 14. Documentation index
+
+| Document | Purpose |
+| --- | --- |
+| [architecture.md](architecture.md) | System components, trust boundaries, and request flow |
+| [brand-guide.md](brand-guide.md) | Brand tokens and interface usage |
+| [conversation-tool.md](conversation-tool.md) | Continue the Conversation behavior and privacy boundary |
+| [data-model.md](data-model.md) | Current entities, relationships, classifications, and lifecycle |
+| [database-reporting.md](database-reporting.md) | Reporting vocabulary, query library, and AI query-generation guardrails |
+| [deployment.md](deployment.md) | Release, event-window, environment, verification, and rollback procedures |
+| [infrastructure.md](infrastructure.md) | Platform inventory and current ownership notes |
+| [security.md](security.md) | Implemented application security controls |
+| [security-operations.md](security-operations.md) | Monitoring, incident response, and operational responsibilities |
+| [user-journey.md](user-journey.md) | Participant pathways and completion sequence |
+
+## 15. Facts to verify whenever ownership or configuration changes
+
+- the exact production deployment and commit;
+- production environment-variable presence without exposing values;
+- Vercel firewall configuration and expected audience threshold;
+- current Supabase screening timestamps and status;
+- Supabase backup and restoration ownership;
+- KINEMA availability, capacity, shutdown, email, and viewing settings;
+- final privacy-policy wording and any resulting functional requirements.
+
+Operational facts can change independently of the repository. Verify them in the relevant platform before relying on an older screenshot or document.
